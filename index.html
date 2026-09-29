@@ -149,26 +149,6 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     </div>
   </section>
 
-  <section class="panel" aria-labelledby="hPair">
-    <h2 id="hPair">Nowy sensor</h2>
-    <form class="pair" id="pairForm">
-      <label for="code">Kod z aplikatora
-        <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
-      </label>
-      <button type="submit" id="pairBtn" disabled>Paruj</button>
-    </form>
-    <p class="sub">Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.</p>
-    <div class="search" id="search" hidden></div>
-  </section>
-
-  <section class="panel" aria-labelledby="hSeen">
-    <h2 id="hSeen">Sensory w zasięgu</h2>
-    <ul class="seen" id="seen">
-      <li><span><span class="name">DXCM18</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i class="on" style="height:14px"></i></span></span><span class="pill good">używany</span></li>
-      <li><span><span class="name">DXCMJH</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i style="height:14px"></i></span></span><span class="pill">kod nie pasuje</span></li>
-    </ul>
-  </section>
-
   <section class="panel">
     <div class="confirm">
       <button type="button" id="connectBtn">Połącz z bridge'em</button>
@@ -197,6 +177,26 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
         </span>
       </div>
     </details>
+  </section>
+
+  <section class="panel" aria-labelledby="hSeen">
+    <h2 id="hSeen">Sensory w zasięgu</h2>
+    <ul class="seen" id="seen">
+      <li><span><span class="name">DXCM18</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i class="on" style="height:14px"></i></span></span><span class="pill good">używany</span></li>
+      <li><span><span class="name">DXCMJH</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i style="height:14px"></i></span></span><span class="pill">kod nie pasuje</span></li>
+    </ul>
+  </section>
+
+  <section class="panel" aria-labelledby="hPair">
+    <h2 id="hPair">Nowy sensor</h2>
+    <form class="pair" id="pairForm">
+      <label for="code">Kod z aplikatora
+        <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
+      </label>
+      <button type="submit" id="pairBtn" disabled>Paruj</button>
+    </form>
+    <p class="sub">Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.</p>
+    <div class="search" id="search" hidden></div>
   </section>
 </main>
 
