@@ -136,6 +136,19 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <div class="bar" aria-hidden="true"><span id="sBar" style="width:30%"></span></div>
   </section>
 
+  <section class="panel" aria-labelledby="hRange">
+    <h2 id="hRange">Zasięg</h2>
+    <dl>
+      <dt>Telefon ↔ bridge</dt><dd><span id="pRssi">—</span></dd>
+      <dt>Sensor ↔ bridge</dt><dd><span id="sRssi">—</span></dd>
+      <dt>Najsłabszy w teście</dt><dd id="pMin">—</dd>
+    </dl>
+    <div class="confirm">
+      <button type="button" class="quiet" id="rangeBtn" disabled>Test zasięgu</button>
+      <span class="sub" id="rangeHint">Poniżej około −90 dBm połączenie z telefonem się zrywa.</span>
+    </div>
+  </section>
+
   <section class="panel" aria-labelledby="hPair">
     <h2 id="hPair">Nowy sensor</h2>
     <form class="pair" id="pairForm">
@@ -162,6 +175,17 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
       <button type="button" class="quiet" id="refreshBtn" disabled>Odśwież</button>
     </div>
     <p class="msg" id="msg" role="status"></p>
+    <details>
+      <summary>Co znaczy dioda na bridge'u</summary>
+      <dl style="margin-top:10px">
+        <dt>zielone mignięcie co 5 s</dt><dd>sensor OK, świeży odczyt, xDrip połączony</dd>
+        <dt>żółte mignięcie co 5 s</dt><dd>sensor OK, ale xDrip niepołączony, albo rozgrzewanie</dd>
+        <dt>niebieskie miganie</dt><dd>szuka sensora po nowym kodzie</dd>
+        <dt>niebieskie co 5 s</dt><dd>nie ustawiono kodu ani sensora</dd>
+        <dt>turkusowe co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
+        <dt>czerwone co 5 s</dt><dd>brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
+      </dl>
+    </details>
     <details>
       <summary>Telefon nie może się połączyć</summary>
       <p class="sub">Usuwa parowanie telefonów z bridge'em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge'a i w ciągu 10 minut sparuj telefon ponownie.</p>
@@ -281,7 +305,34 @@ function render(st) {
       '</span>' + pill + '<span class="sub">widziany ' + ago(s.ago) + '</span></li>';
   }).join('') : '<li><span class="sub">Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.</span></li>';
 
+  $('pRssi').innerHTML = st.prssi !== undefined ? rssiText(st.prssi) : '—';
+  $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(reklama, ' + ago(using.ago) + ')</span>' : '—';
+  if (rangeTest && st.prssi !== undefined) {
+    rangeMin = rangeMin === null ? st.prssi : Math.min(rangeMin, st.prssi);
+    $('pMin').innerHTML = rssiText(rangeMin);
+  }
+
   if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
+}
+
+function rssiText(r) {
+  const [label, cls] = r >= -70 ? ['dobry', 'good'] : r >= -85 ? ['średni', 'warn'] : ['słaby', 'bad'];
+  return '<span style="font-variant-numeric:tabular-nums">' + r + ' dBm</span>' + bars(r) +
+    ' <span class="pill ' + cls + '">' + label + '</span>';
+}
+
+let rangeTest = false, rangeMin = null;
+
+function setRangeTest(on) {
+  rangeTest = on;
+  rangeMin = null;
+  $('pMin').textContent = on ? 'mierzę…' : '—';
+  $('rangeBtn').textContent = on ? 'Zakończ test' : 'Test zasięgu';
+  $('rangeHint').textContent = on
+    ? 'Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.'
+    : 'Poniżej około −90 dBm połączenie z telefonem się zrywa.';
+  if (timer) clearInterval(timer);
+  if (statusChr) timer = setInterval(readStatus, on ? 1000 : 5000);
 }
 
 async function readStatus() {
@@ -311,10 +362,11 @@ function setConnected(on) {
   $('dot').classList.toggle('on', on);
   $('connText').textContent = on ? 'Połączono' : 'Nie połączono';
   $('connectBtn').textContent = on ? 'Rozłącz' : 'Połącz z bridge’em';
-  for (const id of ['refreshBtn', 'unpairBtn']) $(id).disabled = !on;
+  for (const id of ['refreshBtn', 'unpairBtn', 'rangeBtn']) $(id).disabled = !on;
   validateCode();
   if (timer) clearInterval(timer);
-  timer = on ? setInterval(readStatus, 5000) : null;
+  timer = on ? setInterval(readStatus, rangeTest ? 1000 : 5000) : null;
+  if (!on && rangeTest) setRangeTest(false);
 }
 
 async function connect() {
@@ -364,6 +416,7 @@ $('pairForm').addEventListener('submit', (e) => {
 });
 $('connectBtn').addEventListener('click', connect);
 $('refreshBtn').addEventListener('click', readStatus);
+$('rangeBtn').addEventListener('click', () => setRangeTest(!rangeTest));
 $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = false; });
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {
