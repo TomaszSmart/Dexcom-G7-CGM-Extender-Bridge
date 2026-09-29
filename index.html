@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>G7 Bridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column of instrument panels — reading first, then the sensor, then setup. */
+:root {
+  --bg: #eef2f4;
+  --panel: #ffffff;
+  --ink: #15212b;
+  --muted: #5b6b77;
+  --line: #d5dde3;
+  --accent: #0b6e80;
+  --accent-ink: #ffffff;
+  --low: #c0392b;
+  --ok: #1f8a4c;
+  --high: #b7791f;
+  --soft: #e3eef1;
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f171d; --panel: #16222b; --ink: #e6eef2; --muted: #93a6b3; --line: #273742;
+    --accent: #3fb4c7; --accent-ink: #062027; --low: #ff6b5c; --ok: #46c77e; --high: #e6ad4a;
+    --soft: #1c2d37; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f171d; --panel: #16222b; --ink: #e6eef2; --muted: #93a6b3; --line: #273742;
+  --accent: #3fb4c7; --accent-ink: #062027; --low: #ff6b5c; --ok: #46c77e; --high: #e6ad4a;
+  --soft: #1c2d37; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 15px/1.5 var(--font-body);
+}
+main { max-width: 34rem; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; display: grid; gap: 14px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font: 700 1.35rem/1.2 var(--font-display); margin: 0; letter-spacing: -0.01em; }
+h2 { font: 600 0.78rem/1.2 var(--font-body); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+.conn { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.dot.on { background: var(--ok); }
+button {
+  font: 600 0.95rem var(--font-body); border-radius: 9px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--accent-ink); padding: 10px 16px; cursor: pointer;
+}
+button.quiet { background: transparent; color: var(--accent); }
+button.danger { border-color: var(--low); background: transparent; color: var(--low); }
+button:disabled { opacity: 0.45; cursor: default; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.reading { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: end; }
+.bg { font: 700 3.6rem/0.95 var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.bg small { font: 500 0.95rem var(--font-body); color: var(--muted); margin-left: 4px; letter-spacing: 0; }
+.bg.low { color: var(--low); } .bg.ok { color: var(--ok); } .bg.high { color: var(--high); } .bg.none { color: var(--muted); }
+.trend { font: 500 1.05rem var(--font-body); }
+.sub { color: var(--muted); font-size: 0.88rem; }
+.pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; background: var(--soft); color: var(--ink); }
+.pill.bad { background: color-mix(in srgb, var(--low) 16%, transparent); color: var(--low); }
+.pill.good { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.pill.warn { background: color-mix(in srgb, var(--high) 18%, transparent); color: var(--high); }
+
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; }
+dt { color: var(--muted); font-size: 0.88rem; }
+dd { margin: 0; font-variant-numeric: tabular-nums; min-width: 0; }
+.bar { height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; margin-top: 12px; }
+.bar > span { display: block; height: 100%; background: var(--accent); width: 0; }
+
+form.pair { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+input#code {
+  font: 500 1.6rem/1 var(--font-mono); letter-spacing: 0.35em; width: 8.2em; padding: 8px 10px;
+  border-radius: 9px; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.search { margin-top: 10px; font-size: 0.9rem; }
+ul.seen { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ul.seen li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; padding-block: 8px; border-top: 1px solid var(--line); }
+ul.seen li:first-child { border-top: 0; }
+.name { font: 500 1rem var(--font-mono); }
+.rssi { display: inline-flex; gap: 2px; align-items: flex-end; height: 14px; margin-left: 8px; vertical-align: -2px; }
+.rssi i { width: 4px; background: var(--line); border-radius: 1px; }
+.rssi i.on { background: var(--accent); }
+.msg { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
+.example { font-size: 0.78rem; color: var(--high); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
+.nobt { border-color: var(--low); }
+@media (prefers-reduced-motion: no-preference) { .bar > span { transition: width 0.4s ease; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>G7 Bridge</h1>
+    <span class="conn"><span class="dot" id="dot"></span><span id="connText">Nie połączono</span></span>
+  </header>
+
+  <section class="panel nobt" id="noBt" hidden>
+    <h2>Ta przeglądarka nie obsługuje Bluetooth</h2>
+    <p class="sub">Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="hReading">
+    <h2 id="hReading">Glukoza <span class="example" id="exampleTag">· przykładowe dane</span></h2>
+    <div class="reading">
+      <div class="bg ok" id="bg">142<small>mg/dL</small></div>
+      <div>
+        <div class="trend" id="trend">→ stabilnie</div>
+        <div class="sub" id="age">2 min temu</div>
+      </div>
+    </div>
+    <div style="margin-top:10px"><span class="pill good" id="state">OK</span></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hSensor">
+    <h2 id="hSensor">Sensor</h2>
+    <dl>
+      <dt>Nazwa</dt><dd id="sName">DXCM18</dd>
+      <dt>Sesja</dt><dd id="sDay">dzień 3,2 z 10,5</dd>
+      <dt>Koniec</dt><dd id="sEnd">sob 3 paź, 14:10</dd>
+      <dt>Kod</dt><dd id="sCode">••••</dd>
+      <dt>Telefon (xDrip)</dt><dd id="sPhone">połączony</dd>
+    </dl>
+    <div class="bar" aria-hidden="true"><span id="sBar" style="width:30%"></span></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hPair">
+    <h2 id="hPair">Nowy sensor</h2>
+    <form class="pair" id="pairForm">
+      <label for="code">Kod z aplikatora
+        <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
+      </label>
+      <button type="submit" id="pairBtn" disabled>Paruj</button>
+    </form>
+    <p class="sub">Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.</p>
+    <div class="search" id="search" hidden></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hSeen">
+    <h2 id="hSeen">Sensory w zasięgu</h2>
+    <ul class="seen" id="seen">
+      <li><span><span class="name">DXCM18</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i class="on" style="height:14px"></i></span></span><span class="pill good">używany</span></li>
+      <li><span><span class="name">DXCMJH</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i style="height:14px"></i></span></span><span class="pill">kod nie pasuje</span></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="confirm">
+      <button type="button" id="connectBtn">Połącz z bridge'em</button>
+      <button type="button" class="quiet" id="refreshBtn" disabled>Odśwież</button>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
+    <details>
+      <summary>Telefon nie może się połączyć</summary>
+      <p class="sub">Usuwa parowanie telefonów z bridge'em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge'a i w ciągu 10 minut sparuj telefon ponownie.</p>
+      <div class="confirm">
+        <button type="button" class="danger" id="unpairBtn" disabled>Usuń parowanie telefonów</button>
+        <span id="unpairConfirm" hidden>
+          <button type="button" class="danger" id="unpairYes">Tak, usuń</button>
+          <button type="button" class="quiet" id="unpairNo">Anuluj</button>
+        </span>
+      </div>
+    </details>
+  </section>
+</main>
+
+<script>
+const SVC = 'a7c10001-3f8e-4b5a-9d2c-6e0b1f4a2c90';
+const STATUS = 'a7c10002-3f8e-4b5a-9d2c-6e0b1f4a2c90';
+const CMD = 'a7c10003-3f8e-4b5a-9d2c-6e0b1f4a2c90';
+const $ = (id) => document.getElementById(id);
+
+let device = null, statusChr = null, cmdChr = null, timer = null, busy = false;
+
+// G7 algorithm states (xDrip+ CalibrationState names)
+function stateInfo(s) {
+  if (s === 0x06) return ['OK', 'good'];
+  if (s === 0x07) return ['wymaga kalibracji', 'warn'];
+  if (s === 0x02) return ['rozgrzewanie', 'warn'];
+  if ([0x01, 0x0f, 0x18, 0x1a, 0xc2].includes(s)) return ['koniec sesji', 'bad'];
+  if (s === 0x03) return ['zakłócenia', 'warn'];
+  return ['awaria sensora (0x' + s.toString(16).padStart(2, '0') + ')', 'bad'];
+}
+
+function trendText(t) {
+  if (t === undefined) return 'trend nieznany';
+  const v = t / 10;
+  const arrow = v <= -2 ? '↓↓' : v <= -1 ? '↓' : v < -0.5 ? '↘' : v <= 0.5 ? '→' : v < 1 ? '↗' : v < 2 ? '↑' : '↑↑';
+  return arrow + ' ' + (v > 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + ' mg/dL/min';
+}
+
+function ago(s) {
+  if (s < 90) return s + ' s temu';
+  if (s < 5400) return Math.round(s / 60) + ' min temu';
+  if (s < 172800) return Math.round(s / 3600) + ' h temu';
+  return Math.round(s / 86400) + ' dni temu';
+}
+
+const dateFmt = new Intl.DateTimeFormat('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+function bars(rssi) {
+  const n = rssi > -65 ? 3 : rssi > -80 ? 2 : 1;
+  return '<span class="rssi" aria-label="sygnał ' + rssi + ' dBm">' +
+    [5, 9, 14].map((h, i) => '<i class="' + (i < n ? 'on' : '') + '" style="height:' + h + 'px"></i>').join('') + '</span>';
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function render(st) {
+  $('exampleTag').hidden = true;
+  const g = st.g;
+  const bg = $('bg');
+  if (g) {
+    const usable = g.state === 0x06 || g.state === 0x07;
+    bg.className = 'bg ' + (!usable ? 'none' : g.mgdl < 70 ? 'low' : g.mgdl > 180 ? 'high' : 'ok');
+    bg.innerHTML = g.mgdl + '<small>mg/dL</small>';
+    $('trend').textContent = usable ? trendText(g.trend) : 'nie przekazywany do xDrip';
+    $('age').textContent = ago(g.age);
+    const [label, cls] = stateInfo(g.state);
+    $('state').textContent = label;
+    $('state').className = 'pill ' + cls;
+  } else {
+    bg.className = 'bg none';
+    bg.innerHTML = '—<small>mg/dL</small>';
+    $('trend').textContent = 'brak odczytu od włączenia bridge’a';
+    $('age').textContent = '';
+    $('state').textContent = 'czekam na sensor';
+    $('state').className = 'pill';
+  }
+
+  const using = (st.seen || []).find((s) => s.use);
+  $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : 'nie wybrany');
+  const sess = st.sess || {};
+  if (sess.min !== undefined && sess.len) {
+    const day = (sess.min / 1440).toFixed(1).replace('.', ',');
+    const len = (sess.len / 1440).toFixed(1).replace('.', ',');
+    $('sDay').textContent = 'dzień ' + day + ' z ' + len;
+    $('sBar').style.width = Math.min(100, 100 * sess.min / sess.len) + '%';
+  } else if (sess.min !== undefined) {
+    $('sDay').textContent = 'dzień ' + (sess.min / 1440).toFixed(1).replace('.', ',');
+    $('sBar').style.width = '0%';
+  } else {
+    $('sDay').textContent = 'nieznana (czekam na sensor)';
+    $('sBar').style.width = '0%';
+  }
+  if (sess.start && sess.len) {
+    const end = new Date((sess.start + sess.len * 60) * 1000);
+    $('sEnd').textContent = dateFmt.format(end) + (end < new Date() ? ' (minęło)' : '');
+  } else {
+    $('sEnd').textContent = '—';
+  }
+  $('sCode').textContent = st.code || 'nie ustawiony';
+  $('sPhone').textContent = st.phone ? 'połączony' : 'nie połączony';
+
+  const search = $('search');
+  if (st.search) {
+    search.hidden = false;
+    search.textContent = 'Szukam sensora z kodem ' + st.code + ' — zostało ' + Math.ceil(st.left / 60) + ' min.';
+  } else {
+    search.hidden = true;
+  }
+
+  const list = (st.seen || []).slice().sort((a, b) => b.use - a.use || b.rssi - a.rssi);
+  $('seen').innerHTML = list.length ? list.map((s) => {
+    const pill = s.use ? '<span class="pill good">używany</span>'
+      : s.tried ? '<span class="pill">kod nie pasuje</span>'
+      : st.search ? '<span class="pill warn">do sprawdzenia</span>' : '<span class="pill">inny</span>';
+    return '<li><span><span class="name">' + esc(s.n) + '</span>' + bars(s.rssi) +
+      '</span>' + pill + '<span class="sub">widziany ' + ago(s.ago) + '</span></li>';
+  }).join('') : '<li><span class="sub">Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.</span></li>';
+
+  if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
+}
+
+async function readStatus() {
+  if (!statusChr || busy) return;
+  busy = true;
+  try {
+    const v = await statusChr.readValue();
+    render(JSON.parse(new TextDecoder().decode(v)));
+  } catch (e) {
+    $('msg').textContent = 'Nie udało się odczytać stanu: ' + e.message;
+  } finally {
+    busy = false;
+  }
+}
+
+async function send(cmd) {
+  if (!cmdChr) return;
+  try {
+    await cmdChr.writeValueWithResponse(new TextEncoder().encode(cmd));
+    setTimeout(readStatus, 600);
+  } catch (e) {
+    $('msg').textContent = 'Nie udało się wysłać polecenia: ' + e.message;
+  }
+}
+
+function setConnected(on) {
+  $('dot').classList.toggle('on', on);
+  $('connText').textContent = on ? 'Połączono' : 'Nie połączono';
+  $('connectBtn').textContent = on ? 'Rozłącz' : 'Połącz z bridge’em';
+  for (const id of ['refreshBtn', 'unpairBtn']) $(id).disabled = !on;
+  validateCode();
+  if (timer) clearInterval(timer);
+  timer = on ? setInterval(readStatus, 5000) : null;
+}
+
+async function connect() {
+  if (device && device.gatt.connected) {
+    device.gatt.disconnect();
+    return;
+  }
+  try {
+    $('msg').textContent = 'Wybierz „G7 Bridge” z listy…';
+    device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC] });
+    device.addEventListener('gattserverdisconnected', () => {
+      statusChr = cmdChr = null;
+      setConnected(false);
+      $('msg').textContent = 'Rozłączono.';
+    });
+    const server = await device.gatt.connect();
+    const svc = await server.getPrimaryService(SVC);
+    statusChr = await svc.getCharacteristic(STATUS);
+    cmdChr = await svc.getCharacteristic(CMD);
+    setConnected(true);
+    $('msg').textContent = 'Połączono. Przy pierwszym połączeniu zatwierdź parowanie.';
+    await readStatus();
+  } catch (e) {
+    if (e.name === 'NotFoundError') {
+      $('msg').textContent = 'Nie wybrano urządzenia.';
+    } else if (e.name === 'SecurityError' || /insufficient|authentic|encrypt/i.test(e.message)) {
+      $('msg').textContent = 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.';
+    } else {
+      $('msg').textContent = 'Połączenie nie powiodło się: ' + e.message;
+    }
+    setConnected(false);
+  }
+}
+
+function validateCode() {
+  const ok = /^(\d{4}|\d{6})$/.test($('code').value);
+  $('pairBtn').disabled = !(ok && cmdChr);
+}
+
+$('code').addEventListener('input', validateCode);
+$('pairForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const code = $('code').value;
+  if (!/^(\d{4}|\d{6})$/.test(code)) return;
+  $('msg').textContent = 'Wysyłam kod ' + code + '…';
+  send('code ' + code);
+});
+$('connectBtn').addEventListener('click', connect);
+$('refreshBtn').addEventListener('click', readStatus);
+$('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = false; });
+$('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
+$('unpairYes').addEventListener('click', () => {
+  $('unpairConfirm').hidden = true;
+  $('msg').textContent = 'Usuwam parowanie telefonów…';
+  send('unpair_phone');
+});
+
+if (!('bluetooth' in navigator)) {
+  $('noBt').hidden = false;
+  $('connectBtn').disabled = true;
+}
+</script>
+</body>
+</html>
