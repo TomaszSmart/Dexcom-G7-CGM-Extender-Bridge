@@ -369,19 +369,65 @@ function setConnected(on) {
   if (!on && rangeTest) setRangeTest(false);
 }
 
+// Reconnect by itself while the page is open, unless the user pressed "Rozłącz".
+let wantConnected = false, reconnectTimer = null;
+
+function scheduleReconnect() {
+  if (reconnectTimer || !wantConnected || !device) return;
+  reconnectTimer = setTimeout(async () => {
+    reconnectTimer = null;
+    if (!wantConnected || (device && device.gatt.connected)) return;
+    $('msg').textContent = 'Łączę ponownie…';
+    await openGatt();
+  }, 4000);
+}
+
+function onDisconnected() {
+  statusChr = cmdChr = null;
+  setConnected(false);
+  $('msg').textContent = wantConnected ? 'Rozłączono, łączę ponownie za chwilę…' : 'Rozłączono.';
+  scheduleReconnect();
+}
+
+function adopt(d) {
+  if (device === d) return;
+  device = d;
+  device.addEventListener('gattserverdisconnected', onDisconnected);
+}
+
 async function connect() {
   if (device && device.gatt.connected) {
+    wantConnected = false;
     device.gatt.disconnect();
     return;
   }
   try {
     $('msg').textContent = 'Wybierz „G7 Bridge” z listy…';
-    device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC] });
-    device.addEventListener('gattserverdisconnected', () => {
-      statusChr = cmdChr = null;
-      setConnected(false);
-      $('msg').textContent = 'Rozłączono.';
-    });
+    adopt(await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC] }));
+    wantConnected = true;
+    await openGatt();
+  } catch (e) {
+    $('msg').textContent = e.name === 'NotFoundError' ? 'Nie wybrano urządzenia.' : 'Połączenie nie powiodło się: ' + e.message;
+  }
+}
+
+// A bridge this browser was already allowed to use: connect without the chooser.
+async function autoConnect() {
+  if (!navigator.bluetooth || !navigator.bluetooth.getDevices) return;
+  try {
+    const known = (await navigator.bluetooth.getDevices()).filter((d) => d.name === 'G7 Bridge');
+    if (!known.length) return;
+    adopt(known[0]);
+    wantConnected = true;
+    $('msg').textContent = 'Łączę z zapamiętanym bridge’em…';
+    await openGatt();
+  } catch (e) {
+    /* no remembered permission: the button stays */
+  }
+}
+
+async function openGatt() {
+  try {
     const server = await device.gatt.connect();
     const svc = await server.getPrimaryService(SVC);
     statusChr = await svc.getCharacteristic(STATUS);
@@ -390,14 +436,14 @@ async function connect() {
     $('msg').textContent = 'Połączono. Przy pierwszym połączeniu zatwierdź parowanie.';
     await readStatus();
   } catch (e) {
-    if (e.name === 'NotFoundError') {
-      $('msg').textContent = 'Nie wybrano urządzenia.';
-    } else if (e.name === 'SecurityError' || /insufficient|authentic|encrypt/i.test(e.message)) {
+    if (e.name === 'SecurityError' || /insufficient|authentic|encrypt/i.test(e.message)) {
       $('msg').textContent = 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.';
+      wantConnected = false;
     } else {
-      $('msg').textContent = 'Połączenie nie powiodło się: ' + e.message;
+      $('msg').textContent = 'Brak połączenia (' + e.message + '), próbuję ponownie…';
     }
     setConnected(false);
+    scheduleReconnect();
   }
 }
 
@@ -428,6 +474,8 @@ $('unpairYes').addEventListener('click', () => {
 if (!('bluetooth' in navigator)) {
   $('noBt').hidden = false;
   $('connectBtn').disabled = true;
+} else {
+  autoConnect();
 }
 </script>
 </body>
