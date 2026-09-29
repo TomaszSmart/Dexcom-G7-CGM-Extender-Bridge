@@ -113,27 +113,27 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
   </section>
 
   <section class="panel" aria-labelledby="hReading">
-    <h2 id="hReading">Glukoza <span class="example" id="exampleTag">· przykładowe dane</span></h2>
+    <h2 id="hReading">Glukoza</h2>
     <div class="reading">
-      <div class="bg ok" id="bg">142<small>mg/dL</small></div>
+      <div class="bg none" id="bg">—<small>mg/dL</small></div>
       <div>
-        <div class="trend" id="trend">→ stabilnie</div>
-        <div class="sub" id="age">2 min temu</div>
+        <div class="trend" id="trend">Połącz z bridge’em, żeby zobaczyć odczyt</div>
+        <div class="sub" id="age"></div>
       </div>
     </div>
-    <div style="margin-top:10px"><span class="pill good" id="state">OK</span></div>
+    <div style="margin-top:10px"><span class="pill" id="state">brak danych</span></div>
   </section>
 
   <section class="panel" aria-labelledby="hSensor">
     <h2 id="hSensor">Sensor</h2>
     <dl>
-      <dt>Nazwa</dt><dd id="sName">DXCM18</dd>
-      <dt>Sesja</dt><dd id="sDay">dzień 3,2 z 10,5</dd>
-      <dt>Koniec</dt><dd id="sEnd">sob 3 paź, 14:10</dd>
-      <dt>Kod</dt><dd id="sCode">••••</dd>
-      <dt>Telefon (xDrip)</dt><dd id="sPhone">połączony</dd>
+      <dt>Nazwa</dt><dd id="sName">—</dd>
+      <dt>Sesja</dt><dd id="sDay">—</dd>
+      <dt>Koniec</dt><dd id="sEnd">—</dd>
+      <dt>Kod</dt><dd id="sCode">—</dd>
+      <dt>Telefon (xDrip)</dt><dd id="sPhone">—</dd>
     </dl>
-    <div class="bar" aria-hidden="true"><span id="sBar" style="width:30%"></span></div>
+    <div class="bar" aria-hidden="true"><span id="sBar"></span></div>
   </section>
 
   <section class="panel" aria-labelledby="hRange">
@@ -182,8 +182,7 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
   <section class="panel" aria-labelledby="hSeen">
     <h2 id="hSeen">Sensory w zasięgu</h2>
     <ul class="seen" id="seen">
-      <li><span><span class="name">DXCM18</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i class="on" style="height:14px"></i></span></span><span class="pill good">używany</span></li>
-      <li><span><span class="name">DXCMJH</span><span class="rssi"><i class="on" style="height:5px"></i><i class="on" style="height:9px"></i><i style="height:14px"></i></span></span><span class="pill">kod nie pasuje</span></li>
+      <li><span class="sub">Połącz z bridge’em, żeby zobaczyć sensory w zasięgu.</span></li>
     </ul>
   </section>
 
@@ -243,7 +242,6 @@ function bars(rssi) {
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
 function render(st) {
-  $('exampleTag').hidden = true;
   const g = st.g;
   const bg = $('bg');
   if (g) {
