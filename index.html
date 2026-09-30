@@ -67,6 +67,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .bg.low { color: var(--low); } .bg.ok { color: var(--ok); } .bg.high { color: var(--high); } .bg.none { color: var(--muted); }
 .trend { font: 500 1.05rem var(--font-body); }
 .sub { color: var(--muted); font-size: 0.88rem; }
+ol.sub { padding-left: 20px; margin: 8px 0; }
+ol.sub li { margin: 4px 0; }
+code { font-size: 0.85em; overflow-wrap: anywhere; user-select: all; }
 .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; background: var(--soft); color: var(--ink); }
 .pill.bad { background: color-mix(in srgb, var(--low) 16%, transparent); color: var(--low); }
 .pill.good { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
@@ -165,6 +168,17 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
         <dt>turkusowe co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
         <dt>czerwone co 5 s</dt><dd>brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
       </dl>
+    </details>
+    <details id="autoHelp">
+      <summary>Łączenie bez klikania po odświeżeniu strony</summary>
+      <p class="sub">Chrome domyślnie wymaga kliknięcia „Połącz z bridge'em” po każdym odświeżeniu. Żeby strona łączyła się sama:</p>
+      <ol class="sub">
+        <li>Wpisz w pasku adresu: <code>chrome://flags/#enable-web-bluetooth-new-permissions-backend</code></li>
+        <li>Ustaw „Use the new permissions backend for Web Bluetooth” na <b>Enabled</b>.</li>
+        <li>Naciśnij <b>Relaunch</b> (Chrome się zrestartuje).</li>
+        <li>Otwórz tę stronę i raz połącz się z bridge'em przyciskiem.</li>
+      </ol>
+      <p class="sub">Potem Chrome pamięta bridge i strona łączy się sama. Po wyczyszczeniu danych strony trzeba raz połączyć się przyciskiem od nowa.</p>
     </details>
     <details>
       <summary>Telefon nie może się połączyć</summary>
@@ -411,7 +425,11 @@ async function connect() {
 
 // A bridge this browser was already allowed to use: connect without the chooser.
 async function autoConnect() {
-  if (!navigator.bluetooth || !navigator.bluetooth.getDevices) return;
+  if (!navigator.bluetooth) return;
+  if (!navigator.bluetooth.getDevices) {
+    $('autoHelp').open = true; // flag not enabled yet: show how
+    return;
+  }
   try {
     const known = (await navigator.bluetooth.getDevices()).filter((d) => d.name === 'G7 Bridge');
     if (!known.length) return;
