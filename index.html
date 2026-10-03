@@ -139,6 +139,16 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <div class="bar" aria-hidden="true"><span id="sBar"></span></div>
   </section>
 
+  <section class="panel" aria-labelledby="hBat">
+    <h2 id="hBat">Bateria bridge'a</h2>
+    <dl>
+      <dt>Naładowanie</dt><dd id="bPct">—</dd>
+      <dt>Napięcie</dt><dd id="bMv">—</dd>
+      <dt>Zasilanie</dt><dd id="bUsb">—</dd>
+    </dl>
+    <div class="bar" aria-hidden="true"><span id="bBar"></span></div>
+  </section>
+
   <section class="panel" aria-labelledby="hRange">
     <h2 id="hRange">Zasięg</h2>
     <dl>
@@ -168,6 +178,7 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
         <dt>turkusowe co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
         <dt>czerwone co 5 s</dt><dd>brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
       </dl>
+      <p class="sub">RAK4631 ma tylko zieloną i niebieską diodę: żółte = <b>2× zielona</b>, czerwone (problem) = <b>3× zielona+niebieska</b>, turkusowe = zielona+niebieska. Stała czerwona dioda na płytce RAK to dioda ładowania baterii.</p>
     </details>
     <details id="autoHelp">
       <summary>Łączenie bez klikania po odświeżeniu strony</summary>
@@ -316,6 +327,21 @@ function render(st) {
     return '<li><span><span class="name">' + esc(s.n) + '</span>' + bars(s.rssi) +
       '</span>' + pill + '<span class="sub">widziany ' + ago(s.ago) + '</span></li>';
   }).join('') : '<li><span class="sub">Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.</span></li>';
+
+  const bat = st.bat;
+  if (bat) {
+    const low = bat.pct <= 15 && !bat.usb;
+    $('bPct').innerHTML = (bat.usb ? '~' : '') + bat.pct + ' %' +
+      (low ? ' <span class="pill bad">naładuj</span>' : '');
+    $('bMv').textContent = (bat.mv / 1000).toFixed(2).replace('.', ',') + ' V';
+    $('bUsb').textContent = bat.usb ? 'USB — ładuje się' : 'z baterii';
+    $('bBar').style.width = bat.pct + '%';
+  } else {
+    $('bPct').textContent = 'ta płytka nie mierzy baterii';
+    $('bMv').textContent = '—';
+    $('bUsb').textContent = '—';
+    $('bBar').style.width = '0%';
+  }
 
   $('pRssi').innerHTML = st.prssi !== undefined ? rssiText(st.prssi) : '—';
   $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(reklama, ' + ago(using.ago) + ')</span>' : '—';
