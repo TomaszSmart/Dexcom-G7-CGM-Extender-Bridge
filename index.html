@@ -171,14 +171,14 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <details>
       <summary>Co znaczy dioda na bridge'u</summary>
       <dl style="margin-top:10px">
-        <dt>zielone mignięcie co 5 s</dt><dd>sensor OK, świeży odczyt, xDrip połączony</dd>
-        <dt>żółte mignięcie co 5 s</dt><dd>sensor OK, ale xDrip niepołączony, albo rozgrzewanie</dd>
-        <dt>niebieskie miganie</dt><dd>szuka sensora po nowym kodzie</dd>
-        <dt>niebieskie co 5 s</dt><dd>nie ustawiono kodu ani sensora</dd>
-        <dt>turkusowe co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
-        <dt>czerwone co 5 s</dt><dd>brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
+        <dt>zielona 1× co 5 s</dt><dd>sensor OK, świeży odczyt, xDrip połączony</dd>
+        <dt>zielona 2× co 5 s</dt><dd>sensor OK, ale xDrip niepołączony, albo rozgrzewanie</dd>
+        <dt>zielona + niebieska 3× co 5 s</dt><dd>problem: brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
+        <dt>zielona + niebieska 1× co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
+        <dt>niebieska miga</dt><dd>szuka sensora po nowym kodzie</dd>
+        <dt>niebieska 1× co 5 s</dt><dd>nie ustawiono kodu ani sensora</dd>
+        <dt>czerwona świeci</dt><dd>dioda ładowania baterii (nie zależy od bridge'a)</dd>
       </dl>
-      <p class="sub">RAK4631 ma tylko zieloną i niebieską diodę: żółte = <b>2× zielona</b>, czerwone (problem) = <b>3× zielona+niebieska</b>, turkusowe = zielona+niebieska. Stała czerwona dioda na płytce RAK to dioda ładowania baterii.</p>
     </details>
     <details id="autoHelp">
       <summary>Łączenie bez klikania po odświeżeniu strony</summary>
