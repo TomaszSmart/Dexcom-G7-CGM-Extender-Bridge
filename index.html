@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -46,6 +46,7 @@ body {
 }
 main { max-width: 34rem; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; display: grid; gap: 14px; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.head-right { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 h1 { font: 700 1.35rem/1.2 var(--font-display); margin: 0; letter-spacing: -0.01em; }
 h2 { font: 600 0.78rem/1.2 var(--font-body); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
@@ -60,6 +61,12 @@ button.quiet { background: transparent; color: var(--accent); }
 button.danger { border-color: var(--low); background: transparent; color: var(--low); }
 button:disabled { opacity: 0.45; cursor: default; }
 button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.lang button {
+  font: 600 0.75rem var(--font-body); letter-spacing: 0.05em; padding: 4px 9px; border: 0; border-radius: 0;
+  background: transparent; color: var(--muted);
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 
 .reading { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: end; }
 .bg { font: 700 3.6rem/0.95 var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
@@ -96,7 +103,6 @@ ul.seen li:first-child { border-top: 0; }
 .rssi i { width: 4px; background: var(--line); border-radius: 1px; }
 .rssi i.on { background: var(--accent); }
 .msg { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
-.example { font-size: 0.78rem; color: var(--high); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
@@ -107,119 +113,125 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 <main>
   <header>
     <h1>G7 Bridge</h1>
-    <span class="conn"><span class="dot" id="dot"></span><span id="connText">Nie połączono</span></span>
+    <div class="head-right">
+      <span class="conn"><span class="dot" id="dot"></span><span id="connText" data-i18n="connNo"></span></span>
+      <span class="lang" role="group" aria-label="Language / Język">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="pl" aria-pressed="false">PL</button>
+      </span>
+    </div>
   </header>
 
   <section class="panel nobt" id="noBt" hidden>
-    <h2>Ta przeglądarka nie obsługuje Bluetooth</h2>
-    <p class="sub">Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.</p>
+    <h2 data-i18n="noBtTitle"></h2>
+    <p class="sub" data-i18n="noBtText"></p>
   </section>
 
   <section class="panel" aria-labelledby="hReading">
-    <h2 id="hReading">Glukoza</h2>
+    <h2 id="hReading" data-i18n="hReading"></h2>
     <div class="reading">
       <div class="bg none" id="bg">—<small>mg/dL</small></div>
       <div>
-        <div class="trend" id="trend">Połącz z bridge’em, żeby zobaczyć odczyt</div>
+        <div class="trend" id="trend" data-i18n="trendInit"></div>
         <div class="sub" id="age"></div>
       </div>
     </div>
-    <div style="margin-top:10px"><span class="pill" id="state">brak danych</span></div>
+    <div style="margin-top:10px"><span class="pill" id="state" data-i18n="stateNone"></span></div>
   </section>
 
   <section class="panel" aria-labelledby="hSensor">
-    <h2 id="hSensor">Sensor</h2>
+    <h2 id="hSensor" data-i18n="hSensor"></h2>
     <dl>
-      <dt>Nazwa</dt><dd id="sName">—</dd>
-      <dt>Sesja</dt><dd id="sDay">—</dd>
-      <dt>Koniec</dt><dd id="sEnd">—</dd>
-      <dt>Kod</dt><dd id="sCode">—</dd>
-      <dt>Telefon (xDrip)</dt><dd id="sPhone">—</dd>
+      <dt data-i18n="sName"></dt><dd id="sName">—</dd>
+      <dt data-i18n="sDay"></dt><dd id="sDay">—</dd>
+      <dt data-i18n="sEnd"></dt><dd id="sEnd">—</dd>
+      <dt data-i18n="sCode"></dt><dd id="sCode">—</dd>
+      <dt data-i18n="sPhone"></dt><dd id="sPhone">—</dd>
     </dl>
     <div class="bar" aria-hidden="true"><span id="sBar"></span></div>
   </section>
 
   <section class="panel" aria-labelledby="hBat">
-    <h2 id="hBat">Bateria bridge'a</h2>
+    <h2 id="hBat" data-i18n="hBat"></h2>
     <dl>
-      <dt>Naładowanie</dt><dd id="bPct">—</dd>
-      <dt>Napięcie</dt><dd id="bMv">—</dd>
-      <dt>Zasilanie</dt><dd id="bUsb">—</dd>
+      <dt data-i18n="bPct"></dt><dd id="bPct">—</dd>
+      <dt data-i18n="bMv"></dt><dd id="bMv">—</dd>
+      <dt data-i18n="bUsb"></dt><dd id="bUsb">—</dd>
     </dl>
     <div class="bar" aria-hidden="true"><span id="bBar"></span></div>
   </section>
 
   <section class="panel" aria-labelledby="hRange">
-    <h2 id="hRange">Zasięg</h2>
+    <h2 id="hRange" data-i18n="hRange"></h2>
     <dl>
-      <dt>Telefon ↔ bridge</dt><dd><span id="pRssi">—</span></dd>
-      <dt>Sensor ↔ bridge</dt><dd><span id="sRssi">—</span></dd>
-      <dt>Najsłabszy w teście</dt><dd id="pMin">—</dd>
+      <dt data-i18n="pRssi"></dt><dd><span id="pRssi">—</span></dd>
+      <dt data-i18n="sRssi"></dt><dd><span id="sRssi">—</span></dd>
+      <dt data-i18n="pMin"></dt><dd id="pMin">—</dd>
     </dl>
     <div class="confirm">
-      <button type="button" class="quiet" id="rangeBtn" disabled>Test zasięgu</button>
-      <span class="sub" id="rangeHint">Poniżej około −90 dBm połączenie z telefonem się zrywa.</span>
+      <button type="button" class="quiet" id="rangeBtn" disabled></button>
+      <span class="sub" id="rangeHint"></span>
     </div>
   </section>
 
   <section class="panel">
     <div class="confirm">
-      <button type="button" id="connectBtn">Połącz z bridge'em</button>
-      <button type="button" class="quiet" id="refreshBtn" disabled>Odśwież</button>
+      <button type="button" id="connectBtn"></button>
+      <button type="button" class="quiet" id="refreshBtn" disabled data-i18n="refreshBtn"></button>
     </div>
     <p class="msg" id="msg" role="status"></p>
     <details>
-      <summary>Co znaczy dioda na bridge'u</summary>
+      <summary data-i18n="ledTitle"></summary>
       <dl style="margin-top:10px">
-        <dt>zielona 1× co 5 s</dt><dd>sensor OK, świeży odczyt, xDrip połączony</dd>
-        <dt>zielona 2× co 5 s</dt><dd>sensor OK, ale xDrip niepołączony, albo rozgrzewanie</dd>
-        <dt>zielona + niebieska 3× co 5 s</dt><dd>problem: brak odczytu ponad 15 min, awaria lub koniec sesji</dd>
-        <dt>zielona + niebieska 1× co 2 s</dt><dd>po włączeniu, czeka na pierwszy odczyt</dd>
-        <dt>niebieska miga</dt><dd>szuka sensora po nowym kodzie</dd>
-        <dt>niebieska 1× co 5 s</dt><dd>nie ustawiono kodu ani sensora</dd>
-        <dt>czerwona świeci</dt><dd>dioda ładowania baterii (nie zależy od bridge'a)</dd>
+        <dt data-i18n="ledG1"></dt><dd data-i18n="ledG1d"></dd>
+        <dt data-i18n="ledG2"></dt><dd data-i18n="ledG2d"></dd>
+        <dt data-i18n="ledGB3"></dt><dd data-i18n="ledGB3d"></dd>
+        <dt data-i18n="ledGB1"></dt><dd data-i18n="ledGB1d"></dd>
+        <dt data-i18n="ledBb"></dt><dd data-i18n="ledBbd"></dd>
+        <dt data-i18n="ledB5"></dt><dd data-i18n="ledB5d"></dd>
+        <dt data-i18n="ledR"></dt><dd data-i18n="ledRd"></dd>
       </dl>
     </details>
     <details id="autoHelp">
-      <summary>Łączenie bez klikania po odświeżeniu strony</summary>
-      <p class="sub">Chrome domyślnie wymaga kliknięcia „Połącz z bridge'em” po każdym odświeżeniu. Żeby strona łączyła się sama:</p>
+      <summary data-i18n="autoTitle"></summary>
+      <p class="sub" data-i18n="autoP1"></p>
       <ol class="sub">
-        <li>Wpisz w pasku adresu: <code>chrome://flags/#enable-web-bluetooth-new-permissions-backend</code></li>
-        <li>Ustaw „Use the new permissions backend for Web Bluetooth” na <b>Enabled</b>.</li>
-        <li>Naciśnij <b>Relaunch</b> (Chrome się zrestartuje).</li>
-        <li>Otwórz tę stronę i raz połącz się z bridge'em przyciskiem.</li>
+        <li data-i18n-html="autoL1"></li>
+        <li data-i18n-html="autoL2"></li>
+        <li data-i18n-html="autoL3"></li>
+        <li data-i18n="autoL4"></li>
       </ol>
-      <p class="sub">Potem Chrome pamięta bridge i strona łączy się sama. Po wyczyszczeniu danych strony trzeba raz połączyć się przyciskiem od nowa.</p>
+      <p class="sub" data-i18n="autoP2"></p>
     </details>
     <details>
-      <summary>Telefon nie może się połączyć</summary>
-      <p class="sub">Usuwa parowanie telefonów z bridge'em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge'a i w ciągu 10 minut sparuj telefon ponownie.</p>
+      <summary data-i18n="unpTitle"></summary>
+      <p class="sub" data-i18n="unpText"></p>
       <div class="confirm">
-        <button type="button" class="danger" id="unpairBtn" disabled>Usuń parowanie telefonów</button>
+        <button type="button" class="danger" id="unpairBtn" disabled data-i18n="unpBtn"></button>
         <span id="unpairConfirm" hidden>
-          <button type="button" class="danger" id="unpairYes">Tak, usuń</button>
-          <button type="button" class="quiet" id="unpairNo">Anuluj</button>
+          <button type="button" class="danger" id="unpairYes" data-i18n="unpYes"></button>
+          <button type="button" class="quiet" id="unpairNo" data-i18n="unpNo"></button>
         </span>
       </div>
     </details>
   </section>
 
   <section class="panel" aria-labelledby="hSeen">
-    <h2 id="hSeen">Sensory w zasięgu</h2>
+    <h2 id="hSeen" data-i18n="hSeen"></h2>
     <ul class="seen" id="seen">
-      <li><span class="sub">Połącz z bridge’em, żeby zobaczyć sensory w zasięgu.</span></li>
+      <li><span class="sub" data-i18n="seenInit"></span></li>
     </ul>
   </section>
 
   <section class="panel" aria-labelledby="hPair">
-    <h2 id="hPair">Nowy sensor</h2>
+    <h2 id="hPair" data-i18n="hPair"></h2>
     <form class="pair" id="pairForm">
-      <label for="code">Kod z aplikatora
+      <label for="code"><span data-i18n="codeLabel"></span>
         <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
       </label>
-      <button type="submit" id="pairBtn" disabled>Paruj</button>
+      <button type="submit" id="pairBtn" disabled data-i18n="pairBtn"></button>
     </form>
-    <p class="sub">Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.</p>
+    <p class="sub" data-i18n="pairHint"></p>
     <div class="search" id="search" hidden></div>
   </section>
 </main>
@@ -230,131 +242,276 @@ const STATUS = 'a7c10002-3f8e-4b5a-9d2c-6e0b1f4a2c90';
 const CMD = 'a7c10003-3f8e-4b5a-9d2c-6e0b1f4a2c90';
 const $ = (id) => document.getElementById(id);
 
-let device = null, statusChr = null, cmdChr = null, timer = null, busy = false;
+// ---- texts: English (default) and Polish ----------------------------------------
+const FLAG = '<code>chrome://flags/#enable-web-bluetooth-new-permissions-backend</code>';
+const TEXT = {
+  en: {
+    connNo: 'Not connected', connYes: 'Connected',
+    noBtTitle: 'This browser does not support Bluetooth',
+    noBtText: 'Open this page in Chrome on Android (Web Bluetooth). Safari on iPhone does not support it.',
+    hReading: 'Glucose', trendInit: 'Connect to the bridge to see the reading', stateNone: 'no data',
+    hSensor: 'Sensor', sName: 'Name', sDay: 'Session', sEnd: 'Ends', sCode: 'Code', sPhone: 'Phone (xDrip)',
+    hBat: 'Bridge battery', bPct: 'Charge', bMv: 'Voltage', bUsb: 'Power',
+    hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Weakest in test',
+    rangeBtn: 'Range test', rangeStop: 'Stop test',
+    rangeHint: 'Below about −90 dBm the phone link drops.',
+    rangeHintOn: 'Refreshing every second. Walk around with the bridge and watch the signal.',
+    connectBtn: 'Connect to bridge', disconnectBtn: 'Disconnect', refreshBtn: 'Refresh',
+    ledTitle: 'What the bridge LEDs mean',
+    ledG1: 'green 1× every 5 s', ledG1d: 'sensor OK, fresh reading, xDrip connected',
+    ledG2: 'green 2× every 5 s', ledG2d: 'sensor OK but xDrip not connected, or warm-up',
+    ledGB3: 'green + blue 3× every 5 s', ledGB3d: 'problem: no reading for over 15 min, sensor failure or session ended',
+    ledGB1: 'green + blue 1× every 2 s', ledGB1d: 'after power-on, waiting for the first reading',
+    ledBb: 'blue blinking', ledBbd: 'searching for the sensor that matches a new code',
+    ledB5: 'blue 1× every 5 s', ledB5d: 'no pairing code or sensor set',
+    ledR: 'red steady', ledRd: 'battery charging LED (not controlled by the bridge)',
+    autoTitle: 'Connect automatically after reloading the page',
+    autoP1: 'By default Chrome needs a click on “Connect to bridge” after every reload. To let the page connect by itself:',
+    autoL1: 'Type in the address bar: ' + FLAG,
+    autoL2: 'Set “Use the new permissions backend for Web Bluetooth” to <b>Enabled</b>.',
+    autoL3: 'Tap <b>Relaunch</b> (Chrome restarts).',
+    autoL4: 'Open this page and connect to the bridge once with the button.',
+    autoP2: 'After that Chrome remembers the bridge and the page connects by itself. After clearing the site data, connect once with the button again.',
+    unpTitle: 'Phone cannot connect',
+    unpText: 'Removes the phones’ pairing with the bridge (the sensor stays). Then forget “G7 Bridge” in the phone’s Bluetooth settings, unplug and replug the bridge’s power and pair the phone again within 10 minutes.',
+    unpBtn: 'Remove phone pairing', unpYes: 'Yes, remove', unpNo: 'Cancel',
+    hSeen: 'Sensors in range', seenInit: 'Connect to the bridge to see sensors in range.',
+    hPair: 'New sensor', codeLabel: 'Applicator code', pairBtn: 'Pair',
+    pairHint: 'For 30 minutes the bridge checks the sensors in range and picks the one the code fits. First stop data collection on any other phone that connects to the new sensor.',
+    stOk: 'OK', stCal: 'needs calibration', stWarm: 'warming up', stEnd: 'session ended', stNoise: 'signal noise', stFail: 'sensor failure',
+    trendUnknown: 'trend unknown', notForwarded: 'not sent to xDrip',
+    noReading: 'no reading since the bridge was switched on', waitSensor: 'waiting for the sensor',
+    notSelected: 'not selected', sessUnknown: 'unknown (waiting for the sensor)', passed: ' (passed)',
+    codeNotSet: 'not set', phoneOn: 'connected', phoneOff: 'not connected',
+    pillUsed: 'in use', pillNoFit: 'code does not fit', pillCheck: 'to check', pillOther: 'other',
+    seenNone: 'The bridge has not seen any sensor yet. G7 transmits every 5 minutes.',
+    chargeMe: 'charge', usbCharging: 'USB — charging', onBattery: 'battery', noBattery: 'this board does not measure the battery',
+    advert: 'advert', rssiGood: 'good', rssiMid: 'fair', rssiBad: 'weak', signal: 'signal',
+    measuring: 'measuring…', readFail: 'Could not read the status: ', sendFail: 'Could not send the command: ',
+    reconnecting: 'Reconnecting…', discRetry: 'Disconnected, reconnecting shortly…', disc: 'Disconnected.',
+    pick: 'Choose “G7 Bridge” from the list…', noDevice: 'No device selected.', connFail: 'Connection failed: ',
+    remembered: 'Connecting to the remembered bridge…',
+    connected: 'Connected. On the first connection, accept the pairing request.',
+    denied: 'The bridge refused access. A new phone can only be paired within 10 minutes of powering up the bridge.',
+    unpairing: 'Removing phone pairing…',
+    ago: (s) => s < 90 ? s + ' s ago' : s < 5400 ? Math.round(s / 60) + ' min ago'
+      : s < 172800 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago',
+    seenAgo: (a) => 'seen ' + a,
+    dayOf: (d, l) => 'day ' + d + ' of ' + l, day: (d) => 'day ' + d,
+    searching: (c, m) => 'Searching for the sensor with code ' + c + ' — ' + m + ' min left.',
+    noConn: (m) => 'No connection (' + m + '), retrying…',
+    sendingCode: (c) => 'Sending code ' + c + '…',
+  },
+  pl: {
+    connNo: 'Nie połączono', connYes: 'Połączono',
+    noBtTitle: 'Ta przeglądarka nie obsługuje Bluetooth',
+    noBtText: 'Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.',
+    hReading: 'Glukoza', trendInit: 'Połącz z bridge’em, żeby zobaczyć odczyt', stateNone: 'brak danych',
+    hSensor: 'Sensor', sName: 'Nazwa', sDay: 'Sesja', sEnd: 'Koniec', sCode: 'Kod', sPhone: 'Telefon (xDrip)',
+    hBat: 'Bateria bridge’a', bPct: 'Naładowanie', bMv: 'Napięcie', bUsb: 'Zasilanie',
+    hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Najsłabszy w teście',
+    rangeBtn: 'Test zasięgu', rangeStop: 'Zakończ test',
+    rangeHint: 'Poniżej około −90 dBm połączenie z telefonem się zrywa.',
+    rangeHintOn: 'Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.',
+    connectBtn: 'Połącz z bridge’em', disconnectBtn: 'Rozłącz', refreshBtn: 'Odśwież',
+    ledTitle: 'Co znaczą diody na bridge’u',
+    ledG1: 'zielona 1× co 5 s', ledG1d: 'sensor OK, świeży odczyt, xDrip połączony',
+    ledG2: 'zielona 2× co 5 s', ledG2d: 'sensor OK, ale xDrip niepołączony, albo rozgrzewanie',
+    ledGB3: 'zielona + niebieska 3× co 5 s', ledGB3d: 'problem: brak odczytu ponad 15 min, awaria lub koniec sesji',
+    ledGB1: 'zielona + niebieska 1× co 2 s', ledGB1d: 'po włączeniu, czeka na pierwszy odczyt',
+    ledBb: 'niebieska miga', ledBbd: 'szuka sensora po nowym kodzie',
+    ledB5: 'niebieska 1× co 5 s', ledB5d: 'nie ustawiono kodu ani sensora',
+    ledR: 'czerwona świeci', ledRd: 'dioda ładowania baterii (nie zależy od bridge’a)',
+    autoTitle: 'Łączenie bez klikania po odświeżeniu strony',
+    autoP1: 'Chrome domyślnie wymaga kliknięcia „Połącz z bridge’em” po każdym odświeżeniu. Żeby strona łączyła się sama:',
+    autoL1: 'Wpisz w pasku adresu: ' + FLAG,
+    autoL2: 'Ustaw „Use the new permissions backend for Web Bluetooth” na <b>Enabled</b>.',
+    autoL3: 'Naciśnij <b>Relaunch</b> (Chrome się zrestartuje).',
+    autoL4: 'Otwórz tę stronę i raz połącz się z bridge’em przyciskiem.',
+    autoP2: 'Potem Chrome pamięta bridge i strona łączy się sama. Po wyczyszczeniu danych strony trzeba raz połączyć się przyciskiem od nowa.',
+    unpTitle: 'Telefon nie może się połączyć',
+    unpText: 'Usuwa parowanie telefonów z bridge’em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge’a i w ciągu 10 minut sparuj telefon ponownie.',
+    unpBtn: 'Usuń parowanie telefonów', unpYes: 'Tak, usuń', unpNo: 'Anuluj',
+    hSeen: 'Sensory w zasięgu', seenInit: 'Połącz z bridge’em, żeby zobaczyć sensory w zasięgu.',
+    hPair: 'Nowy sensor', codeLabel: 'Kod z aplikatora', pairBtn: 'Paruj',
+    pairHint: 'Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.',
+    stOk: 'OK', stCal: 'wymaga kalibracji', stWarm: 'rozgrzewanie', stEnd: 'koniec sesji', stNoise: 'zakłócenia', stFail: 'awaria sensora',
+    trendUnknown: 'trend nieznany', notForwarded: 'nie przekazywany do xDrip',
+    noReading: 'brak odczytu od włączenia bridge’a', waitSensor: 'czekam na sensor',
+    notSelected: 'nie wybrany', sessUnknown: 'nieznana (czekam na sensor)', passed: ' (minęło)',
+    codeNotSet: 'nie ustawiony', phoneOn: 'połączony', phoneOff: 'nie połączony',
+    pillUsed: 'używany', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
+    seenNone: 'Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.',
+    chargeMe: 'naładuj', usbCharging: 'USB — ładuje się', onBattery: 'z baterii', noBattery: 'ta płytka nie mierzy baterii',
+    advert: 'reklama', rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
+    measuring: 'mierzę…', readFail: 'Nie udało się odczytać stanu: ', sendFail: 'Nie udało się wysłać polecenia: ',
+    reconnecting: 'Łączę ponownie…', discRetry: 'Rozłączono, łączę ponownie za chwilę…', disc: 'Rozłączono.',
+    pick: 'Wybierz „G7 Bridge” z listy…', noDevice: 'Nie wybrano urządzenia.', connFail: 'Połączenie nie powiodło się: ',
+    remembered: 'Łączę z zapamiętanym bridge’em…',
+    connected: 'Połączono. Przy pierwszym połączeniu zatwierdź parowanie.',
+    denied: 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.',
+    unpairing: 'Usuwam parowanie telefonów…',
+    ago: (s) => s < 90 ? s + ' s temu' : s < 5400 ? Math.round(s / 60) + ' min temu'
+      : s < 172800 ? Math.round(s / 3600) + ' h temu' : Math.round(s / 86400) + ' dni temu',
+    seenAgo: (a) => 'widziany ' + a,
+    dayOf: (d, l) => 'dzień ' + d + ' z ' + l, day: (d) => 'dzień ' + d,
+    searching: (c, m) => 'Szukam sensora z kodem ' + c + ' — zostało ' + m + ' min.',
+    noConn: (m) => 'Brak połączenia (' + m + '), próbuję ponownie…',
+    sendingCode: (c) => 'Wysyłam kod ' + c + '…',
+  },
+};
+
+let lang = 'en';
+try {
+  const saved = localStorage.getItem('g7lang');
+  if (saved === 'pl' || saved === 'en') lang = saved;
+} catch (e) { /* no storage: stay on English */ }
+
+function t(key, ...args) {
+  const v = TEXT[lang][key] ?? TEXT.en[key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+const num = (x, d) => { const s = x.toFixed(d); return lang === 'pl' ? s.replace('.', ',') : s; };
+let dateFmt;
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  dateFmt = new Intl.DateTimeFormat(lang === 'pl' ? 'pl-PL' : 'en-GB',
+    { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  // Texts that depend on state.
+  const on = !!statusChr;
+  $('connText').textContent = t(on ? 'connYes' : 'connNo');
+  $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
+  $('rangeBtn').textContent = t(rangeTest ? 'rangeStop' : 'rangeBtn');
+  $('rangeHint').textContent = t(rangeTest ? 'rangeHintOn' : 'rangeHint');
+  if (lastStatus) render(lastStatus);
+}
+
+document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem('g7lang', lang); } catch (e) { /* not remembered */ }
+  applyLang();
+}));
+
+// ---- status ----------------------------------------------------------------------
+let device = null, statusChr = null, cmdChr = null, timer = null, busy = false, lastStatus = null;
 
 // G7 algorithm states (xDrip+ CalibrationState names)
 function stateInfo(s) {
-  if (s === 0x06) return ['OK', 'good'];
-  if (s === 0x07) return ['wymaga kalibracji', 'warn'];
-  if (s === 0x02) return ['rozgrzewanie', 'warn'];
-  if ([0x01, 0x0f, 0x18, 0x1a, 0xc2].includes(s)) return ['koniec sesji', 'bad'];
-  if (s === 0x03) return ['zakłócenia', 'warn'];
-  return ['awaria sensora (0x' + s.toString(16).padStart(2, '0') + ')', 'bad'];
+  if (s === 0x06) return [t('stOk'), 'good'];
+  if (s === 0x07) return [t('stCal'), 'warn'];
+  if (s === 0x02) return [t('stWarm'), 'warn'];
+  if ([0x01, 0x0f, 0x18, 0x1a, 0xc2].includes(s)) return [t('stEnd'), 'bad'];
+  if (s === 0x03) return [t('stNoise'), 'warn'];
+  return [t('stFail') + ' (0x' + s.toString(16).padStart(2, '0') + ')', 'bad'];
 }
 
-function trendText(t) {
-  if (t === undefined) return 'trend nieznany';
-  const v = t / 10;
+function trendText(tr) {
+  if (tr === undefined) return t('trendUnknown');
+  const v = tr / 10;
   const arrow = v <= -2 ? '↓↓' : v <= -1 ? '↓' : v < -0.5 ? '↘' : v <= 0.5 ? '→' : v < 1 ? '↗' : v < 2 ? '↑' : '↑↑';
-  return arrow + ' ' + (v > 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + ' mg/dL/min';
+  return arrow + ' ' + (v > 0 ? '+' : '') + num(v, 1) + ' mg/dL/min';
 }
-
-function ago(s) {
-  if (s < 90) return s + ' s temu';
-  if (s < 5400) return Math.round(s / 60) + ' min temu';
-  if (s < 172800) return Math.round(s / 3600) + ' h temu';
-  return Math.round(s / 86400) + ' dni temu';
-}
-
-const dateFmt = new Intl.DateTimeFormat('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 function bars(rssi) {
   const n = rssi > -65 ? 3 : rssi > -80 ? 2 : 1;
-  return '<span class="rssi" aria-label="sygnał ' + rssi + ' dBm">' +
+  return '<span class="rssi" aria-label="' + t('signal') + ' ' + rssi + ' dBm">' +
     [5, 9, 14].map((h, i) => '<i class="' + (i < n ? 'on' : '') + '" style="height:' + h + 'px"></i>').join('') + '</span>';
 }
 
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
 function render(st) {
+  lastStatus = st;
   const g = st.g;
   const bg = $('bg');
   if (g) {
     const usable = g.state === 0x06 || g.state === 0x07;
     bg.className = 'bg ' + (!usable ? 'none' : g.mgdl < 70 ? 'low' : g.mgdl > 180 ? 'high' : 'ok');
     bg.innerHTML = g.mgdl + '<small>mg/dL</small>';
-    $('trend').textContent = usable ? trendText(g.trend) : 'nie przekazywany do xDrip';
-    $('age').textContent = ago(g.age);
+    $('trend').textContent = usable ? trendText(g.trend) : t('notForwarded');
+    $('age').textContent = t('ago', g.age);
     const [label, cls] = stateInfo(g.state);
     $('state').textContent = label;
     $('state').className = 'pill ' + cls;
   } else {
     bg.className = 'bg none';
     bg.innerHTML = '—<small>mg/dL</small>';
-    $('trend').textContent = 'brak odczytu od włączenia bridge’a';
+    $('trend').textContent = t('noReading');
     $('age').textContent = '';
-    $('state').textContent = 'czekam na sensor';
+    $('state').textContent = t('waitSensor');
     $('state').className = 'pill';
   }
 
   const using = (st.seen || []).find((s) => s.use);
-  $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : 'nie wybrany');
+  $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : t('notSelected'));
   const sess = st.sess || {};
   if (sess.min !== undefined && sess.len) {
-    const day = (sess.min / 1440).toFixed(1).replace('.', ',');
-    const len = (sess.len / 1440).toFixed(1).replace('.', ',');
-    $('sDay').textContent = 'dzień ' + day + ' z ' + len;
+    $('sDay').textContent = t('dayOf', num(sess.min / 1440, 1), num(sess.len / 1440, 1));
     $('sBar').style.width = Math.min(100, 100 * sess.min / sess.len) + '%';
   } else if (sess.min !== undefined) {
-    $('sDay').textContent = 'dzień ' + (sess.min / 1440).toFixed(1).replace('.', ',');
+    $('sDay').textContent = t('day', num(sess.min / 1440, 1));
     $('sBar').style.width = '0%';
   } else {
-    $('sDay').textContent = 'nieznana (czekam na sensor)';
+    $('sDay').textContent = t('sessUnknown');
     $('sBar').style.width = '0%';
   }
   if (sess.start && sess.len) {
     const end = new Date((sess.start + sess.len * 60) * 1000);
-    $('sEnd').textContent = dateFmt.format(end) + (end < new Date() ? ' (minęło)' : '');
+    $('sEnd').textContent = dateFmt.format(end) + (end < new Date() ? t('passed') : '');
   } else {
     $('sEnd').textContent = '—';
   }
-  $('sCode').textContent = st.code || 'nie ustawiony';
-  $('sPhone').textContent = st.phone ? 'połączony' : 'nie połączony';
+  $('sCode').textContent = st.code || t('codeNotSet');
+  $('sPhone').textContent = t(st.phone ? 'phoneOn' : 'phoneOff');
 
   const search = $('search');
   if (st.search) {
     search.hidden = false;
-    search.textContent = 'Szukam sensora z kodem ' + st.code + ' — zostało ' + Math.ceil(st.left / 60) + ' min.';
+    search.textContent = t('searching', st.code, Math.ceil(st.left / 60));
   } else {
     search.hidden = true;
   }
 
   const list = (st.seen || []).slice().sort((a, b) => b.use - a.use || b.rssi - a.rssi);
   $('seen').innerHTML = list.length ? list.map((s) => {
-    const pill = s.use ? '<span class="pill good">używany</span>'
-      : s.tried ? '<span class="pill">kod nie pasuje</span>'
-      : st.search ? '<span class="pill warn">do sprawdzenia</span>' : '<span class="pill">inny</span>';
+    const pill = s.use ? '<span class="pill good">' + t('pillUsed') + '</span>'
+      : s.tried ? '<span class="pill">' + t('pillNoFit') + '</span>'
+      : st.search ? '<span class="pill warn">' + t('pillCheck') + '</span>' : '<span class="pill">' + t('pillOther') + '</span>';
     return '<li><span><span class="name">' + esc(s.n) + '</span>' + bars(s.rssi) +
-      '</span>' + pill + '<span class="sub">widziany ' + ago(s.ago) + '</span></li>';
-  }).join('') : '<li><span class="sub">Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.</span></li>';
+      '</span>' + pill + '<span class="sub">' + t('seenAgo', t('ago', s.ago)) + '</span></li>';
+  }).join('') : '<li><span class="sub">' + t('seenNone') + '</span></li>';
 
   const bat = st.bat;
   if (bat) {
     const low = bat.pct <= 15 && !bat.usb;
     $('bPct').innerHTML = (bat.usb ? '~' : '') + bat.pct + ' %' +
-      (low ? ' <span class="pill bad">naładuj</span>' : '');
-    $('bMv').textContent = (bat.mv / 1000).toFixed(2).replace('.', ',') + ' V';
-    $('bUsb').textContent = bat.usb ? 'USB — ładuje się' : 'z baterii';
+      (low ? ' <span class="pill bad">' + t('chargeMe') + '</span>' : '');
+    $('bMv').textContent = num(bat.mv / 1000, 2) + ' V';
+    $('bUsb').textContent = t(bat.usb ? 'usbCharging' : 'onBattery');
     $('bBar').style.width = bat.pct + '%';
   } else {
-    $('bPct').textContent = 'ta płytka nie mierzy baterii';
+    $('bPct').textContent = t('noBattery');
     $('bMv').textContent = '—';
     $('bUsb').textContent = '—';
     $('bBar').style.width = '0%';
   }
 
   $('pRssi').innerHTML = st.prssi !== undefined ? rssiText(st.prssi) : '—';
-  $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(reklama, ' + ago(using.ago) + ')</span>' : '—';
+  $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(' + t('advert') + ', ' + t('ago', using.ago) + ')</span>' : '—';
   if (rangeTest && st.prssi !== undefined) {
     rangeMin = rangeMin === null ? st.prssi : Math.min(rangeMin, st.prssi);
-    $('pMin').innerHTML = rssiText(rangeMin);
   }
+  if (rangeTest && rangeMin !== null) $('pMin').innerHTML = rssiText(rangeMin);
 
   if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
 }
 
 function rssiText(r) {
-  const [label, cls] = r >= -70 ? ['dobry', 'good'] : r >= -85 ? ['średni', 'warn'] : ['słaby', 'bad'];
+  const [label, cls] = r >= -70 ? [t('rssiGood'), 'good'] : r >= -85 ? [t('rssiMid'), 'warn'] : [t('rssiBad'), 'bad'];
   return '<span style="font-variant-numeric:tabular-nums">' + r + ' dBm</span>' + bars(r) +
     ' <span class="pill ' + cls + '">' + label + '</span>';
 }
@@ -364,11 +521,9 @@ let rangeTest = false, rangeMin = null;
 function setRangeTest(on) {
   rangeTest = on;
   rangeMin = null;
-  $('pMin').textContent = on ? 'mierzę…' : '—';
-  $('rangeBtn').textContent = on ? 'Zakończ test' : 'Test zasięgu';
-  $('rangeHint').textContent = on
-    ? 'Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.'
-    : 'Poniżej około −90 dBm połączenie z telefonem się zrywa.';
+  $('pMin').textContent = on ? t('measuring') : '—';
+  $('rangeBtn').textContent = t(on ? 'rangeStop' : 'rangeBtn');
+  $('rangeHint').textContent = t(on ? 'rangeHintOn' : 'rangeHint');
   if (timer) clearInterval(timer);
   if (statusChr) timer = setInterval(readStatus, on ? 1000 : 5000);
 }
@@ -380,7 +535,7 @@ async function readStatus() {
     const v = await statusChr.readValue();
     render(JSON.parse(new TextDecoder().decode(v)));
   } catch (e) {
-    $('msg').textContent = 'Nie udało się odczytać stanu: ' + e.message;
+    $('msg').textContent = t('readFail') + e.message;
   } finally {
     busy = false;
   }
@@ -392,14 +547,14 @@ async function send(cmd) {
     await cmdChr.writeValueWithResponse(new TextEncoder().encode(cmd));
     setTimeout(readStatus, 600);
   } catch (e) {
-    $('msg').textContent = 'Nie udało się wysłać polecenia: ' + e.message;
+    $('msg').textContent = t('sendFail') + e.message;
   }
 }
 
 function setConnected(on) {
   $('dot').classList.toggle('on', on);
-  $('connText').textContent = on ? 'Połączono' : 'Nie połączono';
-  $('connectBtn').textContent = on ? 'Rozłącz' : 'Połącz z bridge’em';
+  $('connText').textContent = t(on ? 'connYes' : 'connNo');
+  $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
   for (const id of ['refreshBtn', 'unpairBtn', 'rangeBtn']) $(id).disabled = !on;
   validateCode();
   if (timer) clearInterval(timer);
@@ -407,7 +562,7 @@ function setConnected(on) {
   if (!on && rangeTest) setRangeTest(false);
 }
 
-// Reconnect by itself while the page is open, unless the user pressed "Rozłącz".
+// Reconnect by itself while the page is open, unless the user pressed "Disconnect".
 let wantConnected = false, reconnectTimer = null;
 
 function scheduleReconnect() {
@@ -415,7 +570,7 @@ function scheduleReconnect() {
   reconnectTimer = setTimeout(async () => {
     reconnectTimer = null;
     if (!wantConnected || (device && device.gatt.connected)) return;
-    $('msg').textContent = 'Łączę ponownie…';
+    $('msg').textContent = t('reconnecting');
     await openGatt();
   }, 4000);
 }
@@ -423,7 +578,7 @@ function scheduleReconnect() {
 function onDisconnected() {
   statusChr = cmdChr = null;
   setConnected(false);
-  $('msg').textContent = wantConnected ? 'Rozłączono, łączę ponownie za chwilę…' : 'Rozłączono.';
+  $('msg').textContent = t(wantConnected ? 'discRetry' : 'disc');
   scheduleReconnect();
 }
 
@@ -440,12 +595,12 @@ async function connect() {
     return;
   }
   try {
-    $('msg').textContent = 'Wybierz „G7 Bridge” z listy…';
+    $('msg').textContent = t('pick');
     adopt(await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC] }));
     wantConnected = true;
     await openGatt();
   } catch (e) {
-    $('msg').textContent = e.name === 'NotFoundError' ? 'Nie wybrano urządzenia.' : 'Połączenie nie powiodło się: ' + e.message;
+    $('msg').textContent = e.name === 'NotFoundError' ? t('noDevice') : t('connFail') + e.message;
   }
 }
 
@@ -461,7 +616,7 @@ async function autoConnect() {
     if (!known.length) return;
     adopt(known[0]);
     wantConnected = true;
-    $('msg').textContent = 'Łączę z zapamiętanym bridge’em…';
+    $('msg').textContent = t('remembered');
     await openGatt();
   } catch (e) {
     /* no remembered permission: the button stays */
@@ -475,14 +630,14 @@ async function openGatt() {
     statusChr = await svc.getCharacteristic(STATUS);
     cmdChr = await svc.getCharacteristic(CMD);
     setConnected(true);
-    $('msg').textContent = 'Połączono. Przy pierwszym połączeniu zatwierdź parowanie.';
+    $('msg').textContent = t('connected');
     await readStatus();
   } catch (e) {
     if (e.name === 'SecurityError' || /insufficient|authentic|encrypt/i.test(e.message)) {
-      $('msg').textContent = 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.';
+      $('msg').textContent = t('denied');
       wantConnected = false;
     } else {
-      $('msg').textContent = 'Brak połączenia (' + e.message + '), próbuję ponownie…';
+      $('msg').textContent = t('noConn', e.message);
     }
     setConnected(false);
     scheduleReconnect();
@@ -499,7 +654,7 @@ $('pairForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const code = $('code').value;
   if (!/^(\d{4}|\d{6})$/.test(code)) return;
-  $('msg').textContent = 'Wysyłam kod ' + code + '…';
+  $('msg').textContent = t('sendingCode', code);
   send('code ' + code);
 });
 $('connectBtn').addEventListener('click', connect);
@@ -509,10 +664,11 @@ $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = fal
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {
   $('unpairConfirm').hidden = true;
-  $('msg').textContent = 'Usuwam parowanie telefonów…';
+  $('msg').textContent = t('unpairing');
   send('unpair_phone');
 });
 
+applyLang();
 if (!('bluetooth' in navigator)) {
   $('noBt').hidden = false;
   $('connectBtn').disabled = true;
