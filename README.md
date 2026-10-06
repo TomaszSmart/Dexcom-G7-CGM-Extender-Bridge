@@ -18,7 +18,7 @@ back.
 
 ## The page
 
-Web page for a home-made Bluetooth bridge (nRF52840, e.g. RAK4631) that receives readings from a
+Web page for a home-made Bluetooth bridge that receives readings from a
 Dexcom G7 sensor and forwards them to xDrip+ as a standard Bluetooth CGM service.
 
 **Page:** https://g7bridge.b-hubit.com
@@ -45,7 +45,7 @@ From then on the page reconnects by itself within a few seconds after a reload. 
 the site data or its permissions, connect once with the button again. This is an experimental
 Chrome flag, so it may change in future versions.
 
-## Bridge LEDs (RAK4631)
+## Bridge LEDs
 
 | LED | Meaning |
 |---|---|
