@@ -3,7 +3,7 @@
 Strona do obsługi domowego mostka Bluetooth (nRF52840), który odbiera odczyty z sensora
 Dexcom G7 i przekazuje je do xDrip+ jako standardowa usługa Bluetooth CGM.
 
-**Strona:** https://tomaszsmart.github.io/G7-Bridge/
+**Strona:** https://g7bridge.b-hubit.com
 
 Otwórz ją w Chrome na Androidzie (wymaga Web Bluetooth), „Połącz z bridge'em” i wybierz
 „G7 Bridge”. Strona pokazuje ostatni odczyt, stan i dzień sesji sensora oraz sensory w zasięgu,
