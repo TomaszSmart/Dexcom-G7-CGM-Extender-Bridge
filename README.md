@@ -10,7 +10,7 @@ with every step. It is uncomfortable, it gets in the way of the game, and phones
 
 G7 Bridge is a small, light module that fits in a pocket. It stays close to the sensor, reads the
 glucose every 5 minutes and passes it on to the phone, which can stay in the locker room or on the
-bench — up to about 100 m away in the open. xDrip+ and AndroidAPS keep working as usual, and if the
+bench — up to about 50 m away. xDrip+ and AndroidAPS keep working as usual, and if the
 phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is
 back.
 

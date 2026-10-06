@@ -10,8 +10,8 @@ w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w g
 psują.
 
 G7 Bridge to mały, lekki moduł, który mieści się w kieszeni. Jest blisko sensora, co 5 minut
-odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — na
-otwartej przestrzeni nawet do około 100 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon
+odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — nawet
+do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon
 na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.
 
 **Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.**
