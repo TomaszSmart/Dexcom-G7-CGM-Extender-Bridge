@@ -2,6 +2,22 @@
 
 **English** · [Polski](README.pl.md)
 
+## Why G7 Bridge
+
+A Dexcom G7 sensor only talks to a phone a few metres away. So at football practice, in PE or on
+the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces
+with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.
+
+G7 Bridge is a small, light module that fits in a pocket. It stays close to the sensor, reads the
+glucose every 5 minutes and passes it on to the phone, which can stay in the locker room or on the
+bench — up to about 100 m away in the open. xDrip+ and AndroidAPS keep working as usual, and if the
+phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is
+back.
+
+**The goal is simple: let the child just play — with the parent still seeing every reading.**
+
+## The page
+
 Web page for a home-made Bluetooth bridge (nRF52840, e.g. RAK4631) that receives readings from a
 Dexcom G7 sensor and forwards them to xDrip+ as a standard Bluetooth CGM service.
 
