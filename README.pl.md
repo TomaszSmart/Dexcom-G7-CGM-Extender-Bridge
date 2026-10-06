@@ -18,7 +18,7 @@ na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko poł�
 
 ## Strona
 
-Strona do obsługi domowego mostka Bluetooth (nRF52840, np. RAK4631), który odbiera odczyty
+Strona do obsługi domowego mostka Bluetooth, który odbiera odczyty
 z sensora Dexcom G7 i przekazuje je do xDrip+ jako standardowa usługa Bluetooth CGM.
 
 **Strona:** https://g7bridge.b-hubit.com
@@ -44,7 +44,7 @@ Od tej pory po odświeżeniu strona łączy się sama w ciągu kilku sekund. Po 
 strony lub usunięciu jej uprawnień trzeba raz połączyć się przyciskiem od nowa. To flaga
 eksperymentalna Chrome, więc w przyszłych wersjach może się zmienić.
 
-## Diody bridge'a (RAK4631)
+## Diody bridge'a
 
 | Dioda | Co znaczy |
 |---|---|
