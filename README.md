@@ -50,7 +50,7 @@ Chrome flag, so it may change in future versions.
 | LED | Meaning |
 |---|---|
 | green 1× every 5 s | sensor OK, fresh reading, xDrip connected |
-| green 2× every 5 s | sensor OK but xDrip not connected, or warm-up |
+| green 2× every 5 s | sensor OK but xDrip not connected, or sensor warm-up |
 | green + blue 3× every 5 s | problem: no reading for over 15 min, sensor failure or session ended |
 | green + blue 1× every 2 s | after power-on, waiting for the first reading |
 | blue blinking | searching for the sensor that matches a new code |
