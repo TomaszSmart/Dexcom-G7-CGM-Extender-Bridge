@@ -358,7 +358,7 @@ const TEXT = {
     noReading: 'brak odczytu od włączenia bridge’a', waitSensor: 'czekam na sensor',
     notSelected: 'nie wybrany', sessUnknown: 'nieznana (czekam na sensor)', passed: ' (minęło)',
     codeNotSet: 'nie ustawiony', phoneOn: 'połączony', phoneOff: 'nie połączony',
-    pillUsed: 'w użyciu', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
+    pillUsed: 'używany', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
     seenNone: 'Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.',
     chargeMe: 'naładuj', usbCharging: 'USB — ładuje się', onBattery: 'z baterii', noBattery: 'ta płytka nie mierzy baterii',
     advert: 'reklama', rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
@@ -505,12 +505,14 @@ function render(st) {
 
   const bat = st.bat;
   if (bat) {
-    const low = bat.pct <= 15 && !bat.usb;
+    const low = bat.pct <= 20 && !bat.usb;
     $('bPct').innerHTML = (bat.usb ? '~' : '') + bat.pct + ' %' +
       (low ? ' <span class="pill bad">' + t('chargeMe') + '</span>' : '');
     $('bMv').textContent = num(bat.mv / 1000, 2) + ' V';
     $('bUsb').textContent = t(bat.usb ? 'usbCharging' : 'onBattery');
     $('bBar').style.width = bat.pct + '%';
+    // Bar colour: red up to 20 %, yellow up to 30 %, green above.
+    $('bBar').style.background = bat.pct <= 20 ? 'var(--low)' : bat.pct <= 30 ? 'var(--high)' : 'var(--ok)';
   } else {
     $('bPct').textContent = t('noBattery');
     $('bMv').textContent = '—';
