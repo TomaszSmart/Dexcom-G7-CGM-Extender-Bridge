@@ -104,6 +104,10 @@ ul.seen li:first-child { border-top: 0; }
 .rssi i.on { background: var(--accent); }
 .msg { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.codes { display: grid; gap: 10px; margin-top: 8px; }
+.codes div { border-top: 1px solid var(--line); padding-top: 8px; }
+.codes code { user-select: text; }
+details { margin-top: 10px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
 @media (prefers-reduced-motion: no-preference) { .bar > span { transition: width 0.4s ease; } }
@@ -138,6 +142,12 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
       </div>
     </div>
     <div style="margin-top:10px"><span class="pill" id="state" data-i18n="stateNone"></span></div>
+    <p class="sub" id="stateHint" hidden></p>
+    <details>
+      <summary data-i18n="codesTitle"></summary>
+      <p class="sub" data-i18n="codesIntro"></p>
+      <div class="codes" id="codes"></div>
+    </details>
   </section>
 
   <section class="panel" aria-labelledby="hSensor">
@@ -263,6 +273,9 @@ const TEXT = {
     noBtTitle: 'This browser does not support Bluetooth',
     noBtText: 'Open this page in Chrome on Android (Web Bluetooth). Safari on iPhone does not support it.',
     hReading: 'Glucose', trendInit: 'Connect to the bridge to see the reading', stateNone: 'no data',
+    codesTitle: 'Sensor state codes',
+    codesIntro: 'The G7 reports a state with every reading. Only “OK” and “needs calibration” readings are sent to xDrip. The names come from xDrip+; Dexcom does not publish the exact meanings, so the causes below are the likely ones.',
+    stUnknown: 'unknown state',
     hSensor: 'Sensor', sName: 'Name', sDay: 'Session', sEnd: 'Ends', sCode: 'Code', sPhone: 'Phone (xDrip)',
     hBat: 'Bridge battery', bPct: 'Charge', bMv: 'Voltage', bUsb: 'Power',
     hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Weakest in test',
@@ -325,6 +338,9 @@ const TEXT = {
     noBtTitle: 'Ta przeglądarka nie obsługuje Bluetooth',
     noBtText: 'Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.',
     hReading: 'Glukoza', trendInit: 'Połącz z bridge’em, żeby zobaczyć odczyt', stateNone: 'brak danych',
+    codesTitle: 'Kody stanu sensora',
+    codesIntro: 'G7 podaje stan przy każdym odczycie. Do xDrip trafiają tylko odczyty „OK” i „wymaga kalibracji”. Nazwy pochodzą z xDrip+; Dexcom nie publikuje dokładnego znaczenia, więc przyczyny poniżej to te najbardziej prawdopodobne.',
+    stUnknown: 'nieznany stan',
     hSensor: 'Sensor', sName: 'Nazwa', sDay: 'Sesja', sEnd: 'Koniec', sCode: 'Kod', sPhone: 'Telefon (xDrip)',
     hBat: 'Bateria bridge’a', bPct: 'Naładowanie', bMv: 'Napięcie', bUsb: 'Zasilanie',
     hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Najsłabszy w teście',
@@ -399,6 +415,7 @@ function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  renderCodes();
   // Texts that depend on state.
   const on = !!statusChr;
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
@@ -418,13 +435,56 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 let device = null, statusChr = null, cmdChr = null, timer = null, busy = false, lastStatus = null;
 
 // G7 algorithm states (xDrip+ CalibrationState names)
+// Grouped by what to do. Names follow xDrip+ (Dexcom does not publish the meanings).
+const STATES = [
+  { codes: [0x06], cls: 'good',
+    en: ['OK', 'Readings are valid and sent to xDrip.', ''],
+    pl: ['OK', 'Odczyty są prawidłowe i trafiają do xDrip.', ''] },
+  { codes: [0x07], cls: 'warn',
+    en: ['needs calibration', 'Readings are still sent.', 'Calibrate in xDrip only if the values look wrong.'],
+    pl: ['wymaga kalibracji', 'Odczyty nadal są wysyłane.', 'Kalibruj w xDrip tylko, jeśli wartości wyglądają źle.'] },
+  { codes: [0x02], cls: 'warn',
+    en: ['warming up', 'Normal for about 30 minutes after a new sensor starts.', 'Wait; readings start by themselves.'],
+    pl: ['rozgrzewanie', 'Normalne przez ok. 30 minut po starcie nowego sensora.', 'Poczekaj, odczyty pojawią się same.'] },
+  { codes: [0x03], cls: 'warn',
+    en: ['signal noise', 'Temporary, e.g. pressure on the sensor (lying on it), a knock, or the first day.', 'Usually passes by itself; check with a meter meanwhile.'],
+    pl: ['zakłócenia', 'Chwilowe, np. ucisk na sensor (leżenie na nim), uderzenie albo pierwszy dzień.', 'Zwykle mija samo; w tym czasie sprawdzaj glukometrem.'] },
+  { codes: [0x11, 0x12], cls: 'warn',
+    en: ['sensor errors', 'The sensor reports an error, sometimes only for a while.', 'Wait 1–3 hours; if it stays, replace the sensor.'],
+    pl: ['błędy sensora', 'Sensor zgłasza błąd, czasem tylko na chwilę.', 'Odczekaj 1–3 godziny; jeśli zostaje, wymień sensor.'] },
+  { codes: [0x01, 0x0f, 0x1a, 0xc2], cls: 'bad',
+    en: ['session stopped', 'The session was ended, e.g. “Stop sensor” in xDrip or the Dexcom app.', 'A G7 cannot be restarted: replace the sensor.'],
+    pl: ['sesja zatrzymana', 'Sesję zakończono, np. „Stop sensor” w xDrip albo w aplikacji Dexcom.', 'G7 nie da się uruchomić ponownie: wymień sensor.'] },
+  { codes: [0x18], cls: 'bad',
+    en: ['sensor expired', 'The 10 days plus the 12-hour grace period are over.', 'Replace the sensor.'],
+    pl: ['sensor wygasł', 'Minęło 10 dni i 12 godzin okresu dodatkowego.', 'Wymień sensor.'] },
+  { codes: [0x16, 0x17], cls: 'bad',
+    en: ['failed to start', 'The sensor failed during warm-up.', 'Replace the sensor; Dexcom usually replaces it under warranty.'],
+    pl: ['nieudany start', 'Sensor zawiódł podczas rozgrzewania.', 'Wymień sensor; Dexcom zwykle wymienia go w ramach reklamacji.'] },
+  { codes: [0x0b, 0x0c, 0x10, 0x13, 0x14, 0x15, 0x19, 0x1b, 0x1c, 0x1d, 0x1e], cls: 'bad',
+    en: ['sensor failed', 'The sensor stopped measuring. Possible causes: the filament came out or the sensor peeled off, a hard knock, a session stopped from an app, or simply the end of its life (expired G7s also report 0x19).', 'It does not recover: replace the sensor, check with a meter meanwhile, and report it to Dexcom for a replacement.'],
+    pl: ['awaria sensora', 'Sensor przestał mierzyć. Możliwe przyczyny: wysunięty filament albo odklejony sensor, mocne uderzenie, sesja zatrzymana z aplikacji albo po prostu koniec życia (wygasłe G7 też zgłaszają 0x19).', 'Sam nie wróci: wymień sensor, w tym czasie sprawdzaj glukometrem i zgłoś reklamację w Dexcom.'] },
+];
+
+const hex = (c) => '0x' + c.toString(16).padStart(2, '0');
+
+function stateEntry(s) {
+  return STATES.find((g) => g.codes.includes(s));
+}
+
 function stateInfo(s) {
-  if (s === 0x06) return [t('stOk'), 'good'];
-  if (s === 0x07) return [t('stCal'), 'warn'];
-  if (s === 0x02) return [t('stWarm'), 'warn'];
-  if ([0x01, 0x0f, 0x18, 0x1a, 0xc2].includes(s)) return [t('stEnd'), 'bad'];
-  if (s === 0x03) return [t('stNoise'), 'warn'];
-  return [t('stFail') + ' (0x' + s.toString(16).padStart(2, '0') + ')', 'bad'];
+  const g = stateEntry(s);
+  if (!g) return [t('stUnknown') + ' (' + hex(s) + ')', 'warn'];
+  return [g[lang][0] + (s === 0x06 ? '' : ' (' + hex(s) + ')'), g.cls];
+}
+
+function renderCodes() {
+  $('codes').innerHTML = STATES.map((g) => {
+    const [name, what, todo] = g[lang];
+    return '<div><span class="pill ' + g.cls + '">' + esc(name) + '</span> <code>' +
+      g.codes.map(hex).join(', ') + '</code><p class="sub" style="margin:6px 0 0">' +
+      esc(what) + (todo ? ' <b>' + esc(todo) + '</b>' : '') + '</p></div>';
+  }).join('');
 }
 
 function trendText(tr) {
@@ -455,7 +515,11 @@ function render(st) {
     const [label, cls] = stateInfo(g.state);
     $('state').textContent = label;
     $('state').className = 'pill ' + cls;
+    const e = stateEntry(g.state);
+    $('stateHint').hidden = !e || e.cls === 'good';
+    $('stateHint').textContent = e ? e[lang][1] + ' ' + e[lang][2] : '';
   } else {
+    $('stateHint').hidden = true;
     bg.className = 'bg none';
     bg.innerHTML = '—<small>mg/dL</small>';
     $('trend').textContent = t('noReading');
