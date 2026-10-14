@@ -39,27 +39,15 @@ w osobnej części pamięci i przetrwają aktualizację.
    telefon; xDrip+ połączy się sam. AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
 5. **Nowy sensor** — wpisz na stronie 4-cyfrowy kod z aplikatora. Wcześniej wyłącz zbieranie danych
    w innym telefonie, który łączy się z tym sensorem. Bridge sam znajdzie sensor, do którego pasuje
-   kod, i sparuje się z nim (do 5 minut).
+   kod, i sparuje się z nim (do 30 minut).
 
 Minęło 10 minut? Odłącz baterię i USB (albo naciśnij raz RESET) i sparuj ponownie.
-
-## Kompilacja ze źródeł
-
-Wymaga nRF Connect SDK **v2.9.3**. Zawsze kompiluj bez sysbuild:
-
-```
-west build --board rak4631/nrf52840 --pristine --no-sysbuild <ścieżka>/firmware
-```
-
-Obraz to `build/zephyr/zephyr.uf2`. W Windows ścieżka ze spacjami psuje kompilację — użyj
-junction (np. `C:\ncs\g7bridge`) wskazującego na ten folder.
-
-Opcjonalnie, tylko do prywatnych kompilacji: `tools/make_g7_certs.py` zamienia tekst QR xDrip+ albo
-eksport ustawień w `src/g7_certs.h`, który jest wtedy wkompilowany jako zapas. Ten plik zawiera klucz
-podpisujący — nigdy go nie commituj ani nie udostępniaj i nie publikuj obrazu z nim zbudowanego
-(`.gitignore` go pomija).
 
 ## Konsola szeregowa
 
 Port USB pokazuje logi i konsolę (115200 bodów). Przydatne polecenia: `g7 get_code`, `g7 get_id`,
 `g7 certs`, `g7 cert_selftest`, `g7 battery`, `g7 unpair_phone`, `g7 repair_sensor`.
+
+## Kompilacja
+
+Chcesz sam zbudować albo zmienić firmware? Zobacz [BUILDING.pl.md](BUILDING.pl.md).
