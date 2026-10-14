@@ -36,7 +36,7 @@ sensora.
    i zatwierdź parowanie. Po parowaniu bridge raz rozłączy telefon; xDrip+ połączy się sam.
    AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
 6. **Sensor** — wyłącz zbieranie danych w innym telefonie, który łączy się z sensorem, wpisz kod
-   z aplikatora w panelu **Nowy sensor** i naciśnij **Paruj**. Do maxx. 30 minut bridge znajdzie
+   z aplikatora w panelu **Nowy sensor** i naciśnij **Paruj**. Do 30 minut bridge znajdzie
    sensor, a odczyty pojawią się w xDrip+.
 
 Aktualizacje: strona pokaże, kiedy jest nowszy firmware; wgrywasz go tak samo jak w kroku 1.
