@@ -22,7 +22,7 @@ Potrzebujesz: **RAK4631** firmy RAKwireless na płytce **RAK19007/RAK19003** z a
 akumulatorem Li-Po, telefonu z Androidem z **Chrome** i **xDrip+** oraz 4-cyfrowego kodu z aplikatora
 sensora.
 
-1. **Firmware** — pobierz `g7-bridge-rak4631-<wersja>.uf2` z
+1. **[Firmware](firmware/README.pl.md)** (pełna instrukcja tam) — pobierz `g7-bridge-rak4631-<wersja>.uf2` z
    [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), naciśnij
    dwa razy RESET na płytce i skopiuj plik na dysk `RAK4631` (błąd kopiowania zgłoszony przez
    Windows na końcu jest normalny — płytka restartuje się, gdy tylko dostanie plik).

@@ -22,7 +22,7 @@ You need: a RAKwireless **RAK4631** on a **RAK19007/RAK19003** base board with a
 small Li-Po battery, an Android phone with **Chrome** and **xDrip+**, and the 4-digit code from the
 sensor applicator.
 
-1. **Firmware** — download `g7-bridge-rak4631-<version>.uf2` from
+1. **[Firmware](firmware/README.md)** (full instructions there) — download `g7-bridge-rak4631-<version>.uf2` from
    [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), press
    RESET twice on the board and copy the file onto the `RAK4631` drive (a copy error from Windows
    at the end is normal — the board restarts as soon as it has the file).
@@ -36,7 +36,7 @@ sensor applicator.
    the pairing request. The bridge drops the phone once after pairing; xDrip+ reconnects by itself.
    AndroidAPS keeps xDrip+ as its BG source.
 6. **Sensor** — stop data collection on any other phone that talks to the sensor, enter the
-   applicator code under **New sensor** and tap **Pair**. Within about 5 minutes the bridge finds
+   applicator code under **New sensor** and tap **Pair**. Within up to 30 minutes the bridge finds
    the sensor and readings appear in xDrip+.
 
 Updating later: the page shows when a newer firmware is available; flash it the same way as in
