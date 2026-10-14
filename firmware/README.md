@@ -29,11 +29,16 @@ are kept in a separate part of the flash and survive updates.
 1. Open the setup page in Chrome on Android: https://g7bridge.b-hubit.com
 2. Within 10 minutes of powering the bridge up, connect to “G7 Bridge” and accept the pairing.
 3. **App certificates** — a new G7 asks for them on its first pairing. They are not part of this
-   firmware: load them from the page (scan xDrip+'s G7 “Auto configure” QR code with the camera,
-   or pick an xDrip+ settings export). They stay on your bridge only.
-4. **New sensor** — enter the 4-digit code from the applicator. The bridge finds the sensor the
-   code belongs to.
-5. In xDrip+, choose the G7 Bridge as a standard Bluetooth CGM.
+   firmware: on the page tap **From the xDrip+ documentation** (it reads the QR code from xDrip+'s
+   G7 guide) and **Send to bridge**. They stay on your bridge only.
+4. **xDrip+** — within the same 10 minutes: xDrip+ → Settings → **Hardware Data Source** →
+   **SmartGuide**, choose “G7 Bridge” and accept the pairing request. The bridge drops the phone
+   once right after pairing; xDrip+ reconnects by itself. AndroidAPS keeps xDrip+ as its BG source.
+5. **New sensor** — enter the 4-digit code from the applicator on the page. Stop data collection on
+   any other phone that talks to that sensor first. The bridge finds the sensor the code belongs
+   to and pairs with it (up to 5 minutes).
+
+Missed the 10-minute window? Unplug the battery and USB (or press RESET once) and pair again.
 
 ## Build from source
 

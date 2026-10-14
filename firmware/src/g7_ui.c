@@ -157,6 +157,7 @@ static void build_status(void)
 	static const char *const cert_src[] = {"none", "stored", "builtin"};
 
 	APPEND(",\"certs\":\"%s\"", cert_src[g7_certs_source()]);
+	APPEND(",\"fw\":\"%s\"", CONFIG_BT_DIS_FW_REV_STR);
 	APPEND(",\"msg\":\"%s\"}", last_msg);
 
 	status_len = p - status_json;

@@ -162,6 +162,7 @@ textarea#certsText {
   <section class="panel" aria-labelledby="hBat">
     <h2 id="hBat" data-i18n="hBat"></h2>
     <dl>
+      <dt data-i18n="fwLabel"></dt><dd id="fwVer">—</dd>
       <dt data-i18n="bPct"></dt><dd id="bPct">—</dd>
       <dt data-i18n="bMv"></dt><dd id="bMv">—</dd>
       <dt data-i18n="bUsb"></dt><dd id="bUsb">—</dd>
@@ -188,6 +189,16 @@ textarea#certsText {
       <button type="button" class="quiet" id="refreshBtn" disabled data-i18n="refreshBtn"></button>
     </div>
     <p class="msg" id="msg" role="status"></p>
+    <details id="xdripHelp">
+      <summary data-i18n="xdTitle"></summary>
+      <ol class="sub">
+        <li data-i18n="xd1"></li>
+        <li data-i18n-html="xd2"></li>
+        <li data-i18n="xd3"></li>
+        <li data-i18n="xd4"></li>
+        <li data-i18n="xd5"></li>
+      </ol>
+    </details>
     <details>
       <summary data-i18n="ledTitle"></summary>
       <dl style="margin-top:10px">
@@ -250,6 +261,7 @@ textarea#certsText {
       <summary data-i18n="certsLoad"></summary>
       <p class="sub" data-i18n="certsHint"></p>
       <div class="confirm">
+        <button type="button" id="certsDocBtn" data-i18n="certsDoc"></button>
         <button type="button" class="quiet" id="camBtn" data-i18n="camStart"></button>
       </div>
       <div id="camBox" hidden>
@@ -299,7 +311,17 @@ const TEXT = {
     noBtText: 'Open this page in Chrome on Android (Web Bluetooth). Safari on iPhone does not support it.',
     hReading: 'Glucose', trendInit: 'Connect to the bridge to see the reading', stateNone: 'no data',
     hSensor: 'Sensor', sName: 'Name', sDay: 'Session', sEnd: 'Ends', sCode: 'Code', sPhone: 'Phone (xDrip)',
-    hBat: 'Bridge battery', bPct: 'Charge', bMv: 'Voltage', bUsb: 'Power',
+    hBat: 'Bridge', bPct: 'Battery', bMv: 'Voltage', bUsb: 'Power', fwLabel: 'Firmware',
+    fwCurrent: 'up to date', fwDev: 'development build', fwNew: (v) => 'version ' + v + ' available',
+    fwGet: 'download', fwHow: 'how to update',
+    xdTitle: 'Connect xDrip+ to the bridge',
+    xd1: 'Use a recent xDrip+ that has the “SmartGuide” data source.',
+    xd2: 'Within 10 minutes of powering the bridge up: xDrip+ → Settings → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
+    xd3: 'xDrip+ scans for devices: choose “G7 Bridge” and accept the Android pairing request.',
+    xd4: 'The bridge drops the phone once right after pairing — this is expected; xDrip+ reconnects by itself and fetches up to 24 hours of history.',
+    xd5: 'AndroidAPS keeps using xDrip+ as its BG source, nothing changes there.',
+    certsDoc: 'From the xDrip+ documentation',
+    certsDocFail: 'Could not load the QR code from the xDrip+ documentation: ',
     hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Weakest in test',
     rangeBtn: 'Range test', rangeStop: 'Stop test',
     rangeHint: 'Below about −90 dBm the phone link drops.',
@@ -330,7 +352,7 @@ const TEXT = {
     certsNone: 'not loaded — a new G7 cannot be paired', certsStored: 'loaded', certsBuiltin: 'built into this firmware',
     certsOld: 'this firmware cannot load certificates (update it)',
     certsLoad: 'Load certificates',
-    certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ gets from the “Auto configure” QR code in its G7 setup guide. Paste the decoded QR text (starts with xdp2:), or pick an xDrip+ settings export (…_preferences.xml). Everything is unpacked in this browser and sent only to your bridge.',
+    certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera, pick a screenshot of it, paste its text (starts with xdp2:) or pick an xDrip+ settings export (…_preferences.xml). Everything is unpacked in this browser and sent only to your bridge.',
     certsFile: 'Settings file', certsSend: 'Send to bridge', certsQr: 'QR photo / image',
     certsQrRead: 'QR code read — tap “Send to bridge”.', certsQrNone: 'No QR code found in this image.',
     camStart: 'Scan with camera', camStop: 'Stop camera',
@@ -373,7 +395,17 @@ const TEXT = {
     noBtText: 'Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.',
     hReading: 'Glukoza', trendInit: 'Połącz z bridge’em, żeby zobaczyć odczyt', stateNone: 'brak danych',
     hSensor: 'Sensor', sName: 'Nazwa', sDay: 'Sesja', sEnd: 'Koniec', sCode: 'Kod', sPhone: 'Telefon (xDrip)',
-    hBat: 'Bateria bridge’a', bPct: 'Naładowanie', bMv: 'Napięcie', bUsb: 'Zasilanie',
+    hBat: 'Bridge', bPct: 'Bateria', bMv: 'Napięcie', bUsb: 'Zasilanie', fwLabel: 'Firmware',
+    fwCurrent: 'aktualny', fwDev: 'wersja rozwojowa', fwNew: (v) => 'dostępna wersja ' + v,
+    fwGet: 'pobierz', fwHow: 'jak zaktualizować',
+    xdTitle: 'Połącz xDrip+ z bridge’em',
+    xd1: 'Użyj aktualnego xDrip+, który ma źródło danych „SmartGuide”.',
+    xd2: 'W ciągu 10 minut od podłączenia zasilania bridge’a: xDrip+ → Ustawienia → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
+    xd3: 'xDrip+ szuka urządzeń: wybierz „G7 Bridge” i zatwierdź prośbę Androida o parowanie.',
+    xd4: 'Zaraz po parowaniu bridge raz rozłączy telefon — tak ma być; xDrip+ połączy się sam i pobierze do 24 godzin historii.',
+    xd5: 'AndroidAPS dalej korzysta z xDrip+ jako źródła BG, tu nic się nie zmienia.',
+    certsDoc: 'Z dokumentacji xDrip+',
+    certsDocFail: 'Nie udało się pobrać kodu QR z dokumentacji xDrip+: ',
     hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Najsłabszy w teście',
     rangeBtn: 'Test zasięgu', rangeStop: 'Zakończ test',
     rangeHint: 'Poniżej około −90 dBm połączenie z telefonem się zrywa.',
@@ -404,7 +436,7 @@ const TEXT = {
     certsNone: 'nie wczytane — nowego G7 nie da się sparować', certsStored: 'wczytane', certsBuiltin: 'wbudowane w ten firmware',
     certsOld: 'ten firmware nie obsługuje wczytywania (zaktualizuj go)',
     certsLoad: 'Wczytaj certyfikaty',
-    certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ dostaje z kodu QR „Auto configure” w swoim przewodniku konfiguracji G7. Wklej odczytany tekst kodu QR (zaczyna się od xdp2:) albo wybierz plik eksportu ustawień xDrip+ (…_preferences.xml). Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
+    certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem, wybrać jego zrzut ekranu, wkleić tekst (zaczyna się od xdp2:) albo wybrać plik eksportu ustawień xDrip+ (…_preferences.xml). Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
     certsFile: 'Plik ustawień', certsSend: 'Wyślij do bridge’a', certsQr: 'Zdjęcie / obraz QR',
     certsQrRead: 'Kod QR odczytany — naciśnij „Wyślij do bridge’a”.', certsQrNone: 'Nie znaleziono kodu QR na tym obrazie.',
     camStart: 'Skanuj aparatem', camStop: 'Zatrzymaj aparat',
@@ -466,6 +498,7 @@ function applyLang() {
   $('camBtn').textContent = t(camStream ? 'camStop' : 'camStart');
   $('rangeHint').textContent = t(rangeTest ? 'rangeHintOn' : 'rangeHint');
   if (lastStatus) render(lastStatus);
+  renderVersion();
 }
 
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
@@ -639,6 +672,66 @@ async function startCam() {
 
 $('camBtn').addEventListener('click', () => (camStream ? stopCam() : startCam()));
 
+// The QR code xDrip+'s own G7 documentation shows (GitHub Pages allows reading it here).
+const XDRIP_QR = 'https://navid200.github.io/xDrip/docs/Dexcom/images/G7_keks_QR.png';
+
+$('certsDocBtn').addEventListener('click', async () => {
+  const msg = $('certsMsg');
+  try {
+    const res = await fetch(XDRIP_QR, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await readQr(await res.blob());
+    if (!text) throw new Error(t('certsQrNone'));
+    await parseCerts(text); // fail here rather than on send
+    $('certsText').value = text;
+    msg.textContent = t('certsQrRead');
+  } catch (e) {
+    msg.textContent = t('certsDocFail') + e.message;
+  }
+});
+
+// ---- firmware version vs the latest release ------------------------------------
+const REPO = 'TomaszSmart/Dexcom-G7-CGM-Extender-Bridge';
+const RELEASES = 'https://github.com/' + REPO + '/releases/latest';
+const HOWTO = 'https://github.com/' + REPO + '/blob/main/firmware/README.md#install';
+let fwVersion = null, latest = null;
+
+(async () => {
+  try {
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/releases/latest');
+    if (!r.ok) return;
+    const j = await r.json();
+    const asset = (j.assets || []).find((a) => /rak4631.*\.uf2$/.test(a.name));
+    latest = { ver: j.tag_name.replace(/^v/, ''), url: asset ? asset.browser_download_url : RELEASES };
+    renderVersion();
+  } catch (e) { /* offline: no update check */ }
+})();
+
+const verNum = (v) => (/^\d+(\.\d+)*$/.test(v) ? v.split('.').map(Number) : null);
+
+function newer(a, b) { // a > b
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
+  }
+  return false;
+}
+
+function renderVersion() {
+  const el = $('fwVer');
+  if (!fwVersion) { el.textContent = '—'; return; }
+  const cur = verNum(fwVersion), lat = latest && verNum(latest.ver);
+  let html = esc(fwVersion);
+  if (lat && (!cur || newer(lat, cur))) {
+    html += ' <span class="pill warn">' + esc(t('fwNew', latest.ver)) + '</span>' +
+      ' <a href="' + latest.url + '">' + t('fwGet') + '</a> · <a href="' + HOWTO + '" target="_blank" rel="noopener">' + t('fwHow') + '</a>';
+  } else if (!cur) {
+    html += ' <span class="pill">' + t('fwDev') + '</span>';
+  } else if (lat) {
+    html += ' <span class="pill good">' + t('fwCurrent') + '</span>';
+  }
+  el.innerHTML = html;
+}
+
 $('certsQr').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   e.target.value = '';
@@ -769,6 +862,11 @@ function render(st) {
   }
   if (rangeTest && rangeMin !== null) $('pMin').innerHTML = rssiText(rangeMin);
 
+  if (st.fw && st.fw !== fwVersion) {
+    fwVersion = st.fw;
+    renderVersion();
+  }
+
   const cs = $('certsState');
   if (!certsChr || !st.certs) {
     cs.innerHTML = '<span class="pill warn">' + t('certsOld') + '</span>';
@@ -869,7 +967,7 @@ async function connect() {
   }
   try {
     $('msg').textContent = t('pick');
-    adopt(await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC] }));
+    adopt(await navigator.bluetooth.requestDevice({ filters: [{ name: 'G7 Bridge' }], optionalServices: [SVC, 'device_information'] }));
     wantConnected = true;
     await openGatt();
   } catch (e) {
@@ -903,6 +1001,13 @@ async function openGatt() {
     statusChr = await svc.getCharacteristic(STATUS);
     cmdChr = await svc.getCharacteristic(CMD);
     certsChr = await svc.getCharacteristic(CERTS).catch(() => null); // older firmware: none
+    // Device Information: needs the permission asked for in connect(); older grants lack it.
+    try {
+      const dis = await server.getPrimaryService('device_information');
+      const v = await (await dis.getCharacteristic('firmware_revision_string')).readValue();
+      fwVersion = new TextDecoder().decode(v).trim();
+    } catch (e) { /* the status JSON may still carry "fw" */ }
+    renderVersion();
     setConnected(true);
     $('msg').textContent = t('connected');
     await readStatus();

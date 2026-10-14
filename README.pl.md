@@ -16,6 +16,31 @@ na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko poł�
 
 **Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.**
 
+## Szybki start
+
+Potrzebujesz: **RAK4631** firmy RAKwireless na płytce **RAK19007/RAK19003** z anteną BLE i małym
+akumulatorem Li-Po, telefonu z Androidem z **Chrome** i **xDrip+** oraz 4-cyfrowego kodu z aplikatora
+sensora.
+
+1. **Firmware** — pobierz `g7-bridge-rak4631-<wersja>.uf2` z
+   [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), naciśnij
+   dwa razy RESET na płytce i skopiuj plik na dysk `RAK4631`.
+2. **Włącz zasilanie bridge'a.** Kroki 3–5 trzeba zrobić w ciągu **10 minut** (tylko wtedy telefon
+   może się sparować; potem naciśnij raz RESET i kontynuuj).
+3. **Strona** — otwórz https://g7bridge.b-hubit.com w Chrome, naciśnij **Połącz z bridge'em**,
+   wybierz „G7 Bridge” i zatwierdź parowanie.
+4. **Certyfikaty aplikacji** — w panelu „Certyfikaty aplikacji” naciśnij **Z dokumentacji xDrip+**,
+   a potem **Wyślij do bridge'a** (raz na bridge; przetrwają aktualizacje).
+5. **xDrip+** — Ustawienia → **Hardware Data Source** → **SmartGuide**, wybierz „G7 Bridge”
+   i zatwierdź parowanie. Po parowaniu bridge raz rozłączy telefon; xDrip+ połączy się sam.
+   AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
+6. **Sensor** — wyłącz zbieranie danych w innym telefonie, który łączy się z sensorem, wpisz kod
+   z aplikatora w panelu **Nowy sensor** i naciśnij **Paruj**. W ciągu ok. 5 minut bridge znajdzie
+   sensor, a odczyty pojawią się w xDrip+.
+
+Aktualizacje: strona pokaże, kiedy jest nowszy firmware; wgrywasz go tak samo jak w kroku 1.
+Ustawienia, certyfikaty i parowania zostają.
+
 ## Strona
 
 Strona do obsługi domowego mostka Bluetooth, który odbiera odczyty

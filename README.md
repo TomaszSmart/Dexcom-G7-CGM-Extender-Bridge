@@ -16,6 +16,31 @@ back.
 
 **The goal is simple: let the child just play — with the parent still seeing every reading.**
 
+## Quick start
+
+You need: a RAKwireless **RAK4631** on a **RAK19007/RAK19003** base board with a BLE antenna and a
+small Li-Po battery, an Android phone with **Chrome** and **xDrip+**, and the 4-digit code from the
+sensor applicator.
+
+1. **Firmware** — download `g7-bridge-rak4631-<version>.uf2` from
+   [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), press
+   RESET twice on the board and copy the file onto the `RAK4631` drive.
+2. **Power the bridge up.** The next steps 3–5 must happen within **10 minutes** (phones can only
+   pair in that window; afterwards press RESET once and continue).
+3. **Page** — open https://g7bridge.b-hubit.com in Chrome, tap **Connect to bridge**, choose
+   “G7 Bridge” and accept the pairing request.
+4. **App certificates** — in “App certificates” tap **From the xDrip+ documentation**, then
+   **Send to bridge** (once per bridge; they survive updates).
+5. **xDrip+** — Settings → **Hardware Data Source** → **SmartGuide**, choose “G7 Bridge” and accept
+   the pairing request. The bridge drops the phone once after pairing; xDrip+ reconnects by itself.
+   AndroidAPS keeps xDrip+ as its BG source.
+6. **Sensor** — stop data collection on any other phone that talks to the sensor, enter the
+   applicator code under **New sensor** and tap **Pair**. Within about 5 minutes the bridge finds
+   the sensor and readings appear in xDrip+.
+
+Updating later: the page shows when a newer firmware is available; flash it the same way as in
+step 1. Settings, certificates and pairings are kept.
+
 ## The page
 
 Web page for a home-made Bluetooth bridge that receives readings from a

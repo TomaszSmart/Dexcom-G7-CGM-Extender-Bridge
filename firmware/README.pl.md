@@ -30,11 +30,16 @@ w osobnej części pamięci i przetrwają aktualizację.
 1. Otwórz stronę konfiguracji w Chrome na Androidzie: https://g7bridge.b-hubit.com
 2. W ciągu 10 minut od podłączenia zasilania bridge'a połącz się z „G7 Bridge” i zatwierdź parowanie.
 3. **Certyfikaty aplikacji** — nowy G7 prosi o nie przy pierwszym parowaniu. Nie ma ich w tym
-   firmware: wczytaj je ze strony (zeskanuj aparatem kod QR „Auto configure” z przewodnika G7
-   w xDrip+ albo wybierz plik eksportu ustawień xDrip+). Zostają tylko w Twoim bridge'u.
-4. **Nowy sensor** — wpisz 4-cyfrowy kod z aplikatora. Bridge sam znajdzie sensor, do którego
-   pasuje kod.
-5. W xDrip+ wybierz G7 Bridge jako standardowy CGM Bluetooth.
+   firmware: na stronie naciśnij **Z dokumentacji xDrip+** (strona odczyta kod QR z przewodnika G7
+   xDrip+) i **Wyślij do bridge'a**. Zostają tylko w Twoim bridge'u.
+4. **xDrip+** — w tych samych 10 minutach: xDrip+ → Ustawienia → **Hardware Data Source** →
+   **SmartGuide**, wybierz „G7 Bridge” i zatwierdź parowanie. Zaraz po parowaniu bridge raz rozłączy
+   telefon; xDrip+ połączy się sam. AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
+5. **Nowy sensor** — wpisz na stronie 4-cyfrowy kod z aplikatora. Wcześniej wyłącz zbieranie danych
+   w innym telefonie, który łączy się z tym sensorem. Bridge sam znajdzie sensor, do którego pasuje
+   kod, i sparuje się z nim (do 5 minut).
+
+Minęło 10 minut? Odłącz baterię i USB (albo naciśnij raz RESET) i sparuj ponownie.
 
 ## Kompilacja ze źródeł
 
