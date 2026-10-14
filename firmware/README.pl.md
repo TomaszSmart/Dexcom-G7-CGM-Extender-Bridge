@@ -9,19 +9,17 @@ Zbudowane na nRF Connect SDK (Zephyr).
 > Projekt hobbystyczny, nie jest wyrobem medycznym. Decyzje terapeutyczne podejmuj na podstawie
 > zatwierdzonych urządzeń.
 
-## Płytki
+## Sprzęt
 
-| Płytka | Cel kompilacji | Uwagi |
-|---|---|---|
-| RAK4631 na RAK19007 / RAK19003 (zalecana) | `rak4631/nrf52840` | zewnętrzna antena BLE, poziom baterii, zasięg do telefonu ok. 50 m i więcej |
-| Seeed XIAO nRF52840 (Sense) | `xiao_ble` | bardzo mały zasięg (antena na płytce) |
-| Nordic nRF52840 Dongle | `nrf52840dongle/nrf52840` | do testów |
+Moduł RAKwireless **RAK4631** WisBlock na płytce bazowej **RAK19007** albo **RAK19003**, z anteną
+BLE w gnieździe u.FL opisanym BLE (antena LoRa nie jest potrzebna). Akumulator Li-Po 3,7 V z wtykiem
+JST-PH 2,0 mm — sprawdź polaryzację z „+” na płytce, płytka nie ma zabezpieczenia przed odwrotnym
+podłączeniem. Cel kompilacji: `rak4631/nrf52840`.
 
 ## Instalacja
 
-1. Pobierz plik `.uf2` dla swojej płytki z zakładki **Releases**.
-2. Wprowadź płytkę w tryb bootloadera: RAK4631 — naciśnij szybko dwa razy RESET (pojawi się dysk
-   `RAK4631`); XIAO — naciśnij raz RESET (dysk `XIAO-SENSE`).
+1. Pobierz `g7-bridge-rak4631-<wersja>.uf2` z zakładki **Releases**.
+2. Naciśnij szybko dwa razy RESET: pojawi się dysk `RAK4631`.
 3. Skopiuj plik `.uf2` na ten dysk. Płytka sama się zaprogramuje i uruchomi ponownie.
 
 Aktualizacje instaluje się tak samo. Kod parowania, sensor, jego klucze i certyfikaty aplikacji są

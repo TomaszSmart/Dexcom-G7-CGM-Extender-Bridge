@@ -1,8 +1,0 @@
-/* Status LED colours for src/g7_led.c: the XIAO's RGB LED. */
-/ {
-	aliases {
-		status-red = &led0;
-		status-green = &led1;
-		status-blue = &led2;
-	};
-};

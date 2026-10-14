@@ -106,6 +106,13 @@ ul.seen li:first-child { border-top: 0; }
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
+textarea#certsText {
+  width: 100%; margin-top: 8px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); font: 400 0.8rem/1.35 var(--font-mono); resize: vertical;
+}
+#camVideo { width: 100%; max-height: 60vh; margin-top: 10px; border-radius: 9px; background: #000; object-fit: cover; }
+.filebtn { display: inline-block; cursor: pointer; padding: 10px 16px; border-radius: 9px;
+  border: 1px solid var(--accent); color: var(--accent); font: 600 0.95rem var(--font-body); }
 @media (prefers-reduced-motion: no-preference) { .bar > span { transition: width 0.4s ease; } }
 </style>
 </head>
@@ -236,6 +243,33 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <div class="search" id="search" hidden></div>
   </section>
 
+  <section class="panel" aria-labelledby="hCerts">
+    <h2 id="hCerts" data-i18n="hCerts"></h2>
+    <dl><dt data-i18n="certsState"></dt><dd id="certsState">—</dd></dl>
+    <details id="certsBox">
+      <summary data-i18n="certsLoad"></summary>
+      <p class="sub" data-i18n="certsHint"></p>
+      <div class="confirm">
+        <button type="button" class="quiet" id="camBtn" data-i18n="camStart"></button>
+      </div>
+      <div id="camBox" hidden>
+        <video id="camVideo" playsinline muted></video>
+        <p class="sub" data-i18n="camHint"></p>
+      </div>
+      <textarea id="certsText" rows="4" spellcheck="false" autocomplete="off"></textarea>
+      <div class="confirm">
+        <label class="filebtn"><span data-i18n="certsQr"></span>
+          <input type="file" id="certsQr" accept="image/*" hidden>
+        </label>
+        <label class="filebtn"><span data-i18n="certsFile"></span>
+          <input type="file" id="certsFile" accept=".xml,.txt,text/*" hidden>
+        </label>
+        <button type="button" id="certsBtn" disabled data-i18n="certsSend"></button>
+      </div>
+      <p class="sub" id="certsMsg" role="status"></p>
+    </details>
+  </section>
+
   <section class="panel" aria-labelledby="hAbout">
     <h2 id="hAbout" data-i18n="hAbout"></h2>
     <p class="sub" data-i18n="about1"></p>
@@ -248,6 +282,7 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 const SVC = 'a7c10001-3f8e-4b5a-9d2c-6e0b1f4a2c90';
 const STATUS = 'a7c10002-3f8e-4b5a-9d2c-6e0b1f4a2c90';
 const CMD = 'a7c10003-3f8e-4b5a-9d2c-6e0b1f4a2c90';
+const CERTS = 'a7c10004-3f8e-4b5a-9d2c-6e0b1f4a2c90';
 const $ = (id) => document.getElementById(id);
 
 // ---- texts: English (default) and Polish ----------------------------------------
@@ -291,6 +326,18 @@ const TEXT = {
     hSeen: 'Sensors in range', seenInit: 'Connect to the bridge to see sensors in range.',
     hPair: 'New sensor', codeLabel: 'Applicator code', pairBtn: 'Pair',
     pairHint: 'For 30 minutes the bridge checks the sensors in range and picks the one the code fits. First stop data collection on any other phone that connects to the new sensor.',
+    hCerts: 'App certificates', certsState: 'State',
+    certsNone: 'not loaded — a new G7 cannot be paired', certsStored: 'loaded', certsBuiltin: 'built into this firmware',
+    certsOld: 'this firmware cannot load certificates (update it)',
+    certsLoad: 'Load certificates',
+    certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ gets from the “Auto configure” QR code in its G7 setup guide. Paste the decoded QR text (starts with xdp2:), or pick an xDrip+ settings export (…_preferences.xml). Everything is unpacked in this browser and sent only to your bridge.',
+    certsFile: 'Settings file', certsSend: 'Send to bridge', certsQr: 'QR photo / image',
+    certsQrRead: 'QR code read — tap “Send to bridge”.', certsQrNone: 'No QR code found in this image.',
+    camStart: 'Scan with camera', camStop: 'Stop camera',
+    camHint: 'Hold the phone so the QR code fills most of the picture and is sharp; it is read automatically.',
+    camFail: 'Camera not available: ',
+    certsBad: (m) => 'Not recognised: ' + m, certsSending: (n) => 'Sending… ' + n + ' %',
+    certsMissing: 'keks_p1, keks_p2 and keks_p3 not found', certsShort: 'certificate too short',
     stOk: 'OK', stCal: 'needs calibration', stWarm: 'warming up', stEnd: 'session ended', stNoise: 'signal noise', stFail: 'sensor failure',
     trendUnknown: 'trend unknown', notForwarded: 'not sent to xDrip',
     noReading: 'no reading since the bridge was switched on', waitSensor: 'waiting for the sensor',
@@ -353,6 +400,18 @@ const TEXT = {
     hSeen: 'Sensory w zasięgu', seenInit: 'Połącz z bridge’em, żeby zobaczyć sensory w zasięgu.',
     hPair: 'Nowy sensor', codeLabel: 'Kod z aplikatora', pairBtn: 'Paruj',
     pairHint: 'Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.',
+    hCerts: 'Certyfikaty aplikacji', certsState: 'Stan',
+    certsNone: 'nie wczytane — nowego G7 nie da się sparować', certsStored: 'wczytane', certsBuiltin: 'wbudowane w ten firmware',
+    certsOld: 'ten firmware nie obsługuje wczytywania (zaktualizuj go)',
+    certsLoad: 'Wczytaj certyfikaty',
+    certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ dostaje z kodu QR „Auto configure” w swoim przewodniku konfiguracji G7. Wklej odczytany tekst kodu QR (zaczyna się od xdp2:) albo wybierz plik eksportu ustawień xDrip+ (…_preferences.xml). Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
+    certsFile: 'Plik ustawień', certsSend: 'Wyślij do bridge’a', certsQr: 'Zdjęcie / obraz QR',
+    certsQrRead: 'Kod QR odczytany — naciśnij „Wyślij do bridge’a”.', certsQrNone: 'Nie znaleziono kodu QR na tym obrazie.',
+    camStart: 'Skanuj aparatem', camStop: 'Zatrzymaj aparat',
+    camHint: 'Trzymaj telefon tak, żeby kod QR zajmował większość obrazu i był ostry — odczyt nastąpi sam.',
+    camFail: 'Aparat niedostępny: ',
+    certsBad: (m) => 'Nie rozpoznano: ' + m, certsSending: (n) => 'Wysyłam… ' + n + ' %',
+    certsMissing: 'nie znaleziono keks_p1, keks_p2 i keks_p3', certsShort: 'za krótki certyfikat',
     stOk: 'OK', stCal: 'wymaga kalibracji', stWarm: 'rozgrzewanie', stEnd: 'koniec sesji', stNoise: 'zakłócenia', stFail: 'awaria sensora',
     trendUnknown: 'trend nieznany', notForwarded: 'nie przekazywany do xDrip',
     noReading: 'brak odczytu od włączenia bridge’a', waitSensor: 'czekam na sensor',
@@ -404,6 +463,7 @@ function applyLang() {
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
   $('rangeBtn').textContent = t(rangeTest ? 'rangeStop' : 'rangeBtn');
+  $('camBtn').textContent = t(camStream ? 'camStop' : 'camStart');
   $('rangeHint').textContent = t(rangeTest ? 'rangeHintOn' : 'rangeHint');
   if (lastStatus) render(lastStatus);
 }
@@ -415,7 +475,189 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 }));
 
 // ---- status ----------------------------------------------------------------------
-let device = null, statusChr = null, cmdChr = null, timer = null, busy = false, lastStatus = null;
+let device = null, statusChr = null, cmdChr = null, certsChr = null, timer = null, busy = false, lastStatus = null;
+
+// ---- app certificates (xDrip+'s keks_p1..p3) --------------------------------------
+const hexToBytes = (h) => {
+  const s = h.replace(/[^0-9a-f]/gi, ''); // like xDrip's tolerantHexStringToByteArray
+  return Uint8Array.from(s.match(/../g) || [], (b) => parseInt(b, 16));
+};
+
+// xDrip+ QRcodeUtils "xdp2:" format: base64 -> gzip -> u16 count, then
+// (u16 key length, key, u16 value length, value) big-endian; "b__" keys hold raw bytes.
+async function decodeXdp2(text) {
+  const b64 = text.replace(/^xdp2:/, '').replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
+  const raw = Uint8Array.from(atob(b64 + '='.repeat((4 - b64.length % 4) % 4)), (c) => c.charCodeAt(0));
+  const gz = new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip'));
+  const buf = new Uint8Array(await new Response(gz).arrayBuffer());
+  const dv = new DataView(buf.buffer);
+  const out = {};
+  let off = 2;
+  for (let i = 0, n = dv.getUint16(0); i < n; i++) {
+    const kl = dv.getUint16(off); off += 2;
+    const key = new TextDecoder().decode(buf.subarray(off, off + kl)).replace(/^b__/, ''); off += kl;
+    const vl = dv.getUint16(off); off += 2;
+    out[key] = buf.slice(off, off + vl); off += vl;
+  }
+  return out;
+}
+
+async function parseCerts(text) {
+  text = text.trim();
+  let parts = {};
+  if (text.startsWith('xdp2:')) {
+    parts = await decodeXdp2(text);
+  } else if (text.startsWith('<')) {
+    const doc = new DOMParser().parseFromString(text, 'text/xml');
+    for (const el of doc.querySelectorAll('string')) {
+      if (/^keks_p[123]$/.test(el.getAttribute('name'))) parts[el.getAttribute('name')] = hexToBytes(el.textContent);
+    }
+  } else {
+    for (const m of text.matchAll(/(keks_p[123])\s*[=:]\s*([0-9A-Fa-f\s:]+)/g)) parts[m[1]] = hexToBytes(m[2]);
+  }
+  const [a, b, k] = ['keks_p1', 'keks_p2', 'keks_p3'].map((n) => parts[n]);
+  if (!a || !b || !k || !k.length) throw new Error(t('certsMissing'));
+  if (a.length <= 100 || b.length <= 100) throw new Error(t('certsShort'));
+  return [a, b, k];
+}
+
+async function sendCerts() {
+  const msg = $('certsMsg');
+  let parts;
+  try {
+    parts = await parseCerts($('certsText').value);
+  } catch (e) {
+    msg.textContent = t('certsBad', e.message);
+    return;
+  }
+  $('certsBtn').disabled = true;
+  try {
+    const total = parts.reduce((n, p) => n + p.length, 0);
+    let sent = 0;
+    for (let i = 0; i < parts.length; i++) {
+      // <part 1..3> <offset u16 LE> <up to 16 bytes>: fits the default 20-byte write
+      for (let off = 0; off < parts[i].length; off += 16) {
+        const chunk = parts[i].subarray(off, off + 16);
+        const pkt = new Uint8Array(3 + chunk.length);
+        pkt.set([i + 1, off & 0xff, off >> 8]);
+        pkt.set(chunk, 3);
+        await certsChr.writeValueWithResponse(pkt);
+        sent += chunk.length;
+        msg.textContent = t('certsSending', Math.round(100 * sent / total));
+      }
+    }
+    await send('certs_commit');
+    msg.textContent = '';
+    $('certsText').value = '';
+  } catch (e) {
+    msg.textContent = t('sendFail') + e.message;
+  } finally {
+    $('certsBtn').disabled = !certsChr;
+  }
+}
+
+// QR codes: Chrome's BarcodeDetector where it exists, else jsQR from a CDN.
+const detector = 'BarcodeDetector' in window ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+
+async function loadJsQr() {
+  if (window.jsQR) return;
+  await new Promise((ok, fail) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+    s.onload = ok; s.onerror = fail;
+    document.head.append(s);
+  });
+}
+
+// One attempt on an image/video source, drawn at most `max` pixels wide.
+async function decodeQr(src, w, h, max) {
+  if (detector) {
+    try {
+      const codes = await detector.detect(src);
+      if (codes.length) return codes[0].rawValue;
+    } catch (e) { /* try jsQR */ }
+  }
+  await loadJsQr();
+  const k = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas');
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(src, 0, 0, c.width, c.height);
+  const res = jsQR(ctx.getImageData(0, 0, c.width, c.height).data, c.width, c.height);
+  return res ? res.data : null;
+}
+
+// Photos from the phone camera are huge; a dense QR reads best around 1000 px.
+async function readQr(file) {
+  const bmp = await createImageBitmap(file);
+  for (const max of [1200, 800, 1600, 2400]) {
+    const text = await decodeQr(bmp, bmp.width, bmp.height, max);
+    if (text) return text;
+  }
+  return null;
+}
+
+// Live scanning with the rear camera.
+let camStream = null;
+
+function stopCam() {
+  if (camStream) camStream.getTracks().forEach((tr) => tr.stop());
+  camStream = null;
+  $('camBox').hidden = true;
+  $('camBtn').textContent = t('camStart');
+}
+
+async function startCam() {
+  const video = $('camVideo');
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false,
+    });
+  } catch (e) {
+    $('certsMsg').textContent = t('camFail') + e.message;
+    return;
+  }
+  video.srcObject = camStream;
+  await video.play();
+  $('camBox').hidden = false;
+  $('camBtn').textContent = t('camStop');
+  $('certsMsg').textContent = '';
+  while (camStream) {
+    if (video.readyState >= 2) {
+      const text = await decodeQr(video, video.videoWidth, video.videoHeight, 1000).catch(() => null);
+      if (text && camStream) {
+        stopCam();
+        $('certsText').value = text;
+        $('certsMsg').textContent = t('certsQrRead');
+        return;
+      }
+    }
+    await new Promise((r) => setTimeout(r, 200));
+  }
+}
+
+$('camBtn').addEventListener('click', () => (camStream ? stopCam() : startCam()));
+
+$('certsQr').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const text = await readQr(f);
+    if (text) $('certsText').value = text;
+    $('certsMsg').textContent = t(text ? 'certsQrRead' : 'certsQrNone');
+  } catch (err) {
+    $('certsMsg').textContent = t('certsQrNone');
+  }
+});
+
+$('certsBtn').addEventListener('click', sendCerts);
+$('certsFile').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (f) $('certsText').value = await f.text();
+  e.target.value = '';
+});
 
 // G7 algorithm states (xDrip+ CalibrationState names)
 function stateInfo(s) {
@@ -527,6 +769,16 @@ function render(st) {
   }
   if (rangeTest && rangeMin !== null) $('pMin').innerHTML = rssiText(rangeMin);
 
+  const cs = $('certsState');
+  if (!certsChr || !st.certs) {
+    cs.innerHTML = '<span class="pill warn">' + t('certsOld') + '</span>';
+  } else if (st.certs === 'none') {
+    cs.innerHTML = '<span class="pill bad">' + t('certsNone') + '</span>';
+    $('certsBox').open = true;
+  } else {
+    cs.innerHTML = '<span class="pill good">' + t(st.certs === 'stored' ? 'certsStored' : 'certsBuiltin') + '</span>';
+  }
+
   if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
 }
 
@@ -576,6 +828,7 @@ function setConnected(on) {
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
   for (const id of ['refreshBtn', 'unpairBtn', 'rangeBtn']) $(id).disabled = !on;
+  $('certsBtn').disabled = !(on && certsChr);
   validateCode();
   if (timer) clearInterval(timer);
   timer = on ? setInterval(readStatus, rangeTest ? 1000 : 5000) : null;
@@ -596,7 +849,7 @@ function scheduleReconnect() {
 }
 
 function onDisconnected() {
-  statusChr = cmdChr = null;
+  statusChr = cmdChr = certsChr = null;
   setConnected(false);
   $('msg').textContent = t(wantConnected ? 'discRetry' : 'disc');
   scheduleReconnect();
@@ -649,6 +902,7 @@ async function openGatt() {
     const svc = await server.getPrimaryService(SVC);
     statusChr = await svc.getCharacteristic(STATUS);
     cmdChr = await svc.getCharacteristic(CMD);
+    certsChr = await svc.getCharacteristic(CERTS).catch(() => null); // older firmware: none
     setConnected(true);
     $('msg').textContent = t('connected');
     await readStatus();

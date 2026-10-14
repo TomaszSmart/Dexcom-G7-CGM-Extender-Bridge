@@ -8,19 +8,17 @@ Built with the nRF Connect SDK (Zephyr).
 
 > Hobby project, not a medical device. Make treatment decisions based on approved devices.
 
-## Boards
+## Hardware
 
-| Board | Build target | Notes |
-|---|---|---|
-| RAK4631 on RAK19007 / RAK19003 (recommended) | `rak4631/nrf52840` | external BLE antenna, battery level, ~50 m+ range to the phone |
-| Seeed XIAO nRF52840 (Sense) | `xiao_ble` | very short range (on-board antenna) |
-| Nordic nRF52840 Dongle | `nrf52840dongle/nrf52840` | for testing |
+RAKwireless **RAK4631** WisBlock core on a **RAK19007** or **RAK19003** base board, with the BLE
+antenna on the module's BLE u.FL connector (the LoRa antenna is not needed). A 3.7 V Li-Po
+battery with a JST-PH 2.0 mm plug — check the polarity against the “+” on the board, there is no
+reverse-polarity protection. Build target: `rak4631/nrf52840`.
 
 ## Install
 
-1. Download the `.uf2` file for your board from **Releases**.
-2. Put the board into its bootloader: RAK4631 — press RESET twice quickly (a `RAK4631` drive appears);
-   XIAO — press RESET once (`XIAO-SENSE` drive).
+1. Download `g7-bridge-rak4631-<version>.uf2` from **Releases**.
+2. Press RESET twice quickly: a `RAK4631` drive appears.
 3. Copy the `.uf2` file onto that drive. The board flashes itself and restarts.
 
 Updates are installed the same way. The pairing code, the sensor, its keys and the app certificates

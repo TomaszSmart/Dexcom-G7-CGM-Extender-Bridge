@@ -1,5 +1,5 @@
-# Builds the G7 Bridge firmware. A pushed tag v* also publishes a GitHub Release
-# with one .uf2 per board. The app certificates are never part of these images.
+# Builds the G7 Bridge firmware for the RAK4631. A pushed tag v* also publishes a GitHub Release
+# with the .uf2. The app certificates are never part of these images.
 name: Firmware
 
 on:
@@ -27,8 +27,6 @@ jobs:
         include:
           - board: rak4631/nrf52840
             name: rak4631
-          - board: xiao_ble
-            name: xiao-nrf52840
     steps:
       - uses: actions/checkout@v4
         with:

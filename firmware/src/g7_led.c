@@ -1,17 +1,17 @@
 /*
- * Status on the XIAO's RGB LED, so the bridge can be checked without a phone.
- * Steady states are one short flash every few seconds (it sits by a bed at night):
+ * Status on the RAK19007/19003 green and blue LEDs, so the bridge can be checked
+ * without a phone. Steady states are short flashes every few seconds:
  *
- *   green  flash /5 s   sensor OK, fresh reading, xDrip+ connected
- *   yellow flash /5 s   sensor OK but no phone connected, or sensor warming up
- *   blue   blink 1 Hz   searching for the sensor a new pairing code belongs to
- *   blue   flash /5 s   not set up (no pairing code / sensor)
- *   cyan   flash /2 s   after power-on, waiting for the first reading (15 min)
- *   red    flash /5 s   no reading for 15 min, or the sensor failed / its session ended
- *   red, green, blue    once at boot (LED self-test)
+ *   green 1x /5 s           sensor OK, fresh reading, xDrip+ connected
+ *   green 2x /5 s           sensor OK but no phone connected, or sensor warming up
+ *   green+blue 3x /5 s      no reading for 15 min, or the sensor failed / its session ended
+ *   green+blue 1x /2 s      after power-on, waiting for the first reading (15 min)
+ *   blue blink 1 Hz         searching for the sensor a new pairing code belongs to
+ *   blue 1x /5 s            not set up (no pairing code / sensor)
+ *   green, blue             once at boot (LED self-test)
  *
- * Boards with only green and blue (RAK4631) count flashes instead:
- *   yellow -> 2 green flashes, red -> 3 flashes of green+blue, cyan -> green+blue.
+ * Internally the states are named by RGB colour (yellow, red, cyan); without a red
+ * LED they become the flash counts above (for_board()).
  */
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>

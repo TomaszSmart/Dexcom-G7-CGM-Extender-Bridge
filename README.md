@@ -59,7 +59,7 @@ Chrome flag, so it may change in future versions.
 
 ## Firmware
 
-The bridge firmware (nRF52840: RAK4631, XIAO, nRF52840 Dongle) is in [firmware/](firmware/README.md):
+The bridge firmware (RAKwireless RAK4631 WisBlock) is in [firmware/](firmware/README.md):
 boards, installation, first setup and building from source. The app certificates a new G7 asks for
 are not part of it; you load them into your own bridge from the page.
 

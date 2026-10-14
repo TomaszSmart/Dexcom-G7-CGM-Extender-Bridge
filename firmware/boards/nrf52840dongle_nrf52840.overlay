@@ -1,8 +1,0 @@
-/* Status LED colours for src/g7_led.c: the Dongle's RGB LED (LD2); LD1 stays off. */
-/ {
-	aliases {
-		status-red = &led1_red;
-		status-green = &led1_green;
-		status-blue = &led1_blue;
-	};
-};
