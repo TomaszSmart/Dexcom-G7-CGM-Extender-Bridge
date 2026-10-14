@@ -31,7 +31,7 @@ sensora.
 3. **Strona** — otwórz https://g7bridge.b-hubit.com w Chrome, naciśnij **Połącz z bridge'em**,
    wybierz „G7 Bridge” i zatwierdź parowanie.
 4. **Certyfikaty aplikacji** — w panelu „Certyfikaty aplikacji” naciśnij **Z dokumentacji xDrip+**,
-   a potem **Wyślij do bridge'a** (raz na bridge; przetrwają aktualizacje).
+   a potem **Wyślij do bridge'a** (jednorazowa procedura).
 5. **xDrip+** — Ustawienia → **Hardware Data Source** → **SmartGuide**, wybierz „G7 Bridge”
    i zatwierdź parowanie. Po parowaniu bridge raz rozłączy telefon; xDrip+ połączy się sam.
    AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
