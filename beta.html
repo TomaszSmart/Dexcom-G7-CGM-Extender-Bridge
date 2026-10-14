@@ -250,6 +250,9 @@ textarea#certsText {
       <p class="sub" data-i18n="certsHint"></p>
       <textarea id="certsText" rows="4" spellcheck="false" autocomplete="off"></textarea>
       <div class="confirm">
+        <label class="filebtn"><span data-i18n="certsQr"></span>
+          <input type="file" id="certsQr" accept="image/*" hidden>
+        </label>
         <label class="filebtn"><span data-i18n="certsFile"></span>
           <input type="file" id="certsFile" accept=".xml,.txt,text/*" hidden>
         </label>
@@ -320,7 +323,8 @@ const TEXT = {
     certsOld: 'this firmware cannot load certificates (update it)',
     certsLoad: 'Load certificates',
     certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ gets from the “Auto configure” QR code in its G7 setup guide. Paste the decoded QR text (starts with xdp2:), or pick an xDrip+ settings export (…_preferences.xml). Everything is unpacked in this browser and sent only to your bridge.',
-    certsFile: 'Choose file', certsSend: 'Send to bridge',
+    certsFile: 'Settings file', certsSend: 'Send to bridge', certsQr: 'QR photo / image',
+    certsQrRead: 'QR code read — tap “Send to bridge”.', certsQrNone: 'No QR code found in this image.',
     certsBad: (m) => 'Not recognised: ' + m, certsSending: (n) => 'Sending… ' + n + ' %',
     certsMissing: 'keks_p1, keks_p2 and keks_p3 not found', certsShort: 'certificate too short',
     stOk: 'OK', stCal: 'needs calibration', stWarm: 'warming up', stEnd: 'session ended', stNoise: 'signal noise', stFail: 'sensor failure',
@@ -390,7 +394,8 @@ const TEXT = {
     certsOld: 'ten firmware nie obsługuje wczytywania (zaktualizuj go)',
     certsLoad: 'Wczytaj certyfikaty',
     certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ dostaje z kodu QR „Auto configure” w swoim przewodniku konfiguracji G7. Wklej odczytany tekst kodu QR (zaczyna się od xdp2:) albo wybierz plik eksportu ustawień xDrip+ (…_preferences.xml). Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
-    certsFile: 'Wybierz plik', certsSend: 'Wyślij do bridge’a',
+    certsFile: 'Plik ustawień', certsSend: 'Wyślij do bridge’a', certsQr: 'Zdjęcie / obraz QR',
+    certsQrRead: 'Kod QR odczytany — naciśnij „Wyślij do bridge’a”.', certsQrNone: 'Nie znaleziono kodu QR na tym obrazie.',
     certsBad: (m) => 'Nie rozpoznano: ' + m, certsSending: (n) => 'Wysyłam… ' + n + ' %',
     certsMissing: 'nie znaleziono keks_p1, keks_p2 i keks_p3', certsShort: 'za krótki certyfikat',
     stOk: 'OK', stCal: 'wymaga kalibracji', stWarm: 'rozgrzewanie', stEnd: 'koniec sesji', stNoise: 'zakłócenia', stFail: 'awaria sensora',
@@ -535,6 +540,44 @@ async function sendCerts() {
     $('certsBtn').disabled = !certsChr;
   }
 }
+
+// QR from a photo or screenshot: Chrome's BarcodeDetector, else jsQR from a CDN.
+async function readQr(file) {
+  const bmp = await createImageBitmap(file);
+  if ('BarcodeDetector' in window) {
+    try {
+      const codes = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bmp);
+      if (codes.length) return codes[0].rawValue;
+    } catch (e) { /* fall through to jsQR */ }
+  }
+  if (!window.jsQR) {
+    await new Promise((ok, fail) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+      s.onload = ok; s.onerror = fail;
+      document.head.append(s);
+    });
+  }
+  const c = document.createElement('canvas');
+  c.width = bmp.width; c.height = bmp.height;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(bmp, 0, 0);
+  const res = jsQR(ctx.getImageData(0, 0, c.width, c.height).data, c.width, c.height);
+  return res ? res.data : null;
+}
+
+$('certsQr').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const text = await readQr(f);
+    if (text) $('certsText').value = text;
+    $('certsMsg').textContent = t(text ? 'certsQrRead' : 'certsQrNone');
+  } catch (err) {
+    $('certsMsg').textContent = t('certsQrNone');
+  }
+});
 
 $('certsBtn').addEventListener('click', sendCerts);
 $('certsFile').addEventListener('change', async (e) => {
