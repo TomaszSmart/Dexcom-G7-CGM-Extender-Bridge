@@ -1,0 +1,91 @@
+/*
+ * RAK4631 (WisBlock core) on a RAK19007 base, flashed as UF2 through the Adafruit nRF52
+ * bootloader it ships with (SoftDevice S140 6.1.1 below the app, bootloader at the top).
+ * Logs and the shell go to the base board's USB port, not the header UART.
+ * The BLE antenna must be on the module's BLE u.FL connector, not the LoRa one.
+ */
+#include <zephyr/dt-bindings/adc/nrf-saadc.h>
+
+/ {
+	/* Battery for src/g7_battery.c: VBAT -> 1 M / 1.5 M divider -> P0.05 (AIN3). */
+	zephyr,user {
+		io-channels = <&adc 3>;
+		battery-divider-x1000 = <1667>;
+	};
+
+	chosen {
+		zephyr,console = &cdc_acm_uart;
+		zephyr,shell-uart = &cdc_acm_uart;
+		zephyr,code-partition = &code_partition;
+	};
+
+	/* Status LED for src/g7_led.c: the base board has only green and blue, no red. */
+	aliases {
+		status-green = &green_led;
+		status-blue = &blue_led;
+	};
+};
+
+&adc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@3 {
+		reg = <3>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		/* 600 k source impedance: needs the long acquisition time. */
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
+		zephyr,input-positive = <NRF_SAADC_AIN3>;
+		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
+	};
+};
+
+/* Zephyr's board file has them active-low; on the RAK19007 base they light on a high pin. */
+&green_led {
+	gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+};
+
+&blue_led {
+	gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+};
+
+&flash0 {
+	/delete-node/ partitions;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		sd_partition: partition@0 {
+			label = "softdevice";
+			reg = <0x00000000 0x00026000>;
+		};
+
+		code_partition: partition@26000 {
+			label = "code_partition";
+			reg = <0x00026000 0x000c6000>;
+		};
+
+		storage_partition: partition@ec000 {
+			label = "storage";
+			reg = <0x000ec000 0x00008000>;
+		};
+
+		boot_partition: partition@f4000 {
+			label = "adafruit_boot";
+			reg = <0x000f4000 0x0000c000>;
+		};
+	};
+};
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+
+	cdc_acm_uart: cdc-acm-uart {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};

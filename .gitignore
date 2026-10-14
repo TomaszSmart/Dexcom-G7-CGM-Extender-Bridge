@@ -1,0 +1,7 @@
+# Signing key + app certificates extracted from the xDrip+ QR -- never commit
+firmware/src/g7_certs.h
+# Build output (images may embed the key above)
+build*/
+*.uf2
+*.hex
+__pycache__/

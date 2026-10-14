@@ -57,6 +57,16 @@ Chrome flag, so it may change in future versions.
 | blue 1× every 5 s | no pairing code or sensor set |
 | red steady | battery charging LED (not controlled by the bridge) |
 
+## Firmware
+
+The bridge firmware (nRF52840: RAK4631, XIAO, nRF52840 Dongle) is in [firmware/](firmware/README.md):
+boards, installation, first setup and building from source. The app certificates a new G7 asks for
+are not part of it; you load them into your own bridge from the page.
+
+## License
+
+GPL-3.0 (see [LICENSE](LICENSE)). The G7 authentication follows xDrip+ (libkeks), which is GPL-3.0.
+
 ## Privacy
 
 The page runs entirely in the browser and does not send any data anywhere.

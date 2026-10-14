@@ -56,6 +56,16 @@ eksperymentalna Chrome, więc w przyszłych wersjach może się zmienić.
 | niebieska 1× co 5 s | nie ustawiono kodu ani sensora |
 | czerwona świeci | dioda ładowania baterii (nie zależy od bridge'a) |
 
+## Firmware
+
+Firmware bridge'a (nRF52840: RAK4631, XIAO, nRF52840 Dongle) jest w [firmware/](firmware/README.pl.md):
+płytki, instalacja, pierwsza konfiguracja i kompilacja ze źródeł. Certyfikatów aplikacji, o które
+prosi nowy G7, w nim nie ma — wczytujesz je do swojego bridge'a ze strony.
+
+## Licencja
+
+GPL-3.0 (zob. [LICENSE](LICENSE)). Uwierzytelnianie G7 jest wzorowane na xDrip+ (libkeks), które ma licencję GPL-3.0.
+
 ## Prywatność
 
 Strona działa w całości w przeglądarce i nie wysyła nigdzie żadnych danych.
