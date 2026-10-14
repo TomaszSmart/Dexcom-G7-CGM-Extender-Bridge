@@ -24,7 +24,8 @@ sensora.
 
 1. **Firmware** — pobierz `g7-bridge-rak4631-<wersja>.uf2` z
    [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), naciśnij
-   dwa razy RESET na płytce i skopiuj plik na dysk `RAK4631`.
+   dwa razy RESET na płytce i skopiuj plik na dysk `RAK4631` (błąd kopiowania zgłoszony przez
+   Windows na końcu jest normalny — płytka restartuje się, gdy tylko dostanie plik).
 2. **Włącz zasilanie bridge'a.** Kroki 3–5 trzeba zrobić w ciągu **10 minut** (tylko wtedy telefon
    może się sparować; potem naciśnij raz RESET i kontynuuj).
 3. **Strona** — otwórz https://g7bridge.b-hubit.com w Chrome, naciśnij **Połącz z bridge'em**,

@@ -24,7 +24,8 @@ sensor applicator.
 
 1. **Firmware** — download `g7-bridge-rak4631-<version>.uf2` from
    [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases/latest), press
-   RESET twice on the board and copy the file onto the `RAK4631` drive.
+   RESET twice on the board and copy the file onto the `RAK4631` drive (a copy error from Windows
+   at the end is normal — the board restarts as soon as it has the file).
 2. **Power the bridge up.** The next steps 3–5 must happen within **10 minutes** (phones can only
    pair in that window; afterwards press RESET once and continue).
 3. **Page** — open https://g7bridge.b-hubit.com in Chrome, tap **Connect to bridge**, choose

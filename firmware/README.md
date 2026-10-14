@@ -19,7 +19,9 @@ reverse-polarity protection. Build target: `rak4631/nrf52840`.
 
 1. Download `g7-bridge-rak4631-<version>.uf2` from **Releases**.
 2. Press RESET twice quickly: a `RAK4631` drive appears.
-3. Copy the `.uf2` file onto that drive. The board flashes itself and restarts.
+3. Copy the `.uf2` file onto that drive. The board flashes itself and restarts. Windows often
+   reports a copy error (“device not ready”) because the drive disappears as soon as the last block
+   arrives — that is normal; the setup page shows the new version afterwards.
 
 Updates are installed the same way. The pairing code, the sensor, its keys and the app certificates
 are kept in a separate part of the flash and survive updates.

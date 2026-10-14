@@ -20,7 +20,9 @@ podłączeniem. Cel kompilacji: `rak4631/nrf52840`.
 
 1. Pobierz `g7-bridge-rak4631-<wersja>.uf2` z zakładki **Releases**.
 2. Naciśnij szybko dwa razy RESET: pojawi się dysk `RAK4631`.
-3. Skopiuj plik `.uf2` na ten dysk. Płytka sama się zaprogramuje i uruchomi ponownie.
+3. Skopiuj plik `.uf2` na ten dysk. Płytka sama się zaprogramuje i uruchomi ponownie. Windows
+   często zgłasza błąd kopiowania („urządzenie nie jest gotowe”), bo dysk znika zaraz po odebraniu
+   ostatniej części pliku — to normalne; strona pokaże potem nową wersję.
 
 Aktualizacje instaluje się tak samo. Kod parowania, sensor, jego klucze i certyfikaty aplikacji są
 w osobnej części pamięci i przetrwają aktualizację.
