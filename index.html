@@ -106,13 +106,7 @@ ul.seen li:first-child { border-top: 0; }
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
-textarea#certsText {
-  width: 100%; margin-top: 8px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line);
-  background: var(--bg); color: var(--ink); font: 400 0.8rem/1.35 var(--font-mono); resize: vertical;
-}
 #camVideo { width: 100%; max-height: 60vh; margin-top: 10px; border-radius: 9px; background: #000; object-fit: cover; }
-.filebtn { display: inline-block; cursor: pointer; padding: 10px 16px; border-radius: 9px;
-  border: 1px solid var(--accent); color: var(--accent); font: 600 0.95rem var(--font-body); }
 @media (prefers-reduced-motion: no-preference) { .bar > span { transition: width 0.4s ease; } }
 </style>
 </head>
@@ -268,14 +262,8 @@ textarea#certsText {
         <video id="camVideo" playsinline muted></video>
         <p class="sub" data-i18n="camHint"></p>
       </div>
-      <textarea id="certsText" rows="4" spellcheck="false" autocomplete="off"></textarea>
+      <textarea id="certsText" hidden></textarea>
       <div class="confirm">
-        <label class="filebtn"><span data-i18n="certsQr"></span>
-          <input type="file" id="certsQr" accept="image/*" hidden>
-        </label>
-        <label class="filebtn"><span data-i18n="certsFile"></span>
-          <input type="file" id="certsFile" accept=".xml,.txt,text/*" hidden>
-        </label>
         <button type="button" id="certsBtn" disabled data-i18n="certsSend"></button>
       </div>
       <p class="sub" id="certsMsg" role="status"></p>
@@ -352,8 +340,8 @@ const TEXT = {
     certsNone: 'not loaded — a new G7 cannot be paired', certsStored: 'loaded', certsBuiltin: 'built into this firmware',
     certsOld: 'this firmware cannot load certificates (update it)',
     certsLoad: 'Load certificates',
-    certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera, pick a screenshot of it, paste its text (starts with xdp2:) or pick an xDrip+ settings export (…_preferences.xml). Everything is unpacked in this browser and sent only to your bridge.',
-    certsFile: 'Settings file', certsSend: 'Send to bridge', certsQr: 'QR photo / image',
+    certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera. Everything is unpacked in this browser and sent only to your bridge.',
+    certsSend: 'Send to bridge',
     certsQrRead: 'QR code read — tap “Send to bridge”.', certsQrNone: 'No QR code found in this image.',
     camStart: 'Scan with camera', camStop: 'Stop camera',
     camHint: 'Hold the phone so the QR code fills most of the picture and is sharp; it is read automatically.',
@@ -436,8 +424,8 @@ const TEXT = {
     certsNone: 'nie wczytane — nowego G7 nie da się sparować', certsStored: 'wczytane', certsBuiltin: 'wbudowane w ten firmware',
     certsOld: 'ten firmware nie obsługuje wczytywania (zaktualizuj go)',
     certsLoad: 'Wczytaj certyfikaty',
-    certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem, wybrać jego zrzut ekranu, wkleić tekst (zaczyna się od xdp2:) albo wybrać plik eksportu ustawień xDrip+ (…_preferences.xml). Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
-    certsFile: 'Plik ustawień', certsSend: 'Wyślij do bridge’a', certsQr: 'Zdjęcie / obraz QR',
+    certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem. Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
+    certsSend: 'Wyślij do bridge’a',
     certsQrRead: 'Kod QR odczytany — naciśnij „Wyślij do bridge’a”.', certsQrNone: 'Nie znaleziono kodu QR na tym obrazie.',
     camStart: 'Skanuj aparatem', camStop: 'Zatrzymaj aparat',
     camHint: 'Trzymaj telefon tak, żeby kod QR zajmował większość obrazu i był ostry — odczyt nastąpi sam.',
@@ -620,7 +608,7 @@ async function decodeQr(src, w, h, max) {
   return res ? res.data : null;
 }
 
-// Photos from the phone camera are huge; a dense QR reads best around 1000 px.
+// The QR image from the xDrip+ documentation; a dense QR reads best around 1000 px.
 async function readQr(file) {
   const bmp = await createImageBitmap(file);
   for (const max of [1200, 800, 1600, 2400]) {
@@ -732,25 +720,7 @@ function renderVersion() {
   el.innerHTML = html;
 }
 
-$('certsQr').addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  e.target.value = '';
-  if (!f) return;
-  try {
-    const text = await readQr(f);
-    if (text) $('certsText').value = text;
-    $('certsMsg').textContent = t(text ? 'certsQrRead' : 'certsQrNone');
-  } catch (err) {
-    $('certsMsg').textContent = t('certsQrNone');
-  }
-});
-
 $('certsBtn').addEventListener('click', sendCerts);
-$('certsFile').addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  if (f) $('certsText').value = await f.text();
-  e.target.value = '';
-});
 
 // G7 algorithm states (xDrip+ CalibrationState names)
 function stateInfo(s) {
