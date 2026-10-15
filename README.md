@@ -28,8 +28,9 @@ sensor applicator.
    at the end is normal — the board restarts as soon as it has the file).
 2. **Power the bridge up.** The next steps 3–5 must happen within **10 minutes** (phones can only
    pair in that window; afterwards press RESET once and continue).
-3. **Page** — open https://g7bridge.b-hubit.com in Chrome, tap **Connect to bridge**, choose
-   “G7 Bridge” and accept the pairing request.
+3. **Page or app** — open https://g7bridge.b-hubit.com in Chrome and tap **Connect to bridge**,
+   or install the [Android app](android/README.md) and tap **Connect**; choose “G7 Bridge” and
+   accept the pairing request.
 4. **App certificates** — in “App certificates” tap **From the xDrip+ documentation**, then
    **Send to bridge** (once per bridge; they survive updates).
 5. **xDrip+** — Settings → **Hardware Data Source** → **SmartGuide**, choose “G7 Bridge” and accept
@@ -83,11 +84,26 @@ Chrome flag, so it may change in future versions.
 | blue 1× every 5 s | no pairing code or sensor set |
 | red steady | battery charging LED (not controlled by the bridge) |
 
+## The Android app
+
+The [G7 Bridge app](android/README.md) does what the page does, without Chrome, and watches the
+bridge in the background: it warns when the bridge's battery runs low and explains why no data
+arrives (bridge out of reach, sensor not heard, xDrip+ not collecting, sensor ended). Glucose
+alarms stay in xDrip+. Download the APK from the newest **app-v…** release.
+
 ## Firmware
 
 The bridge firmware (RAKwireless RAK4631 WisBlock) is in [firmware/](firmware/README.md):
 boards, installation, first setup and building from source. The app certificates a new G7 asks for
 are not part of it; you load them into your own bridge from the page.
+
+## Repository
+
+| Folder | What | Releases |
+|---|---|---|
+| [firmware/](firmware/README.md) | bridge firmware (RAK4631) | tags `v…` → `.uf2` |
+| [web/](web/index.html) | setup page, published on https://g7bridge.b-hubit.com | — |
+| [android/](android/README.md) | Android app | tags `app-v…` → `.apk` |
 
 ## License
 
@@ -95,6 +111,8 @@ GPL-3.0 (see [LICENSE](LICENSE)). The G7 authentication follows xDrip+ (libkeks)
 
 ## Privacy
 
-The page runs entirely in the browser and does not send any data anywhere.
+The page runs entirely in the browser and the app entirely on the phone; neither sends any data
+anywhere. They only ask GitHub for the latest firmware version and load the certificates QR code
+from the xDrip+ documentation.
 
 > Hobby project, not a medical device. Make treatment decisions based on approved devices.

@@ -28,8 +28,9 @@ sensora.
    Windows na końcu jest normalny — płytka restartuje się, gdy tylko dostanie plik).
 2. **Włącz zasilanie bridge'a.** Kroki 3–5 trzeba zrobić w ciągu **10 minut** (tylko wtedy telefon
    może się sparować; potem naciśnij raz RESET i kontynuuj).
-3. **Strona** — otwórz https://g7bridge.b-hubit.com w Chrome, naciśnij **Połącz z bridge'em**,
-   wybierz „G7 Bridge” i zatwierdź parowanie.
+3. **Strona lub aplikacja** — otwórz https://g7bridge.b-hubit.com w Chrome i naciśnij
+   **Połącz z bridge'em** albo zainstaluj [aplikację na Androida](android/README.pl.md) i naciśnij
+   **Połącz**; wybierz „G7 Bridge” i zatwierdź parowanie.
 4. **Certyfikaty aplikacji** — w panelu „Certyfikaty aplikacji” naciśnij **Z dokumentacji xDrip+**,
    a potem **Wyślij do bridge'a** (jednorazowa procedura).
 5. **xDrip+** — Ustawienia → **Hardware Data Source** → **SmartGuide**, wybierz „G7 Bridge”
@@ -82,11 +83,26 @@ eksperymentalna Chrome, więc w przyszłych wersjach może się zmienić.
 | niebieska 1× co 5 s | nie ustawiono kodu ani sensora |
 | czerwona świeci | dioda ładowania baterii (nie zależy od bridge'a) |
 
+## Aplikacja na Androida
+
+[Aplikacja G7 Bridge](android/README.pl.md) robi to samo co strona, bez Chrome, i pilnuje bridge'a
+w tle: ostrzega o słabnącej baterii bridge'a i wyjaśnia, dlaczego nie ma danych (bridge poza
+zasięgiem, sensor niesłyszalny, xDrip+ nie odbiera, koniec sesji). Alarmy glukozy zostają
+w xDrip+. Plik APK pobierzesz z najnowszego wydania **app-v…**.
+
 ## Firmware
 
 Firmware bridge'a (RAKwireless RAK4631 WisBlock) jest w [firmware/](firmware/README.pl.md):
 płytki, instalacja, pierwsza konfiguracja i kompilacja ze źródeł. Certyfikatów aplikacji, o które
 prosi nowy G7, w nim nie ma — wczytujesz je do swojego bridge'a ze strony.
+
+## Repozytorium
+
+| Folder | Co | Wydania |
+|---|---|---|
+| [firmware/](firmware/README.pl.md) | firmware bridge'a (RAK4631) | tagi `v…` → `.uf2` |
+| [web/](web/index.html) | strona konfiguracji, publikowana na https://g7bridge.b-hubit.com | — |
+| [android/](android/README.pl.md) | aplikacja na Androida | tagi `app-v…` → `.apk` |
 
 ## Licencja
 
@@ -94,7 +110,9 @@ GPL-3.0 (zob. [LICENSE](LICENSE)). Uwierzytelnianie G7 jest wzorowane na xDrip+ 
 
 ## Prywatność
 
-Strona działa w całości w przeglądarce i nie wysyła nigdzie żadnych danych.
+Strona działa w całości w przeglądarce, a aplikacja w całości w telefonie; żadna nie wysyła
+nigdzie danych. Pytają tylko GitHuba o najnowszą wersję firmware i pobierają kod QR certyfikatów
+z dokumentacji xDrip+.
 
 > Projekt hobbystyczny, nie jest wyrobem medycznym. Decyzje terapeutyczne podejmuj na podstawie
 > zatwierdzonych urządzeń.

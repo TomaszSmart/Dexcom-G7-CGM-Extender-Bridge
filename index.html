@@ -686,9 +686,11 @@ let fwVersion = null, latest = null;
 
 (async () => {
   try {
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/releases/latest');
+    // The repository also has app releases (tags app-v…): only firmware tags (v…) count.
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=30');
     if (!r.ok) return;
-    const j = await r.json();
+    const j = (await r.json()).find((x) => !x.draft && !x.prerelease && /^v\d/.test(x.tag_name));
+    if (!j) return;
     const asset = (j.assets || []).find((a) => /rak4631.*\.uf2$/.test(a.name));
     latest = { ver: j.tag_name.replace(/^v/, ''), url: asset ? asset.browser_download_url : RELEASES };
     renderVersion();

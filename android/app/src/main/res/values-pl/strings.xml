@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tagline">Kieszonkowy mostek Bluetooth, dzięki któremu dziecko z cukrzycą może trenować bez telefonu przy sobie.</string>
+
+    <!-- połączenie -->
+    <string name="conn_no">Nie połączono</string>
+    <string name="conn_bonding">Parowanie…</string>
+    <string name="conn_connecting">Łączę…</string>
+    <string name="conn_yes">Połączono</string>
+    <string name="btn_connect">Połącz</string>
+    <string name="btn_disconnect">Rozłącz</string>
+    <string name="btn_refresh">Odśwież</string>
+    <string name="btn_choose">Wybierz bridge</string>
+    <string name="choose_title">Wybierz swój bridge</string>
+    <string name="choose_hint">Bridge’e sparowane z tym telefonem (np. przez xDrip+) i znalezione w pobliżu. Trzymaj bridge blisko i włączony.</string>
+    <string name="choose_bonded">sparowany</string>
+    <string name="choose_scanning">Szukam…</string>
+    <string name="choose_none">Nie znaleziono jeszcze „G7 Bridge”.</string>
+    <string name="btn_cancel">Anuluj</string>
+    <string name="perm_text">Aplikacja potrzebuje uprawnienia Bluetooth, żeby rozmawiać z bridge’em.</string>
+    <string name="btn_allow">Zezwól</string>
+    <string name="bt_off">Bluetooth jest wyłączony.</string>
+    <string name="btn_bt_on">Włącz</string>
+
+    <!-- glukoza -->
+    <string name="h_reading">Glukoza</string>
+    <string name="trend_unknown">trend nieznany</string>
+    <string name="not_forwarded">nie przekazywany do xDrip</string>
+    <string name="no_reading">brak odczytu od włączenia bridge’a</string>
+    <string name="trend_init">Połącz z bridge’em, żeby zobaczyć odczyt</string>
+    <string name="wait_sensor">czekam na sensor</string>
+    <string name="st_cal">wymaga kalibracji</string>
+    <string name="st_warm">rozgrzewanie</string>
+    <string name="st_end">koniec sesji</string>
+    <string name="st_noise">zakłócenia</string>
+    <string name="st_fail">awaria sensora (0x%1$02x)</string>
+    <string name="ago_s">%1$d s temu</string>
+    <string name="ago_min">%1$d min temu</string>
+    <string name="ago_h">%1$d h temu</string>
+    <string name="ago_d">%1$d dni temu</string>
+
+    <!-- sensor -->
+    <string name="s_name">Nazwa</string>
+    <string name="s_day">Sesja</string>
+    <string name="s_end">Koniec</string>
+    <string name="s_code">Kod</string>
+    <string name="s_phone">Telefon (xDrip)</string>
+    <string name="not_selected">nie wybrany</string>
+    <string name="day_of">dzień %1$s z %2$s</string>
+    <string name="day">dzień %1$s</string>
+    <string name="sess_unknown">nieznana (czekam na sensor)</string>
+    <string name="passed">(minęło)</string>
+    <string name="code_not_set">nie ustawiony</string>
+    <string name="phone_on">połączony</string>
+    <string name="phone_off">nie połączony</string>
+    <string name="searching">Szukam sensora z kodem %1$s — zostało %2$d min.</string>
+
+    <!-- bridge -->
+    <string name="fw_update_text">Pobierz plik na komputer, naciśnij szybko dwa razy RESET na bridge’u i skopiuj plik na dysk RAK4631.</string>
+    <string name="bat_desc">Bateria bridge’a %1$d%%</string>
+    <string name="bat_charging">Bateria bridge’a %1$d%%, ładuje się</string>
+    <string name="fw_current">aktualny</string>
+    <string name="fw_dev">wersja rozwojowa</string>
+    <string name="fw_new">dostępna wersja %1$s</string>
+    <string name="fw_get">Pobierz</string>
+    <string name="fw_how">Jak zaktualizować</string>
+
+    <!-- zasięg -->
+    <string name="h_range">Zasięg</string>
+    <string name="p_rssi">Telefon ↔ bridge</string>
+    <string name="s_rssi">Sensor ↔ bridge</string>
+    <string name="p_min">Najsłabszy w teście</string>
+    <string name="range_btn">Test zasięgu</string>
+    <string name="range_stop">Zakończ test</string>
+    <string name="range_hint">Poniżej około −90 dBm połączenie z telefonem się zrywa.</string>
+    <string name="range_hint_on">Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.</string>
+    <string name="rssi_good">dobry</string>
+    <string name="rssi_mid">średni</string>
+    <string name="rssi_bad">słaby</string>
+    <string name="measuring">mierzę…</string>
+    <string name="advert">reklama, %1$s</string>
+
+    <!-- nowy sensor -->
+    <string name="h_pair">Nowy sensor</string>
+    <string name="code_label">Kod z aplikatora</string>
+    <string name="pair_btn">Paruj</string>
+    <string name="pair_hint">Bridge przez 30 minut sprawdza sensory w zasięgu i wybiera ten, do którego pasuje kod. Najpierw wyłącz zbieranie danych w innym telefonie, który łączy się z nowym sensorem.</string>
+    <string name="h_seen">Sensory w zasięgu</string>
+    <string name="seen_none">Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.</string>
+    <string name="seen_ago">widziany %1$s</string>
+    <string name="pill_used">używany</string>
+    <string name="pill_nofit">kod nie pasuje</string>
+    <string name="pill_check">do sprawdzenia</string>
+    <string name="pill_other">inny</string>
+
+    <!-- certyfikaty -->
+    <string name="h_certs">Certyfikaty aplikacji</string>
+    <string name="certs_none">nie wczytane — nowego G7 nie da się sparować</string>
+    <string name="certs_stored">wczytane</string>
+    <string name="certs_builtin">wbudowane w ten firmware</string>
+    <string name="certs_old">ten firmware nie obsługuje wczytywania (zaktualizuj go)</string>
+    <string name="certs_hint">Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem. Wszystko jest rozpakowywane w tym telefonie i wysyłane tylko do Twojego bridge’a.</string>
+    <string name="certs_doc">Z dokumentacji xDrip+</string>
+    <string name="certs_cam">Skanuj aparatem</string>
+    <string name="certs_send">Wyślij do bridge’a</string>
+    <string name="certs_ready">Certyfikaty odczytane — naciśnij „Wyślij do bridge’a”.</string>
+    <string name="certs_doc_fail">Nie udało się pobrać kodu QR z dokumentacji xDrip+: %1$s</string>
+    <string name="certs_missing">Nie rozpoznano: nie znaleziono keks_p1, keks_p2 i keks_p3.</string>
+    <string name="certs_short">Nie rozpoznano: za krótki certyfikat.</string>
+    <string name="certs_malformed">Nie rozpoznano: dane kodu QR są uszkodzone.</string>
+    <string name="certs_sending">Wysyłam… %1$d%%</string>
+    <string name="cam_prompt">Skieruj aparat na kod QR certyfikatów G7 z dokumentacji xDrip+</string>
+
+    <!-- pomoc -->
+    <string name="xd_title">Połącz xDrip+ z bridge’em</string>
+    <string name="xd1">Użyj aktualnego xDrip+, który ma źródło danych „SmartGuide”.</string>
+    <string name="xd2">W ciągu 10 minut od podłączenia zasilania bridge’a: xDrip+ → Ustawienia → Hardware Data Source → SmartGuide.</string>
+    <string name="xd3">xDrip+ szuka urządzeń: wybierz „G7 Bridge” i zatwierdź prośbę Androida o parowanie.</string>
+    <string name="xd4">Zaraz po parowaniu bridge raz rozłączy telefon — tak ma być; xDrip+ połączy się sam i pobierze do 24 godzin historii.</string>
+    <string name="xd5">AndroidAPS dalej korzysta z xDrip+ jako źródła BG, tu nic się nie zmienia.</string>
+    <string name="led_title">Co znaczą diody na bridge’u</string>
+    <string name="led_g1">zielona 1× co 5 s</string>
+    <string name="led_g1d">sensor OK, świeży odczyt, xDrip połączony</string>
+    <string name="led_g2">zielona 2× co 5 s</string>
+    <string name="led_g2d">sensor OK, ale xDrip niepołączony, albo rozgrzewanie</string>
+    <string name="led_gb3">zielona + niebieska 3× co 5 s</string>
+    <string name="led_gb3d">problem: brak odczytu ponad 15 min, awaria lub koniec sesji</string>
+    <string name="led_gb1">zielona + niebieska 1× co 2 s</string>
+    <string name="led_gb1d">po włączeniu, czeka na pierwszy odczyt</string>
+    <string name="led_bb">niebieska miga</string>
+    <string name="led_bbd">szuka sensora po nowym kodzie</string>
+    <string name="led_b5">niebieska 1× co 5 s</string>
+    <string name="led_b5d">nie ustawiono kodu ani sensora</string>
+    <string name="led_r">czerwona świeci</string>
+    <string name="led_rd">dioda ładowania baterii (nie zależy od bridge’a)</string>
+    <string name="unp_title">Telefon nie może się połączyć</string>
+    <string name="unp_text">Usuwa parowanie telefonów z bridge’em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge’a i w ciągu 10 minut sparuj telefon ponownie.</string>
+    <string name="unp_btn">Usuń parowanie telefonów</string>
+    <string name="unp_yes">Tak, usuń</string>
+    <string name="forget_btn">Użyj innego bridge’a</string>
+    <string name="h_about">Dlaczego G7 Bridge</string>
+    <string name="about1">Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu piłki, na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się psują.</string>
+    <string name="about2">G7 Bridge to mały, lekki moduł, który mieści się w kieszeni. Jest blisko sensora, co 5 minut odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — nawet do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.</string>
+    <string name="about3">Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.</string>
+    <string name="disclaimer">Projekt hobbystyczny, nie jest wyrobem medycznym. Decyzje terapeutyczne podejmuj na podstawie zatwierdzonych urządzeń.</string>
+    <string name="app_version">Aplikacja %1$s</string>
+
+    <!-- linia stanu -->
+    <string name="msg_bonding">Zatwierdź prośbę o parowanie…</string>
+    <string name="msg_denied">Bridge odmówił parowania. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.</string>
+    <string name="msg_not_bridge">To urządzenie nie jest G7 Bridge.</string>
+    <string name="msg_disc_retry">Rozłączono, łączę ponownie za chwilę…</string>
+    <string name="msg_disc">Rozłączono.</string>
+    <string name="msg_no_conn">Brak połączenia (%1$s), próbuję ponownie…</string>
+    <string name="msg_read_fail">Nie udało się odczytać stanu: %1$s</string>
+    <string name="msg_send_fail">Nie udało się wysłać polecenia: %1$s</string>
+    <string name="msg_sending_code">Wysyłam kod %1$s…</string>
+    <string name="msg_unpairing">Usuwam parowanie telefonów…</string>
+    <string name="msg_bridge">Bridge: %1$s</string>
+
+    <!-- powiadomienia -->
+    <string name="xd6">Włącz w xDrip+ alarm „Missed readings” (np. po 20 min) i pozwól mu przebijać tryb Nie przeszkadzać — to on jest siatką bezpieczeństwa. G7 Bridge podpowiada tylko przyczynę i ostrzega o baterii bridge’a.</string>
+    <string name="ch_battery">Niska bateria bridge’a</string>
+    <string name="ch_battery_empty">Bateria bridge’a prawie pusta</string>
+    <string name="ch_diagnosis">Dlaczego nie ma danych</string>
+    <string name="ch_info">Certyfikaty i aktualizacje</string>
+    <string name="n_bat_low_title">Bateria bridge’a %1$d%%</string>
+    <string name="n_bat_empty_title">Bateria bridge’a prawie pusta: %1$d%%</string>
+    <string name="n_bat_text">Naładuj wkrótce bridge (USB-C), inaczej xDrip+ przestanie dostawać odczyty.</string>
+    <string name="n_unreach_title">Telefon nie łączy się z bridge’em</string>
+    <string name="n_unreach_text">Ostatni kontakt o %1$s. Bridge jest poza zasięgiem, wyłączony albo ma pustą baterię.</string>
+    <string name="n_unreach_text_bat">Ostatni kontakt o %1$s, bateria miała %2$d%%. Bridge jest poza zasięgiem, wyłączony albo ma pustą baterię.</string>
+    <string name="n_nosensor_title">Bridge nie słyszy sensora</string>
+    <string name="n_nosensor_text">Bridge nie widzi sensora. Trzymaj bridge bliżej niego, np. w kieszeni po tej samej stronie ciała.</string>
+    <string name="n_nosensor_text_min">Bridge nie słyszał sensora od %1$d min. Trzymaj bridge bliżej niego, np. w kieszeni po tej samej stronie ciała.</string>
+    <string name="n_noreading_title">Bridge nie dostaje odczytów</string>
+    <string name="n_noreading_text">Sensor jest w zasięgu, ale nie przekazuje bridge’owi odczytów. Może go trzymać inny telefon albo odbiornik połączony z sensorem.</string>
+    <string name="n_noxdrip_title">xDrip+ nie odbiera odczytów z bridge’a</string>
+    <string name="n_noxdrip_text">Bridge ma świeże odczyty, ale xDrip+ w tym telefonie ich nie pobiera. Otwórz xDrip+ i sprawdź, czy źródło danych to SmartGuide z „G7 Bridge”.</string>
+    <string name="n_end_title">Koniec sesji sensora</string>
+    <string name="n_end_text">%1$s nie wysyła już odczytów. Załóż nowy sensor i wpisz jego kod w G7 Bridge.</string>
+    <string name="n_fail_title">Awaria sensora (0x%1$02x)</string>
+    <string name="n_fail_text">%1$s zgłasza awarię i nie wysyła użytecznych odczytów. Wymień sensor i wpisz nowy kod w G7 Bridge.</string>
+    <string name="n_certs_title">Certyfikaty aplikacji nie są wczytane</string>
+    <string name="n_certs_text">Bez nich bridge nie sparuje nowego G7. Otwórz G7 Bridge i wczytaj je z dokumentacji xDrip+.</string>
+</resources>

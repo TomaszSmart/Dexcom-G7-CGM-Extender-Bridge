@@ -1,0 +1,84 @@
+# Builds the G7 Bridge Android app. A pushed tag app-v* builds an APK signed with the key from
+# the repository secrets and publishes it as a GitHub Release (not marked "latest", so the
+# firmware release stays the latest one).
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['android/**', '.github/workflows/android.yml']
+    tags: ['app-v*']
+  pull_request:
+    paths: ['android/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/app-v* ]]; then VER="${GITHUB_REF_NAME#app-v}"; else VER="0.0.0-dev-${GITHUB_SHA::7}"; fi
+          echo "VER=$VER" >> "$GITHUB_ENV"
+
+      - name: Build (debug, no signing key)
+        if: ${{ !startsWith(github.ref, 'refs/tags/app-v') }}
+        run: |
+          ./gradlew --no-daemon assembleDebug -PappVersion="$VER"
+          mkdir -p ../out
+          cp app/build/outputs/apk/debug/app-debug.apk "../out/g7-bridge-app-$VER-debug.apk"
+
+      - name: Build signed release
+        if: ${{ startsWith(github.ref, 'refs/tags/app-v') }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          G7_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          G7_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          G7_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::The ANDROID_KEYSTORE_BASE64 secret is missing"
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export G7_KEYSTORE="$RUNNER_TEMP/release.jks"
+          ./gradlew --no-daemon assembleRelease -PappVersion="$VER"
+          rm -f "$RUNNER_TEMP/release.jks"
+          mkdir -p ../out
+          cp app/build/outputs/apk/release/app-release.apk "../out/g7-bridge-app-$VER.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: g7-bridge-app
+          path: out/*.apk
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/app-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: g7-bridge-app
+          path: out
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: G7 Bridge app ${{ github.ref_name }}
+          files: out/*.apk
+          make_latest: 'false'
+          generate_release_notes: true
