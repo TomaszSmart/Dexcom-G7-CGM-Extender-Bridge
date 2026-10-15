@@ -11,6 +11,7 @@ plugins {
 val appVersion = (findProperty("appVersion") as String?) ?: "0.1.0-dev"
 val appVersionCode = Regex("""^(\d+)\.(\d+)\.(\d+)""").find(appVersion)
     ?.destructured?.let { (major, minor, patch) -> major.toInt() * 10000 + minor.toInt() * 100 + patch.toInt() }
+    ?.coerceAtLeast(1) // CI test builds are "0.0.0-dev-<sha>"
     ?: 1
 val releaseKeystore: String? = System.getenv("G7_KEYSTORE")
 
