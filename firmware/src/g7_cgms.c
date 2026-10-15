@@ -71,6 +71,22 @@ static uint8_t sensor_status;
 #define DEFAULT_SESSION_HOURS 252
 static bool meas_notify, racp_indicate, socp_indicate;
 
+/*
+ * Whether the connected phone has used the CGM service on this link (status,
+ * session times, history). Zephyr restores a bonded phone's subscriptions by
+ * itself on every connection, and the setup app shares the phone's link without
+ * touching this service -- so only this shows that xDrip+ is really collecting.
+ */
+static bool collector_seen;
+
+static void collector_active(void)
+{
+	if (!collector_seen) {
+		collector_seen = true;
+		LOG_INF("Phone is collecting (xDrip+ uses the CGM service)");
+	}
+}
+
 /* Session Start Time placeholder (2026-01-01) until the phone has told us its
  * clock: xDrip+ reads it, finds it more than 2 minutes off and writes "now".
  */
@@ -118,6 +134,8 @@ static ssize_t read_status(struct bt_conn *conn, const struct bt_gatt_attr *attr
 {
 	uint8_t status[5] = {0};
 	uint16_t now;
+
+	collector_active();
 
 	/* Time Offset "now" in sensor minutes: xDrip+ takes session start = now - this.
 	 * Until a G7 reading has arrived since boot we do not know it; refuse, so
@@ -222,6 +240,8 @@ static ssize_t read_start_time(struct bt_conn *conn, const struct bt_gatt_attr *
 	bt_addr_le_t sensor;
 	struct g7_session_info info;
 
+	collector_active();
+
 	if (current_session(&sensor, &info) && info.start_utc_s) {
 		encode_date_time(info.start_utc_s, value);
 	} else {
@@ -241,6 +261,8 @@ static ssize_t write_start_time(struct bt_conn *conn, const struct bt_gatt_attr 
 	uint32_t sensor_s;
 	bt_addr_le_t sensor;
 	struct g7_session_info info = {0};
+
+	collector_active();
 
 	if (offset || len < 9) {
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
@@ -282,6 +304,8 @@ static ssize_t read_run_time(struct bt_conn *conn, const struct bt_gatt_attr *at
 	struct g7_session_info info;
 	bt_addr_le_t sensor;
 	uint16_t hours = DEFAULT_SESSION_HOURS;
+
+	collector_active();
 
 	/* Expected session length in hours; xDrip+ shows remaining days from it. */
 	if (g7_config_get_key_addr(&sensor) && g7_config_get_session(&sensor, &info) &&
@@ -516,6 +540,8 @@ K_THREAD_DEFINE(g7_cgms_tid, 2048, cgms_thread, NULL, NULL, NULL, 8, 0, 0);
 static ssize_t queue_cp(bool racp, bool subscribed, const void *buf, uint16_t len,
 			uint16_t offset)
 {
+	collector_active();
+
 	if (offset || len == 0 || len > sizeof(pending.data)) {
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
 	}
@@ -585,6 +611,7 @@ static void cgms_connected(struct bt_conn *conn, uint8_t err)
 		return;
 	}
 	phone = bt_conn_ref(conn);
+	collector_seen = false;
 	LOG_INF("Phone connected");
 }
 
@@ -597,6 +624,7 @@ static void cgms_disconnected(struct bt_conn *conn, uint8_t reason)
 	bt_conn_unref(phone);
 	phone = NULL;
 	meas_notify = racp_indicate = socp_indicate = false;
+	collector_seen = false;
 	k_sem_give(&indicate_sem);
 }
 
@@ -682,6 +710,11 @@ void g7_cgms_time_changed(void)
 bool g7_cgms_phone_connected(void)
 {
 	return phone != NULL;
+}
+
+bool g7_cgms_collecting(void)
+{
+	return phone != NULL && collector_seen;
 }
 
 void g7_cgms_notify_reading(const struct g7_record *rec)

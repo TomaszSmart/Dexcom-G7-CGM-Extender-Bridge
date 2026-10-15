@@ -107,7 +107,7 @@ static struct pattern current_pattern(void)
 	    st.reading_age_s > STALE_S) {
 		return (struct pattern){RED, 5000, FLASH_MS};
 	}
-	if (!g7_state_usable(st.state) || !g7_cgms_phone_connected()) {
+	if (!g7_state_usable(st.state) || !g7_cgms_collecting()) {
 		return (struct pattern){YELLOW, 5000, FLASH_MS};
 	}
 	return (struct pattern){GREEN, 5000, FLASH_MS};

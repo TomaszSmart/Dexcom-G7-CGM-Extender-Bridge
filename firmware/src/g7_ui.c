@@ -109,9 +109,10 @@ static void build_status(void)
 
 	g7_bridge_get_status(&st);
 
-	APPEND("{\"code\":\"%s\",\"id\":\"%s\",\"search\":%d,\"left\":%u,\"phone\":%d",
+	APPEND("{\"code\":\"%s\",\"id\":\"%s\",\"search\":%d,\"left\":%u,\"phone\":%d,"
+	       "\"xdrip\":%d",
 	       g7_config_get_code(), g7_config_get_id(), st.searching, st.search_left_s,
-	       g7_cgms_phone_connected());
+	       g7_cgms_phone_connected(), g7_cgms_collecting());
 
 	if (st.have_reading) {
 		APPEND(",\"g\":{\"mgdl\":%u,\"state\":%u,\"age\":%u", st.mgdl, st.state,

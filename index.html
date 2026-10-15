@@ -709,7 +709,7 @@ function renderVersion() {
   if (!fwVersion) { el.textContent = '—'; return; }
   const cur = verNum(fwVersion), lat = latest && verNum(latest.ver);
   let html = esc(fwVersion);
-  if (lat && (!cur || newer(lat, cur))) {
+  if (cur && lat && newer(lat, cur)) {
     html += ' <span class="pill warn">' + esc(t('fwNew', latest.ver)) + '</span>' +
       ' <a href="' + latest.url + '">' + t('fwGet') + '</a> · <a href="' + HOWTO + '" target="_blank" rel="noopener">' + t('fwHow') + '</a>';
   } else if (!cur) {
@@ -789,7 +789,8 @@ function render(st) {
     $('sEnd').textContent = '—';
   }
   $('sCode').textContent = st.code || t('codeNotSet');
-  $('sPhone').textContent = t(st.phone ? 'phoneOn' : 'phoneOff');
+  // "xdrip" (firmware 0.3+): xDrip+ really collects; "phone" also counts this page's link
+  $('sPhone').textContent = t((st.xdrip !== undefined ? st.xdrip : st.phone) ? 'phoneOn' : 'phoneOff');
 
   const search = $('search');
   if (st.search) {

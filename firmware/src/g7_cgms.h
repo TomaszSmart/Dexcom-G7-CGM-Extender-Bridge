@@ -31,8 +31,11 @@ void g7_cgms_set_sensor_state(bool session_ended, bool failed);
  */
 void g7_cgms_time_changed(void);
 
-/* True while a phone is connected to the CGM service. */
+/* True while a phone is connected (xDrip+, or only the setup app). */
 bool g7_cgms_phone_connected(void);
+
+/* True while the connected phone collects readings: it has used the CGM service. */
+bool g7_cgms_collecting(void);
 
 /* Pushes a new live reading to a connected, subscribed phone (no-op otherwise). */
 void g7_cgms_notify_reading(const struct g7_record *rec);
