@@ -123,6 +123,9 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     </div>
   </header>
   <p class="sub" style="margin:-6px 0 0" data-i18n="tagline"></p>
+  <p class="sub" style="margin:0"><span data-i18n="appLine"></span>
+    <a id="apkLink" href="https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases"></a> ·
+    <a id="apkHow" target="_blank" rel="noopener"></a></p>
 
   <section class="panel nobt" id="noBt" hidden>
     <h2 data-i18n="noBtTitle"></h2>
@@ -293,6 +296,7 @@ const TEXT = {
     about1: 'A Dexcom G7 sensor only talks to a phone a few metres away. So at football practice, in PE or on the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.',
     about2: 'G7 Bridge is a small, light module that fits in a pocket. It stays close to the sensor, reads the glucose every 5 minutes and passes it on to the phone, which can stay in the locker room or on the bench — up to about 50 m away. xDrip+ and AndroidAPS keep working as usual, and if the phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is back.',
     about3: 'The goal is simple: let the child just play — with the parent still seeing every reading.',
+    appLine: 'Prefer an app? G7 Bridge for Android:', apkGet: 'download the APK', apkHow: 'how to install',
     connNo: 'Not connected', connYes: 'Connected',
     noBtTitle: 'This browser does not support Bluetooth',
     noBtText: 'Open this page in Chrome on Android (Web Bluetooth). Safari on iPhone does not support it.',
@@ -375,6 +379,7 @@ const TEXT = {
     about1: 'Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu piłki, na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się psują.',
     about2: 'G7 Bridge to mały, lekki moduł, który mieści się w kieszeni. Jest blisko sensora, co 5 minut odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — nawet do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.',
     about3: 'Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.',
+    appLine: 'Wolisz aplikację? G7 Bridge na Androida:', apkGet: 'pobierz APK', apkHow: 'jak zainstalować',
     connNo: 'Nie połączono', connYes: 'Połączono',
     noBtTitle: 'Ta przeglądarka nie obsługuje Bluetooth',
     noBtText: 'Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.',
@@ -480,6 +485,7 @@ function applyLang() {
   $('camBtn').textContent = t(camStream ? 'camStop' : 'camStart');
   if (lastStatus) render(lastStatus);
   renderVersion();
+  renderApk();
 }
 
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
@@ -682,13 +688,31 @@ let fwVersion = null, latest = null;
     // The repository also has app releases (tags app-v…): only firmware tags (v…) count.
     const r = await fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=30');
     if (!r.ok) return;
-    const j = (await r.json()).find((x) => !x.draft && !x.prerelease && /^v\d/.test(x.tag_name));
+    const all = await r.json();
+    // The newest Android app release (tags app-v…), for the download link at the top.
+    const app = all.find((x) => !x.draft && !x.prerelease && /^app-v\d/.test(x.tag_name));
+    const apk = app && (app.assets || []).find((a) => /\.apk$/.test(a.name));
+    if (apk) {
+      appApk = { ver: app.tag_name.replace(/^app-v/, ''), url: apk.browser_download_url };
+      renderApk();
+    }
+    const j = all.find((x) => !x.draft && !x.prerelease && /^v\d/.test(x.tag_name));
     if (!j) return;
     const asset = (j.assets || []).find((a) => /rak4631.*\.uf2$/.test(a.name));
     latest = { ver: j.tag_name.replace(/^v/, ''), url: asset ? asset.browser_download_url : RELEASES };
     renderVersion();
   } catch (e) { /* offline: no update check */ }
 })();
+
+// Until the release list arrives (or offline) the link opens the Releases page.
+let appApk = null;
+
+function renderApk() {
+  $('apkLink').textContent = t('apkGet') + (appApk ? ' ' + appApk.ver : '');
+  if (appApk) $('apkLink').href = appApk.url;
+  $('apkHow').textContent = t('apkHow');
+  $('apkHow').href = 'https://github.com/' + REPO + '/blob/main/android/' + (lang === 'pl' ? 'README.pl.md' : 'README.md');
+}
 
 const verNum = (v) => (/^\d+(\.\d+)*$/.test(v) ? v.split('.').map(Number) : null);
 
