@@ -799,9 +799,11 @@ function render(st) {
     $('sDay').textContent = t('sessUnknown');
     $('sBar').style.width = '0%';
   }
-  if (sess.start && sess.len) {
-    const end = new Date((sess.start + sess.len * 60) * 1000);
-    $('sEnd').textContent = dateFmt.format(end) + (end < new Date() ? t('passed') : '');
+  // From the sensor's own clock (no session start from xDrip+ needed). A sensor that did not
+  // tell its session length (often one that has ended) gets the G7 standard, marked "~".
+  if (sess.min !== undefined) {
+    const end = new Date(Date.now() + ((sess.len || G7_SESSION_MIN) - sess.min) * 60000);
+    $('sEnd').textContent = (sess.len ? '' : '~ ') + dateFmt.format(end) + (end < new Date() ? t('passed') : '');
   } else {
     $('sEnd').textContent = '—';
   }
@@ -863,6 +865,8 @@ function render(st) {
 }
 
 const BOLT = '<svg viewBox="0 0 10 16" aria-hidden="true"><path d="M6.2 0 0.5 9.3h4L3.5 16l6-9.6h-4z"/></svg>';
+
+const G7_SESSION_MIN = 15120; // 10 days + 12 h grace
 
 function rssiText(r) {
   const [label, cls] = r >= -70 ? [t('rssiGood'), 'good'] : r >= -85 ? [t('rssiMid'), 'warn'] : [t('rssiBad'), 'bad'];

@@ -331,6 +331,8 @@ private fun ago(s: Int): String = when {
     else -> stringResource(R.string.ago_d, Math.round(s / 86400.0).toInt())
 }
 
+private const val G7_SESSION_MIN = 15120 // 10 days + 12 h grace
+
 private fun num(v: Double, digits: Int = 1) = "%.${digits}f".format(v)
 
 // ---- cards -------------------------------------------------------------------------
@@ -432,12 +434,14 @@ private fun SensorCard(st: BridgeStatus?) {
                 }
             }
         }
-        val start = sess?.startUtcS
+        // From the sensor's own clock (no session start from xDrip+ needed). A sensor that did not
+        // tell its session length (often one that has ended) gets the G7 standard, marked "~".
         Field(
             stringResource(R.string.s_end),
-            if (start != null && len != null) {
-                val end = Date((start + len * 60L) * 1000)
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(end) +
+            if (min != null) {
+                val end = Date(System.currentTimeMillis() + ((len ?: G7_SESSION_MIN) - min) * 60_000L)
+                (if (len == null) "~ " else "") +
+                    DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(end) +
                     if (end.before(Date())) " " + stringResource(R.string.passed) else ""
             } else {
                 "—"
