@@ -1,5 +1,6 @@
 # Publishes the setup page (web/) on GitHub Pages: https://g7bridge.b-hubit.com
-# Needs Settings -> Pages -> Source: "GitHub Actions".
+# Needs Settings -> Pages -> Source: "GitHub Actions" (the custom domain is set there too;
+# web/CNAME keeps it in the published files).
 name: Page
 
 on:
