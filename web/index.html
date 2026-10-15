@@ -819,7 +819,8 @@ function render(st) {
     search.hidden = true;
   }
 
-  const list = (st.seen || []).slice().sort((a, b) => b.use - a.use || b.rssi - a.rssi);
+  // Firmware 0.3.1+ leaves out "use"/"tried" when 0
+  const list = (st.seen || []).slice().sort((a, b) => (b.use | 0) - (a.use | 0) || b.rssi - a.rssi);
   $('seen').innerHTML = list.length ? list.map((s) => {
     const pill = s.use ? '<span class="pill good">' + t('pillUsed') + '</span>'
       : s.tried ? '<span class="pill">' + t('pillNoFit') + '</span>'

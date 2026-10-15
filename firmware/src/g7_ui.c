@@ -99,6 +99,13 @@ static void queue_rssi(struct bt_conn *conn)
 		p += (n > 0 && n < end - p) ? n : 0;                                        \
 	} while (0)
 
+/*
+ * Room kept for the fields after the sensor list (RSSI, battery, certificates, version and a
+ * message of up to 63 characters), plus one more list entry.
+ */
+#define STATUS_TAIL_RESERVE (sizeof(last_msg) + 120)
+#define STATUS_SEEN_ENTRY_MAX 64
+
 static void build_status(void)
 {
 	struct g7_bridge_status st;
@@ -138,12 +145,27 @@ static void build_status(void)
 	if (p[-1] == ',') {
 		p--;
 	}
+	/*
+	 * The whole status must fit one attribute (512 bytes): with many G7s around the list
+	 * got cut off mid-JSON. The sensor in use goes first, and the list stops while there is
+	 * still room for the fields after it (RSSI, battery, certificates, version, message).
+	 */
 	APPEND("},\"seen\":[");
-	for (size_t i = 0; i < st.n_seen; i++) {
-		const struct g7_seen_sensor *s = &st.seen[i];
+	size_t listed = 0;
 
-		APPEND("%s{\"n\":\"%s\",\"rssi\":%d,\"ago\":%u,\"tried\":%d,\"use\":%d}",
-		       i ? "," : "", s->name, s->rssi, s->seen_s_ago, s->tried, s->paired);
+	for (int pass = 0; pass < 2; pass++) {
+		for (size_t i = 0; i < st.n_seen; i++) {
+			const struct g7_seen_sensor *s = &st.seen[i];
+
+			if (s->paired != (pass == 0) ||
+			    end - p < STATUS_TAIL_RESERVE + STATUS_SEEN_ENTRY_MAX) {
+				continue;
+			}
+			/* "tried"/"use" only when set: the page and the app read a missing one as 0 */
+			APPEND("%s{\"n\":\"%s\",\"rssi\":%d,\"ago\":%u%s%s}", listed++ ? "," : "",
+			       s->name, s->rssi, s->seen_s_ago, s->tried ? ",\"tried\":1" : "",
+			       s->paired ? ",\"use\":1" : "");
+		}
 	}
 	APPEND("]");
 	if (have_rssi) {

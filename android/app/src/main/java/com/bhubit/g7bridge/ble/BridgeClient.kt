@@ -286,7 +286,9 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            if (!linkDown.isCompleted) _problems.tryEmit(Problem.ReadFailed(e.message ?: "?"))
+            // A JSON error message carries the whole text: keep the line short
+            val reason = if (e is org.json.JSONException) "incomplete status" else e.message ?: "?"
+            if (!linkDown.isCompleted) _problems.tryEmit(Problem.ReadFailed(reason))
         }
     }
 
