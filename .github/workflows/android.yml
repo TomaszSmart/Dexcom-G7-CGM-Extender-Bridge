@@ -76,10 +76,9 @@ jobs:
         with:
           name: g7-bridge-app
           path: out
-      - run: echo "VER=${GITHUB_REF_NAME#app-v}" >> "$GITHUB_ENV"
       - uses: softprops/action-gh-release@v2
         with:
-          name: G7 Bridge Android app ${{ env.VER }}
+          name: G7 Bridge Android ${{ github.ref_name }}
           files: out/*.apk
           make_latest: 'false'
           generate_release_notes: true
