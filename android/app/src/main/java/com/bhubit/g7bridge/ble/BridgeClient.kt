@@ -73,8 +73,8 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
     private val _problems = MutableSharedFlow<Problem>(extraBufferCapacity = 8)
     val problems: SharedFlow<Problem> = _problems
 
-    /** Seconds between status reads; 1 s during the range test. */
-    @Volatile var pollIntervalMs = 5_000L
+    /** Time between status reads while the app is on screen. */
+    private val pollIntervalMs = 5_000L
     /** Status reads pause while the app is not on screen. */
     @Volatile var polling = true
         set(value) {

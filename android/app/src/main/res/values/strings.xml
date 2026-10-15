@@ -75,16 +75,10 @@
     <string name="h_range">Range</string>
     <string name="p_rssi">Phone ↔ bridge</string>
     <string name="s_rssi">Sensor ↔ bridge</string>
-    <string name="p_min">Weakest in test</string>
-    <string name="range_btn">Range test</string>
-    <string name="range_stop">Stop test</string>
     <string name="range_hint">Below about −90 dBm the phone link drops.</string>
-    <string name="range_hint_on">Refreshing every second. Walk around with the bridge and watch the signal.</string>
     <string name="rssi_good">good</string>
     <string name="rssi_mid">fair</string>
     <string name="rssi_bad">weak</string>
-    <string name="measuring">measuring…</string>
-    <string name="advert">advert, %1$s</string>
 
     <!-- new sensor -->
     <string name="h_pair">New sensor</string>
@@ -105,6 +99,7 @@
     <string name="certs_stored">loaded</string>
     <string name="certs_builtin">built into this firmware</string>
     <string name="certs_old">this firmware cannot load certificates (update it)</string>
+    <string name="certs_what">What are these certificates?</string>
     <string name="certs_hint">A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera. Everything is unpacked on this phone and sent only to your bridge.</string>
     <string name="certs_doc">From the xDrip+ documentation</string>
     <string name="certs_cam">Scan with camera</string>

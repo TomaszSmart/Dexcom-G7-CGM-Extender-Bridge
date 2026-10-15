@@ -14,6 +14,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.bhubit.g7bridge.AppLanguage
 import com.bhubit.g7bridge.R
 import com.bhubit.g7bridge.ReleaseCheck
 import com.bhubit.g7bridge.ble.BridgeClient
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit
 class BridgeCheckWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
-        val ctx = applicationContext
+        val ctx = AppLanguage.wrap(applicationContext)
         val address = ctx.getSharedPreferences("bridge", Context.MODE_PRIVATE).getString("address", null)
             ?: return Result.success()
         if (Build.VERSION.SDK_INT >= 31 &&

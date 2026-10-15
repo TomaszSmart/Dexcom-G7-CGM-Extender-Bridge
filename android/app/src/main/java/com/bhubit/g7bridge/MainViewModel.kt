@@ -33,8 +33,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     /** The bridge keeps its last message across connections: show it only as an answer to our command. */
     @Volatile private var awaitingAnswer = false
 
-    val rangeTest = MutableStateFlow(false)
-    val rangeMin = MutableStateFlow<Int?>(null)
 
     /** Bridges for the chooser: bonded ones and the ones found by scanning. */
     val found = MutableStateFlow<List<BluetoothDevice>>(emptyList())
@@ -67,8 +65,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             client.status.collect { st ->
                 if (st == null) return@collect
                 if (awaitingAnswer && st.msg.isNotEmpty() && st.msg != "ready") message.value = Msg(R.string.msg_bridge, listOf(st.msg))
-                val r = st.phoneRssi
-                if (rangeTest.value && r != null) rangeMin.value = minOf(rangeMin.value ?: r, r)
             }
         }
     }
@@ -116,13 +112,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setForeground(on: Boolean) {
         client.polling = on
-    }
-
-    fun setRangeTest(on: Boolean) {
-        rangeTest.value = on
-        rangeMin.value = null
-        client.pollIntervalMs = if (on) 1_000 else 5_000
-        client.polling = client.polling // wake the poll loop now
     }
 
     fun refresh() = viewModelScope.launch { client.refreshStatus() }

@@ -2,6 +2,9 @@ package com.bhubit.g7bridge.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
@@ -59,6 +62,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -73,6 +77,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bhubit.g7bridge.AppLanguage
 import com.bhubit.g7bridge.BuildConfig
 import com.bhubit.g7bridge.MainViewModel
 import com.bhubit.g7bridge.Msg
@@ -161,7 +166,10 @@ fun BridgeScreen(vm: MainViewModel) {
                         }
                     }
                     // Full width below: an update notice must not squeeze next to the buttons
-                    FirmwareLine(vm, st)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.weight(1f)) { FirmwareLine(vm, st) }
+                        LanguageSwitch()
+                    }
                 }
             }
         },
@@ -187,7 +195,7 @@ fun BridgeScreen(vm: MainViewModel) {
             }
 
             ReadingCard(st, conn == Conn.CONNECTED)
-            RangeCard(vm, st)
+            RangeCard(st)
             SensorCard(st)
             PairCard(vm, st, conn == Conn.CONNECTED)
             CertsCard(vm, st, conn == Conn.CONNECTED)
@@ -445,6 +453,34 @@ private fun SensorCard(st: BridgeStatus?) {
     }
 }
 
+/** PL · EN: the current language stands out; the other one switches to it. */
+@Composable
+private fun LanguageSwitch() {
+    val ctx = LocalContext.current
+    val current = LocalConfiguration.current.locales[0].language
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+        listOf("pl" to "PL", "en" to "EN").forEachIndexed { i, (tag, label) ->
+            if (i > 0) Text(" · ", color = MaterialTheme.colorScheme.outline)
+            val active = current == tag || (tag == "en" && current != "pl")
+            Text(
+                label,
+                Modifier
+                    .clickable(enabled = !active) { ctx.findActivity()?.let { AppLanguage.set(it, tag) } }
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = if (active) FontWeight.Bold else FontWeight.Normal,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 /** Firmware version under the connection state, with the latest-release check. */
 @Composable
 private fun FirmwareLine(vm: MainViewModel, st: BridgeStatus?) {
@@ -557,28 +593,13 @@ private fun Bolt(color: Color, modifier: Modifier) {
 }
 
 @Composable
-private fun RangeCard(vm: MainViewModel, st: BridgeStatus?) {
-    val testing by vm.rangeTest.collectAsStateWithLifecycle()
-    val weakest by vm.rangeMin.collectAsStateWithLifecycle()
-    val conn by vm.client.conn.collectAsStateWithLifecycle()
+private fun RangeCard(st: BridgeStatus?) {
     Section(stringResource(R.string.h_range)) {
         Field(stringResource(R.string.p_rssi)) { st?.phoneRssi?.let { RssiValue(it) } ?: Text("—") }
         Field(stringResource(R.string.s_rssi)) {
-            st?.inUse?.let { RssiValue(it.rssi, stringResource(R.string.advert, ago(it.agoS))) } ?: Text("—")
+            st?.inUse?.let { RssiValue(it.rssi, stringResource(R.string.seen_ago, ago(it.agoS))) } ?: Text("—")
         }
-        if (testing) {
-            Field(stringResource(R.string.p_min)) {
-                weakest?.let { RssiValue(it) } ?: Text(stringResource(R.string.measuring))
-            }
-        }
-        Text(
-            stringResource(if (testing) R.string.range_hint_on else R.string.range_hint),
-            style = MaterialTheme.typography.bodySmall,
-        )
-        OutlinedButton(
-            onClick = { vm.setRangeTest(!testing) },
-            enabled = conn == Conn.CONNECTED || testing,
-        ) { Text(stringResource(if (testing) R.string.range_stop else R.string.range_btn)) }
+        Text(stringResource(R.string.range_hint), style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -648,7 +669,9 @@ private fun CertsCard(vm: MainViewModel, st: BridgeStatus?, connected: Boolean) 
             st.certs == "stored" -> Pill(stringResource(R.string.certs_stored), Tone.Good)
             else -> Pill(stringResource(R.string.certs_builtin), Tone.Good)
         }
-        Text(stringResource(R.string.certs_hint), style = MaterialTheme.typography.bodySmall)
+        Expandable(stringResource(R.string.certs_what)) {
+            Text(stringResource(R.string.certs_hint), style = MaterialTheme.typography.bodySmall)
+        }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { vm.certsFromXdripDocs() }, enabled = !busy) {
                 Text(stringResource(R.string.certs_doc))

@@ -69,16 +69,10 @@
     <string name="h_range">Zasięg</string>
     <string name="p_rssi">Telefon ↔ bridge</string>
     <string name="s_rssi">Sensor ↔ bridge</string>
-    <string name="p_min">Najsłabszy w teście</string>
-    <string name="range_btn">Test zasięgu</string>
-    <string name="range_stop">Zakończ test</string>
     <string name="range_hint">Poniżej około −90 dBm połączenie z telefonem się zrywa.</string>
-    <string name="range_hint_on">Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.</string>
     <string name="rssi_good">dobry</string>
     <string name="rssi_mid">średni</string>
     <string name="rssi_bad">słaby</string>
-    <string name="measuring">mierzę…</string>
-    <string name="advert">reklama, %1$s</string>
 
     <!-- nowy sensor -->
     <string name="h_pair">Nowy sensor</string>
@@ -99,6 +93,7 @@
     <string name="certs_stored">wczytane</string>
     <string name="certs_builtin">wbudowane w ten firmware</string>
     <string name="certs_old">ten firmware nie obsługuje wczytywania (zaktualizuj go)</string>
+    <string name="certs_what">Co to za certyfikaty?</string>
     <string name="certs_hint">Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem. Wszystko jest rozpakowywane w tym telefonie i wysyłane tylko do Twojego bridge’a.</string>
     <string name="certs_doc">Z dokumentacji xDrip+</string>
     <string name="certs_cam">Skanuj aparatem</string>

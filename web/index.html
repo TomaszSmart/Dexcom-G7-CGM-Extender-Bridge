@@ -169,12 +169,8 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <dl>
       <dt data-i18n="pRssi"></dt><dd><span id="pRssi">—</span></dd>
       <dt data-i18n="sRssi"></dt><dd><span id="sRssi">—</span></dd>
-      <dt data-i18n="pMin"></dt><dd id="pMin">—</dd>
     </dl>
-    <div class="confirm">
-      <button type="button" class="quiet" id="rangeBtn" disabled></button>
-      <span class="sub" id="rangeHint"></span>
-    </div>
+    <p class="sub" data-i18n="rangeHint"></p>
   </section>
 
   <section class="panel">
@@ -253,7 +249,10 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <dl><dt data-i18n="certsState"></dt><dd id="certsState">—</dd></dl>
     <details id="certsBox">
       <summary data-i18n="certsLoad"></summary>
-      <p class="sub" data-i18n="certsHint"></p>
+      <details>
+        <summary data-i18n="certsWhat"></summary>
+        <p class="sub" data-i18n="certsHint"></p>
+      </details>
       <div class="confirm">
         <button type="button" id="certsDocBtn" data-i18n="certsDoc"></button>
         <button type="button" class="quiet" id="camBtn" data-i18n="camStart"></button>
@@ -310,10 +309,8 @@ const TEXT = {
     xd5: 'AndroidAPS keeps using xDrip+ as its BG source, nothing changes there.',
     certsDoc: 'From the xDrip+ documentation',
     certsDocFail: 'Could not load the QR code from the xDrip+ documentation: ',
-    hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Weakest in test',
-    rangeBtn: 'Range test', rangeStop: 'Stop test',
+    hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge',
     rangeHint: 'Below about −90 dBm the phone link drops.',
-    rangeHintOn: 'Refreshing every second. Walk around with the bridge and watch the signal.',
     connectBtn: 'Connect to bridge', disconnectBtn: 'Disconnect', refreshBtn: 'Refresh',
     ledTitle: 'What the bridge LEDs mean',
     ledG1: 'green 1× every 5 s', ledG1d: 'sensor OK, fresh reading, xDrip connected',
@@ -339,7 +336,7 @@ const TEXT = {
     hCerts: 'App certificates', certsState: 'State',
     certsNone: 'not loaded — a new G7 cannot be paired', certsStored: 'loaded', certsBuiltin: 'built into this firmware',
     certsOld: 'this firmware cannot load certificates (update it)',
-    certsLoad: 'Load certificates',
+    certsLoad: 'Load certificates', certsWhat: 'What are these certificates?',
     certsHint: 'A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera. Everything is unpacked in this browser and sent only to your bridge.',
     certsSend: 'Send to bridge',
     certsQrRead: 'QR code read — tap “Send to bridge”.', certsQrNone: 'No QR code found in this image.',
@@ -356,8 +353,8 @@ const TEXT = {
     pillUsed: 'in use', pillNoFit: 'code does not fit', pillCheck: 'to check', pillOther: 'other',
     seenNone: 'The bridge has not seen any sensor yet. G7 transmits every 5 minutes.',
     chargeMe: 'charge', usbCharging: 'USB — charging', onBattery: 'battery', noBattery: 'this board does not measure the battery',
-    advert: 'advert', rssiGood: 'good', rssiMid: 'fair', rssiBad: 'weak', signal: 'signal',
-    measuring: 'measuring…', readFail: 'Could not read the status: ', sendFail: 'Could not send the command: ',
+    rssiGood: 'good', rssiMid: 'fair', rssiBad: 'weak', signal: 'signal',
+    readFail: 'Could not read the status: ', sendFail: 'Could not send the command: ',
     reconnecting: 'Reconnecting…', discRetry: 'Disconnected, reconnecting shortly…', disc: 'Disconnected.',
     pick: 'Choose “G7 Bridge” from the list…', noDevice: 'No device selected.', connFail: 'Connection failed: ',
     remembered: 'Connecting to the remembered bridge…',
@@ -394,10 +391,8 @@ const TEXT = {
     xd5: 'AndroidAPS dalej korzysta z xDrip+ jako źródła BG, tu nic się nie zmienia.',
     certsDoc: 'Z dokumentacji xDrip+',
     certsDocFail: 'Nie udało się pobrać kodu QR z dokumentacji xDrip+: ',
-    hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge', pMin: 'Najsłabszy w teście',
-    rangeBtn: 'Test zasięgu', rangeStop: 'Zakończ test',
+    hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge',
     rangeHint: 'Poniżej około −90 dBm połączenie z telefonem się zrywa.',
-    rangeHintOn: 'Odświeżam co sekundę. Przejdź się z bridge’em i obserwuj sygnał.',
     connectBtn: 'Połącz z bridge’em', disconnectBtn: 'Rozłącz', refreshBtn: 'Odśwież',
     ledTitle: 'Co znaczą diody na bridge’u',
     ledG1: 'zielona 1× co 5 s', ledG1d: 'sensor OK, świeży odczyt, xDrip połączony',
@@ -423,7 +418,7 @@ const TEXT = {
     hCerts: 'Certyfikaty aplikacji', certsState: 'Stan',
     certsNone: 'nie wczytane — nowego G7 nie da się sparować', certsStored: 'wczytane', certsBuiltin: 'wbudowane w ten firmware',
     certsOld: 'ten firmware nie obsługuje wczytywania (zaktualizuj go)',
-    certsLoad: 'Wczytaj certyfikaty',
+    certsLoad: 'Wczytaj certyfikaty', certsWhat: 'Co to za certyfikaty?',
     certsHint: 'Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem. Wszystko jest rozpakowywane w tej przeglądarce i wysyłane tylko do Twojego bridge’a.',
     certsSend: 'Wyślij do bridge’a',
     certsQrRead: 'Kod QR odczytany — naciśnij „Wyślij do bridge’a”.', certsQrNone: 'Nie znaleziono kodu QR na tym obrazie.',
@@ -440,8 +435,8 @@ const TEXT = {
     pillUsed: 'używany', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
     seenNone: 'Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.',
     chargeMe: 'naładuj', usbCharging: 'USB — ładuje się', onBattery: 'z baterii', noBattery: 'ta płytka nie mierzy baterii',
-    advert: 'reklama', rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
-    measuring: 'mierzę…', readFail: 'Nie udało się odczytać stanu: ', sendFail: 'Nie udało się wysłać polecenia: ',
+    rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
+    readFail: 'Nie udało się odczytać stanu: ', sendFail: 'Nie udało się wysłać polecenia: ',
     reconnecting: 'Łączę ponownie…', discRetry: 'Rozłączono, łączę ponownie za chwilę…', disc: 'Rozłączono.',
     pick: 'Wybierz „G7 Bridge” z listy…', noDevice: 'Nie wybrano urządzenia.', connFail: 'Połączenie nie powiodło się: ',
     remembered: 'Łączę z zapamiętanym bridge’em…',
@@ -482,9 +477,7 @@ function applyLang() {
   const on = !!statusChr;
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
-  $('rangeBtn').textContent = t(rangeTest ? 'rangeStop' : 'rangeBtn');
   $('camBtn').textContent = t(camStream ? 'camStop' : 'camStart');
-  $('rangeHint').textContent = t(rangeTest ? 'rangeHintOn' : 'rangeHint');
   if (lastStatus) render(lastStatus);
   renderVersion();
 }
@@ -829,11 +822,7 @@ function render(st) {
   }
 
   $('pRssi').innerHTML = st.prssi !== undefined ? rssiText(st.prssi) : '—';
-  $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(' + t('advert') + ', ' + t('ago', using.ago) + ')</span>' : '—';
-  if (rangeTest && st.prssi !== undefined) {
-    rangeMin = rangeMin === null ? st.prssi : Math.min(rangeMin, st.prssi);
-  }
-  if (rangeTest && rangeMin !== null) $('pMin').innerHTML = rssiText(rangeMin);
+  $('sRssi').innerHTML = using ? rssiText(using.rssi) + ' <span class="sub">(' + t('seenAgo', t('ago', using.ago)) + ')</span>' : '—';
 
   if (st.fw && st.fw !== fwVersion) {
     fwVersion = st.fw;
@@ -857,18 +846,6 @@ function rssiText(r) {
   const [label, cls] = r >= -70 ? [t('rssiGood'), 'good'] : r >= -85 ? [t('rssiMid'), 'warn'] : [t('rssiBad'), 'bad'];
   return '<span style="font-variant-numeric:tabular-nums">' + r + ' dBm</span>' + bars(r) +
     ' <span class="pill ' + cls + '">' + label + '</span>';
-}
-
-let rangeTest = false, rangeMin = null;
-
-function setRangeTest(on) {
-  rangeTest = on;
-  rangeMin = null;
-  $('pMin').textContent = on ? t('measuring') : '—';
-  $('rangeBtn').textContent = t(on ? 'rangeStop' : 'rangeBtn');
-  $('rangeHint').textContent = t(on ? 'rangeHintOn' : 'rangeHint');
-  if (timer) clearInterval(timer);
-  if (statusChr) timer = setInterval(readStatus, on ? 1000 : 5000);
 }
 
 async function readStatus() {
@@ -898,12 +875,11 @@ function setConnected(on) {
   $('dot').classList.toggle('on', on);
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
-  for (const id of ['refreshBtn', 'unpairBtn', 'rangeBtn']) $(id).disabled = !on;
+  for (const id of ['refreshBtn', 'unpairBtn']) $(id).disabled = !on;
   $('certsBtn').disabled = !(on && certsChr);
   validateCode();
   if (timer) clearInterval(timer);
-  timer = on ? setInterval(readStatus, rangeTest ? 1000 : 5000) : null;
-  if (!on && rangeTest) setRangeTest(false);
+  timer = on ? setInterval(readStatus, 5000) : null;
 }
 
 // Reconnect by itself while the page is open, unless the user pressed "Disconnect".
@@ -1011,7 +987,6 @@ $('pairForm').addEventListener('submit', (e) => {
 });
 $('connectBtn').addEventListener('click', connect);
 $('refreshBtn').addEventListener('click', readStatus);
-$('rangeBtn').addEventListener('click', () => setRangeTest(!rangeTest));
 $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = false; });
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {
