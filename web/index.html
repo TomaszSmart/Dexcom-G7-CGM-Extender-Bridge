@@ -52,6 +52,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 /* Bridge battery like a phone's: the fill shrinks and changes colour; a bolt while charging. */
 .batt { position: relative; display: inline-block; width: 60px; height: 30px; padding: 3px;
   border: 2px solid var(--muted); border-radius: 8px; }
+.batt[hidden] { display: none; }
 .batt::after { content: ""; position: absolute; right: -6px; top: 8px; width: 3px; height: 10px;
   background: var(--muted); border-radius: 0 2px 2px 0; }
 .batt-fill { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--ok); }
@@ -142,10 +143,6 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     </div>
   </header>
   <p class="msg" id="msg" role="status" style="margin:0"></p>
-  <p class="sub" style="margin:-6px 0 0" data-i18n="tagline"></p>
-  <p class="sub" style="margin:0"><span data-i18n="appLine"></span>
-    <a id="apkLink" href="https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases"></a> ·
-    <a id="apkHow" target="_blank" rel="noopener"></a></p>
 
   <section class="panel nobt" id="noBt" hidden>
     <h2 data-i18n="noBtTitle"></h2>
@@ -200,6 +197,9 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
       <li><span class="sub" data-i18n="seenInit"></span></li>
     </ul>
   </section>
+
+  <!-- The bridge's answer to a command sent from this page (code, certificates, unpairing) -->
+  <p class="msg" id="bridgeMsg" role="status" style="margin:0"></p>
 
   <section class="panel" aria-labelledby="hCerts">
     <h2 id="hCerts" data-i18n="hCerts"></h2>
@@ -279,6 +279,9 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <p class="sub" data-i18n="about2"></p>
     <p class="sub" data-i18n="about3"></p>
   </section>
+  <p class="sub" style="margin:0;text-align:center"><span data-i18n="appLine"></span>
+    <a id="apkLink" href="https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases"></a> ·
+    <a id="apkHow" target="_blank" rel="noopener"></a></p>
 </main>
 
 <script>
@@ -292,7 +295,6 @@ const $ = (id) => document.getElementById(id);
 const FLAG = '<code>chrome://flags/#enable-web-bluetooth-new-permissions-backend</code>';
 const TEXT = {
   en: {
-    tagline: 'A pocket-sized Bluetooth bridge that lets a child with diabetes train without carrying a phone.',
     hAbout: 'Why G7 Bridge',
     about1: 'A Dexcom G7 sensor only talks to a phone a few metres away. So at football practice, in PE or on the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.',
     about2: 'G7 Bridge is a small, light module that fits in a pocket. It stays close to the sensor, reads the glucose every 5 minutes and passes it on to the phone, which can stay in the locker room or on the bench — up to about 50 m away. xDrip+ and AndroidAPS keep working as usual, and if the phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is back.',
@@ -374,7 +376,6 @@ const TEXT = {
     sendingCode: (c) => 'Sending code ' + c + '…',
   },
   pl: {
-    tagline: 'Kieszonkowy mostek Bluetooth, dzięki któremu dziecko z cukrzycą może trenować bez telefonu przy sobie.',
     hAbout: 'Dlaczego G7 Bridge',
     about1: 'Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu piłki, na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się psują.',
     about2: 'G7 Bridge to mały, lekki moduł, który mieści się w kieszeni. Jest blisko sensora, co 5 minut odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — nawet do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.',
@@ -859,7 +860,8 @@ function render(st) {
     cs.innerHTML = '<span class="pill good">' + t(st.certs === 'stored' ? 'certsStored' : 'certsBuiltin') + '</span>';
   }
 
-  if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
+  // The bridge keeps its last answer across connections: show it only after our own command.
+  if (awaitingAnswer && st.msg && st.msg !== 'ready') $('bridgeMsg').textContent = 'Bridge: ' + st.msg;
 }
 
 const BOLT = '<svg viewBox="0 0 10 16" aria-hidden="true"><path d="M6.2 0 0.5 9.3h4L3.5 16l6-9.6h-4z"/></svg>';
@@ -883,13 +885,16 @@ async function readStatus() {
   }
 }
 
+let awaitingAnswer = false;
+
 async function send(cmd) {
   if (!cmdChr) return;
+  awaitingAnswer = true;
   try {
     await cmdChr.writeValueWithResponse(new TextEncoder().encode(cmd));
     setTimeout(readStatus, 600);
   } catch (e) {
-    $('msg').textContent = t('sendFail') + e.message;
+    $('bridgeMsg').textContent = t('sendFail') + e.message;
   }
 }
 
@@ -1004,7 +1009,7 @@ $('pairForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const code = $('code').value;
   if (!/^(\d{4}|\d{6})$/.test(code)) return;
-  $('msg').textContent = t('sendingCode', code);
+  $('bridgeMsg').textContent = t('sendingCode', code);
   send('code ' + code);
 });
 $('connectBtn').addEventListener('click', connect);
@@ -1012,7 +1017,7 @@ $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = fal
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {
   $('unpairConfirm').hidden = true;
-  $('msg').textContent = t('unpairing');
+  $('bridgeMsg').textContent = t('unpairing');
   send('unpair_phone');
 });
 
