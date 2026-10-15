@@ -364,7 +364,6 @@ const TEXT = {
     reconnecting: 'Reconnecting…', discRetry: 'Disconnected, reconnecting shortly…', disc: 'Disconnected.',
     pick: 'Choose “G7 Bridge” from the list…', noDevice: 'No device selected.', connFail: 'Connection failed: ',
     remembered: 'Connecting to the remembered bridge…',
-    connected: 'Connected. On the first connection, accept the pairing request.',
     denied: 'The bridge refused access. A new phone can only be paired within 10 minutes of powering up the bridge.',
     unpairing: 'Removing phone pairing…',
     ago: (s) => s < 90 ? s + ' s ago' : s < 5400 ? Math.round(s / 60) + ' min ago'
@@ -445,7 +444,6 @@ const TEXT = {
     reconnecting: 'Łączę ponownie…', discRetry: 'Rozłączono, łączę ponownie za chwilę…', disc: 'Rozłączono.',
     pick: 'Wybierz „G7 Bridge” z listy…', noDevice: 'Nie wybrano urządzenia.', connFail: 'Połączenie nie powiodło się: ',
     remembered: 'Łączę z zapamiętanym bridge’em…',
-    connected: 'Połączono. Przy pierwszym połączeniu zatwierdź parowanie.',
     denied: 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.',
     unpairing: 'Usuwam parowanie telefonów…',
     ago: (s) => s < 90 ? s + ' s temu' : s < 5400 ? Math.round(s / 60) + ' min temu'
@@ -985,7 +983,7 @@ async function openGatt() {
     } catch (e) { /* the status JSON may still carry "fw" */ }
     renderVersion();
     setConnected(true);
-    $('msg').textContent = t('connected');
+    $('msg').textContent = ''; // the dot and "Connected" in the header say it
     await readStatus();
   } catch (e) {
     if (e.name === 'SecurityError' || /insufficient|authentic|encrypt/i.test(e.message)) {
