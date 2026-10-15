@@ -82,3 +82,14 @@ jobs:
           files: out/*.apk
           make_latest: 'false'
           generate_release_notes: true
+
+      # A release made in the GitHub page is marked "latest" by default: point "latest" back at the
+      # newest firmware release, which the README's download link relies on.
+      - name: Keep the firmware release as "latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=$(gh api "repos/${{ github.repository }}/releases?per_page=30" --jq '[.[] | select((.draft or .prerelease) | not) | select(.tag_name | test("^v[0-9]"))][0].id')
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/releases/$id" -f make_latest=true --silent
+          fi
