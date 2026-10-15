@@ -166,8 +166,8 @@ fun BridgeScreen(vm: MainViewModel) {
                         }
                     }
                     // Full width below: an update notice must not squeeze next to the buttons
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.weight(1f)) { FirmwareLine(vm, st) }
+                    Row(verticalAlignment = Alignment.Top) {
+                        Box(Modifier.weight(1f)) { VersionLines(vm, st) }
                         LanguageSwitch()
                     }
                 }
@@ -486,26 +486,47 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
     else -> null
 }
 
-/** Firmware version under the connection state, with the latest-release check. */
+/** The bridge's firmware and this app, each with its latest-release check. */
 @Composable
-private fun FirmwareLine(vm: MainViewModel, st: BridgeStatus?) {
+private fun VersionLines(vm: MainViewModel, st: BridgeStatus?) {
     val latest by vm.latest.collectAsStateWithLifecycle()
+    val latestApp by vm.latestApp.collectAsStateWithLifecycle()
     val disFw by vm.client.fwRevision.collectAsStateWithLifecycle()
+    val pl = LocalConfiguration.current.locales[0].language == "pl"
+    Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        (st?.fw ?: disFw)?.let { fw ->
+            VersionLine(
+                stringResource(R.string.fw_line, fw), fw, latest,
+                current = R.string.fw_current, updateText = R.string.fw_update_text, howUrl = ReleaseCheck.HOWTO,
+            )
+        }
+        VersionLine(
+            stringResource(R.string.app_version, BuildConfig.VERSION_NAME), BuildConfig.VERSION_NAME, latestApp,
+            current = R.string.app_current, updateText = R.string.app_update_text,
+            howUrl = if (pl) ReleaseCheck.APP_HOWTO_PL else ReleaseCheck.APP_HOWTO,
+        )
+    }
+}
+
+@Composable
+private fun VersionLine(
+    label: String,
+    installed: String,
+    latest: ReleaseCheck.Latest?,
+    current: Int,
+    updateText: Int,
+    howUrl: String,
+) {
     val uri = LocalUriHandler.current
     var updateDialog by remember { mutableStateOf(false) }
-    val fw = st?.fw ?: disFw ?: return
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
-        Text(
-            stringResource(R.string.fw_line, fw),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(6.dp))
-        when (ReleaseCheck.compare(fw, latest)) {
+        when (ReleaseCheck.compare(installed, latest)) {
             ReleaseCheck.Verdict.UPDATE ->
                 Pill(stringResource(R.string.fw_new, latest!!.version), Tone.Warn) { updateDialog = true }
             ReleaseCheck.Verdict.DEV_BUILD -> Pill(stringResource(R.string.fw_dev))
-            ReleaseCheck.Verdict.CURRENT -> Pill(stringResource(R.string.fw_current), Tone.Good)
+            ReleaseCheck.Verdict.CURRENT -> Pill(stringResource(current), Tone.Good)
             ReleaseCheck.Verdict.UNKNOWN -> {}
         }
     }
@@ -514,7 +535,7 @@ private fun FirmwareLine(vm: MainViewModel, st: BridgeStatus?) {
         AlertDialog(
             onDismissRequest = { updateDialog = false },
             title = { Text(stringResource(R.string.fw_new, l.version)) },
-            text = { Text(stringResource(R.string.fw_update_text)) },
+            text = { Text(stringResource(updateText)) },
             confirmButton = {
                 TextButton(onClick = {
                     updateDialog = false
@@ -524,7 +545,7 @@ private fun FirmwareLine(vm: MainViewModel, st: BridgeStatus?) {
             dismissButton = {
                 TextButton(onClick = {
                     updateDialog = false
-                    uri.openUri(ReleaseCheck.HOWTO)
+                    uri.openUri(howUrl)
                 }) { Text(stringResource(R.string.fw_how)) }
             },
         )
@@ -771,11 +792,6 @@ private fun HelpCard(vm: MainViewModel, connected: Boolean, chooseBridge: () -> 
                 Text(stringResource(R.string.about2))
                 Text(stringResource(R.string.about3))
                 Text(stringResource(R.string.disclaimer), style = MaterialTheme.typography.bodySmall)
-                Text(
-                    stringResource(R.string.app_version, BuildConfig.VERSION_NAME),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
             }
         }
     }

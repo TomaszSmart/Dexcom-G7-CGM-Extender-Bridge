@@ -59,6 +59,9 @@
     <string name="fw_update_text">Pobierz plik na komputer, naciśnij szybko dwa razy RESET na bridge’u i skopiuj plik na dysk RAK4631.</string>
     <string name="bat_desc">Bateria bridge’a %1$d%%</string>
     <string name="bat_charging">Bateria bridge’a %1$d%%, ładuje się</string>
+    <string name="fw_line">Firmware bridge’a %1$s</string>
+    <string name="app_current">aktualna</string>
+    <string name="app_update_text">Pobierz nowy plik APK na tym telefonie i otwórz go: zainstaluje się na tę wersję i zachowa ustawienia.</string>
     <string name="fw_current">aktualny</string>
     <string name="fw_dev">wersja rozwojowa</string>
     <string name="fw_new">dostępna wersja %1$s</string>

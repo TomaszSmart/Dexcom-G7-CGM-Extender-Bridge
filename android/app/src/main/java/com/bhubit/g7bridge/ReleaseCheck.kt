@@ -3,21 +3,25 @@ package com.bhubit.g7bridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * The latest firmware release on GitHub, to compare with the bridge's version. The same
- * repository also has app releases (tags app-v…): only firmware tags (v…) count here.
+ * The latest releases on GitHub, to compare with the bridge's firmware and with this app. The
+ * repository has firmware releases (tags v…, a .uf2) and app releases (tags app-v…, an .apk).
  */
 object ReleaseCheck {
     const val REPO = "TomaszSmart/Dexcom-G7-CGM-Extender-Bridge"
-    const val RELEASES = "https://github.com/$REPO/releases/latest"
+    const val RELEASES = "https://github.com/$REPO/releases"
     const val HOWTO = "https://github.com/$REPO/blob/main/firmware/README.md#install"
+    const val APP_HOWTO = "https://github.com/$REPO/blob/main/android/README.md#install"
+    const val APP_HOWTO_PL = "https://github.com/$REPO/blob/main/android/README.pl.md#instalacja"
 
     data class Latest(val version: String, val downloadUrl: String)
+    data class Releases(val firmware: Latest?, val app: Latest?)
 
-    suspend fun latest(): Latest? = withContext(Dispatchers.IO) {
+    suspend fun releases(): Releases? = withContext(Dispatchers.IO) {
         try {
             val conn = URL("https://api.github.com/repos/$REPO/releases?per_page=30").openConnection() as HttpURLConnection
             conn.connectTimeout = 10_000
@@ -26,16 +30,11 @@ object ReleaseCheck {
             try {
                 if (conn.responseCode != 200) return@withContext null
                 val all = JSONArray(conn.inputStream.bufferedReader().readText())
-                val j = (0 until all.length()).map { all.getJSONObject(it) }.firstOrNull {
-                    !it.optBoolean("draft") && !it.optBoolean("prerelease") &&
-                        Regex("""^v\d""").containsMatchIn(it.optString("tag_name"))
-                } ?: return@withContext null
-                val assets = j.optJSONArray("assets")
-                val uf2 = (0 until (assets?.length() ?: 0)).map { assets!!.getJSONObject(it) }
-                    .firstOrNull { Regex("rak4631.*\\.uf2$").containsMatchIn(it.optString("name")) }
-                Latest(
-                    version = j.getString("tag_name").removePrefix("v"),
-                    downloadUrl = uf2?.optString("browser_download_url") ?: RELEASES,
+                val list = (0 until all.length()).map { all.getJSONObject(it) }
+                    .filter { !it.optBoolean("draft") && !it.optBoolean("prerelease") }
+                Releases(
+                    firmware = newest(list, "v", Regex("rak4631.*\\.uf2$")),
+                    app = newest(list, "app-v", Regex("\\.apk$")),
                 )
             } finally {
                 conn.disconnect()
@@ -43,6 +42,21 @@ object ReleaseCheck {
         } catch (e: Exception) {
             null // offline: no update check
         }
+    }
+
+    /** The bridge firmware only (the background check). */
+    suspend fun latest(): Latest? = releases()?.firmware
+
+    private fun newest(list: List<JSONObject>, prefix: String, asset: Regex): Latest? {
+        val j = list.firstOrNull { Regex("^" + Regex.escape(prefix) + "\\d").containsMatchIn(it.optString("tag_name")) }
+            ?: return null
+        val assets = j.optJSONArray("assets")
+        val file = (0 until (assets?.length() ?: 0)).map { assets!!.getJSONObject(it) }
+            .firstOrNull { asset.containsMatchIn(it.optString("name")) }
+        return Latest(
+            version = j.getString("tag_name").removePrefix(prefix),
+            downloadUrl = file?.optString("browser_download_url") ?: RELEASES,
+        )
     }
 
     private fun parse(v: String?): List<Int>? =

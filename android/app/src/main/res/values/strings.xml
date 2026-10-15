@@ -61,10 +61,12 @@
     <string name="searching">Searching for the sensor with code %1$s — %2$d min left.</string>
 
     <!-- bridge -->
-    <string name="fw_line" translatable="false">Firmware %1$s</string>
     <string name="fw_update_text">Download the file onto the computer, press RESET twice quickly on the bridge and copy the file onto the RAK4631 drive.</string>
     <string name="bat_desc">Bridge battery %1$d%%</string>
     <string name="bat_charging">Bridge battery %1$d%%, charging</string>
+    <string name="fw_line">Bridge firmware %1$s</string>
+    <string name="app_current">up to date</string>
+    <string name="app_update_text">Download the new APK on this phone and open it: it installs over this version and keeps the settings.</string>
     <string name="fw_current">up to date</string>
     <string name="fw_dev">development build</string>
     <string name="fw_new">version %1$s available</string>

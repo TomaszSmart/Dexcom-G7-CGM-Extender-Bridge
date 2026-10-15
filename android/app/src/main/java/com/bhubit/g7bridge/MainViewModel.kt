@@ -23,6 +23,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     val message = MutableStateFlow<Msg?>(null)
     val latest = MutableStateFlow<ReleaseCheck.Latest?>(null)
+    val latestApp = MutableStateFlow<ReleaseCheck.Latest?>(null)
 
     /** Certificates read from a QR code and waiting for "Send to bridge". */
     private val _certs = MutableStateFlow<List<ByteArray>?>(null)
@@ -42,7 +43,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         private set(value) = prefs.edit().putString("address", value).apply()
 
     init {
-        viewModelScope.launch { latest.value = ReleaseCheck.latest() }
+        viewModelScope.launch {
+            ReleaseCheck.releases()?.let {
+                latest.value = it.firmware
+                latestApp.value = it.app
+            }
+        }
         viewModelScope.launch {
             client.problems.collect { p ->
                 message.value = when (p) {
