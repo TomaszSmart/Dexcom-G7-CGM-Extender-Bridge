@@ -418,8 +418,9 @@ private fun SensorCard(st: BridgeStatus?) {
                 Text(
                     when {
                         min != null && len != null && len > 0 ->
-                            stringResource(R.string.day_of, num(min / 1440.0), num(len / 1440.0))
-                        min != null -> stringResource(R.string.day, num(min / 1440.0))
+                            // whole days, e.g. "day 16 of 10"
+                            stringResource(R.string.day_of, (min / 1440).toString(), (len / 1440).toString())
+                        min != null -> stringResource(R.string.day, (min / 1440).toString())
                         else -> stringResource(R.string.sess_unknown)
                     },
                 )

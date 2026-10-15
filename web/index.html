@@ -46,7 +46,18 @@ body {
 }
 main { max-width: 34rem; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; display: grid; gap: 14px; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.head-right { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.head-left { display: grid; gap: 4px; }
+.head-right { display: inline-flex; align-items: center; gap: 12px; }
+.head-sub { flex-basis: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+/* Bridge battery like a phone's: the fill shrinks and changes colour; a bolt while charging. */
+.batt { position: relative; display: inline-block; width: 60px; height: 30px; padding: 3px;
+  border: 2px solid var(--muted); border-radius: 8px; }
+.batt::after { content: ""; position: absolute; right: -6px; top: 8px; width: 3px; height: 10px;
+  background: var(--muted); border-radius: 0 2px 2px 0; }
+.batt-fill { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--ok); }
+.batt-txt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font: 700 0.85rem var(--font-body); color: var(--ink); }
+.batt-txt svg { width: 12px; height: 18px; fill: var(--ink); }
 h1 { font: 700 1.35rem/1.2 var(--font-display); margin: 0; letter-spacing: -0.01em; }
 h2 { font: 600 0.78rem/1.2 var(--font-body); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
@@ -103,6 +114,7 @@ ul.seen li:first-child { border-top: 0; }
 .rssi i { width: 4px; background: var(--line); border-radius: 1px; }
 .rssi i.on { background: var(--accent); }
 .msg { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
+.msg:empty { min-height: 0; margin-block: -7px !important; } /* no gap under the header without a message */
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
@@ -113,15 +125,23 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 <body>
 <main>
   <header>
-    <h1>G7 Bridge</h1>
-    <div class="head-right">
+    <div class="head-left">
+      <h1>G7 Bridge</h1>
       <span class="conn"><span class="dot" id="dot"></span><span id="connText" data-i18n="connNo"></span></span>
+    </div>
+    <div class="head-right">
+      <span class="batt" id="batt" role="img" hidden><span class="batt-fill" id="battFill"></span><span class="batt-txt" id="battTxt"></span></span>
+      <button type="button" id="connectBtn"></button>
+    </div>
+    <div class="head-sub">
+      <span class="sub"><span data-i18n="fwLabel"></span> <span id="fwVer">—</span></span>
       <span class="lang" role="group" aria-label="Language / Język">
         <button type="button" data-lang="en" aria-pressed="true">EN</button>
         <button type="button" data-lang="pl" aria-pressed="false">PL</button>
       </span>
     </div>
   </header>
+  <p class="msg" id="msg" role="status" style="margin:0"></p>
   <p class="sub" style="margin:-6px 0 0" data-i18n="tagline"></p>
   <p class="sub" style="margin:0"><span data-i18n="appLine"></span>
     <a id="apkLink" href="https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases"></a> ·
@@ -144,6 +164,15 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <div style="margin-top:10px"><span class="pill" id="state" data-i18n="stateNone"></span></div>
   </section>
 
+  <section class="panel" aria-labelledby="hRange">
+    <h2 id="hRange" data-i18n="hRange"></h2>
+    <dl>
+      <dt data-i18n="pRssi"></dt><dd><span id="pRssi">—</span></dd>
+      <dt data-i18n="sRssi"></dt><dd><span id="sRssi">—</span></dd>
+    </dl>
+    <p class="sub" data-i18n="rangeHint"></p>
+  </section>
+
   <section class="panel" aria-labelledby="hSensor">
     <h2 id="hSensor" data-i18n="hSensor"></h2>
     <dl>
@@ -156,32 +185,48 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <div class="bar" aria-hidden="true"><span id="sBar"></span></div>
   </section>
 
-  <section class="panel" aria-labelledby="hBat">
-    <h2 id="hBat" data-i18n="hBat"></h2>
-    <dl>
-      <dt data-i18n="fwLabel"></dt><dd id="fwVer">—</dd>
-      <dt data-i18n="bPct"></dt><dd id="bPct">—</dd>
-      <dt data-i18n="bMv"></dt><dd id="bMv">—</dd>
-      <dt data-i18n="bUsb"></dt><dd id="bUsb">—</dd>
-    </dl>
-    <div class="bar" aria-hidden="true"><span id="bBar"></span></div>
+  <section class="panel" aria-labelledby="hPair">
+    <h2 id="hPair" data-i18n="hPair"></h2>
+    <form class="pair" id="pairForm">
+      <label for="code"><span data-i18n="codeLabel"></span>
+        <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
+      </label>
+      <button type="submit" id="pairBtn" disabled data-i18n="pairBtn"></button>
+    </form>
+    <p class="sub" data-i18n="pairHint"></p>
+    <div class="search" id="search" hidden></div>
+    <h2 id="hSeen" data-i18n="hSeen" style="margin-top:18px"></h2>
+    <ul class="seen" id="seen">
+      <li><span class="sub" data-i18n="seenInit"></span></li>
+    </ul>
   </section>
 
-  <section class="panel" aria-labelledby="hRange">
-    <h2 id="hRange" data-i18n="hRange"></h2>
-    <dl>
-      <dt data-i18n="pRssi"></dt><dd><span id="pRssi">—</span></dd>
-      <dt data-i18n="sRssi"></dt><dd><span id="sRssi">—</span></dd>
-    </dl>
-    <p class="sub" data-i18n="rangeHint"></p>
+  <section class="panel" aria-labelledby="hCerts">
+    <h2 id="hCerts" data-i18n="hCerts"></h2>
+    <dl><dt data-i18n="certsState"></dt><dd id="certsState">—</dd></dl>
+    <details id="certsBox">
+      <summary data-i18n="certsLoad"></summary>
+      <details>
+        <summary data-i18n="certsWhat"></summary>
+        <p class="sub" data-i18n="certsHint"></p>
+      </details>
+      <div class="confirm">
+        <button type="button" id="certsDocBtn" data-i18n="certsDoc"></button>
+        <button type="button" class="quiet" id="camBtn" data-i18n="camStart"></button>
+      </div>
+      <div id="camBox" hidden>
+        <video id="camVideo" playsinline muted></video>
+        <p class="sub" data-i18n="camHint"></p>
+      </div>
+      <textarea id="certsText" hidden></textarea>
+      <div class="confirm">
+        <button type="button" id="certsBtn" disabled data-i18n="certsSend"></button>
+      </div>
+      <p class="sub" id="certsMsg" role="status"></p>
+    </details>
   </section>
 
   <section class="panel">
-    <div class="confirm">
-      <button type="button" id="connectBtn"></button>
-      <button type="button" class="quiet" id="refreshBtn" disabled data-i18n="refreshBtn"></button>
-    </div>
-    <p class="msg" id="msg" role="status"></p>
     <details id="xdripHelp">
       <summary data-i18n="xdTitle"></summary>
       <ol class="sub">
@@ -228,50 +273,6 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     </details>
   </section>
 
-  <section class="panel" aria-labelledby="hSeen">
-    <h2 id="hSeen" data-i18n="hSeen"></h2>
-    <ul class="seen" id="seen">
-      <li><span class="sub" data-i18n="seenInit"></span></li>
-    </ul>
-  </section>
-
-  <section class="panel" aria-labelledby="hPair">
-    <h2 id="hPair" data-i18n="hPair"></h2>
-    <form class="pair" id="pairForm">
-      <label for="code"><span data-i18n="codeLabel"></span>
-        <input id="code" inputmode="numeric" autocomplete="off" pattern="[0-9]{4}([0-9]{2})?" maxlength="6" placeholder="0000" required>
-      </label>
-      <button type="submit" id="pairBtn" disabled data-i18n="pairBtn"></button>
-    </form>
-    <p class="sub" data-i18n="pairHint"></p>
-    <div class="search" id="search" hidden></div>
-  </section>
-
-  <section class="panel" aria-labelledby="hCerts">
-    <h2 id="hCerts" data-i18n="hCerts"></h2>
-    <dl><dt data-i18n="certsState"></dt><dd id="certsState">—</dd></dl>
-    <details id="certsBox">
-      <summary data-i18n="certsLoad"></summary>
-      <details>
-        <summary data-i18n="certsWhat"></summary>
-        <p class="sub" data-i18n="certsHint"></p>
-      </details>
-      <div class="confirm">
-        <button type="button" id="certsDocBtn" data-i18n="certsDoc"></button>
-        <button type="button" class="quiet" id="camBtn" data-i18n="camStart"></button>
-      </div>
-      <div id="camBox" hidden>
-        <video id="camVideo" playsinline muted></video>
-        <p class="sub" data-i18n="camHint"></p>
-      </div>
-      <textarea id="certsText" hidden></textarea>
-      <div class="confirm">
-        <button type="button" id="certsBtn" disabled data-i18n="certsSend"></button>
-      </div>
-      <p class="sub" id="certsMsg" role="status"></p>
-    </details>
-  </section>
-
   <section class="panel" aria-labelledby="hAbout">
     <h2 id="hAbout" data-i18n="hAbout"></h2>
     <p class="sub" data-i18n="about1"></p>
@@ -302,7 +303,7 @@ const TEXT = {
     noBtText: 'Open this page in Chrome on Android (Web Bluetooth). Safari on iPhone does not support it.',
     hReading: 'Glucose', trendInit: 'Connect to the bridge to see the reading', stateNone: 'no data',
     hSensor: 'Sensor', sName: 'Name', sDay: 'Session', sEnd: 'Ends', sCode: 'Code', sPhone: 'Phone (xDrip)',
-    hBat: 'Bridge', bPct: 'Battery', bMv: 'Voltage', bUsb: 'Power', fwLabel: 'Firmware',
+    fwLabel: 'Firmware', batDesc: (p) => 'Bridge battery ' + p + ' %', batCharging: (p) => 'Bridge battery ' + p + ' %, charging',
     fwCurrent: 'up to date', fwDev: 'development build', fwNew: (v) => 'version ' + v + ' available',
     fwGet: 'download', fwHow: 'how to update',
     xdTitle: 'Connect xDrip+ to the bridge',
@@ -315,7 +316,7 @@ const TEXT = {
     certsDocFail: 'Could not load the QR code from the xDrip+ documentation: ',
     hRange: 'Range', pRssi: 'Phone ↔ bridge', sRssi: 'Sensor ↔ bridge',
     rangeHint: 'Below about −90 dBm the phone link drops.',
-    connectBtn: 'Connect to bridge', disconnectBtn: 'Disconnect', refreshBtn: 'Refresh',
+    connectBtn: 'Connect to bridge', disconnectBtn: 'Disconnect',
     ledTitle: 'What the bridge LEDs mean',
     ledG1: 'green 1× every 5 s', ledG1d: 'sensor OK, fresh reading, xDrip connected',
     ledG2: 'green 2× every 5 s', ledG2d: 'sensor OK but xDrip not connected, or warm-up',
@@ -356,7 +357,6 @@ const TEXT = {
     codeNotSet: 'not set', phoneOn: 'connected', phoneOff: 'not connected',
     pillUsed: 'in use', pillNoFit: 'code does not fit', pillCheck: 'to check', pillOther: 'other',
     seenNone: 'The bridge has not seen any sensor yet. G7 transmits every 5 minutes.',
-    chargeMe: 'charge', usbCharging: 'USB — charging', onBattery: 'battery', noBattery: 'this board does not measure the battery',
     rssiGood: 'good', rssiMid: 'fair', rssiBad: 'weak', signal: 'signal',
     readFail: 'Could not read the status: ', sendFail: 'Could not send the command: ',
     reconnecting: 'Reconnecting…', discRetry: 'Disconnected, reconnecting shortly…', disc: 'Disconnected.',
@@ -385,7 +385,7 @@ const TEXT = {
     noBtText: 'Otwórz tę stronę w Chrome na Androidzie (Web Bluetooth). Safari na iPhonie tego nie obsługuje.',
     hReading: 'Glukoza', trendInit: 'Połącz z bridge’em, żeby zobaczyć odczyt', stateNone: 'brak danych',
     hSensor: 'Sensor', sName: 'Nazwa', sDay: 'Sesja', sEnd: 'Koniec', sCode: 'Kod', sPhone: 'Telefon (xDrip)',
-    hBat: 'Bridge', bPct: 'Bateria', bMv: 'Napięcie', bUsb: 'Zasilanie', fwLabel: 'Firmware',
+    fwLabel: 'Firmware', batDesc: (p) => 'Bateria bridge’a ' + p + ' %', batCharging: (p) => 'Bateria bridge’a ' + p + ' %, ładuje się',
     fwCurrent: 'aktualny', fwDev: 'wersja rozwojowa', fwNew: (v) => 'dostępna wersja ' + v,
     fwGet: 'pobierz', fwHow: 'jak zaktualizować',
     xdTitle: 'Połącz xDrip+ z bridge’em',
@@ -398,7 +398,7 @@ const TEXT = {
     certsDocFail: 'Nie udało się pobrać kodu QR z dokumentacji xDrip+: ',
     hRange: 'Zasięg', pRssi: 'Telefon ↔ bridge', sRssi: 'Sensor ↔ bridge',
     rangeHint: 'Poniżej około −90 dBm połączenie z telefonem się zrywa.',
-    connectBtn: 'Połącz z bridge’em', disconnectBtn: 'Rozłącz', refreshBtn: 'Odśwież',
+    connectBtn: 'Połącz z bridge’em', disconnectBtn: 'Rozłącz',
     ledTitle: 'Co znaczą diody na bridge’u',
     ledG1: 'zielona 1× co 5 s', ledG1d: 'sensor OK, świeży odczyt, xDrip połączony',
     ledG2: 'zielona 2× co 5 s', ledG2d: 'sensor OK, ale xDrip niepołączony, albo rozgrzewanie',
@@ -439,7 +439,6 @@ const TEXT = {
     codeNotSet: 'nie ustawiony', phoneOn: 'połączony', phoneOff: 'nie połączony',
     pillUsed: 'używany', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
     seenNone: 'Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.',
-    chargeMe: 'naładuj', usbCharging: 'USB — ładuje się', onBattery: 'z baterii', noBattery: 'ta płytka nie mierzy baterii',
     rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
     readFail: 'Nie udało się odczytać stanu: ', sendFail: 'Nie udało się wysłać polecenia: ',
     reconnecting: 'Łączę ponownie…', discRetry: 'Rozłączono, łączę ponownie za chwilę…', disc: 'Rozłączono.',
@@ -792,10 +791,10 @@ function render(st) {
   $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : t('notSelected'));
   const sess = st.sess || {};
   if (sess.min !== undefined && sess.len) {
-    $('sDay').textContent = t('dayOf', num(sess.min / 1440, 1), num(sess.len / 1440, 1));
+    $('sDay').textContent = t('dayOf', Math.floor(sess.min / 1440), Math.floor(sess.len / 1440));
     $('sBar').style.width = Math.min(100, 100 * sess.min / sess.len) + '%';
   } else if (sess.min !== undefined) {
-    $('sDay').textContent = t('day', num(sess.min / 1440, 1));
+    $('sDay').textContent = t('day', Math.floor(sess.min / 1440));
     $('sBar').style.width = '0%';
   } else {
     $('sDay').textContent = t('sessUnknown');
@@ -829,20 +828,17 @@ function render(st) {
   }).join('') : '<li><span class="sub">' + t('seenNone') + '</span></li>';
 
   const bat = st.bat;
+  const batt = $('batt');
+  batt.hidden = !bat;
   if (bat) {
-    const low = bat.pct <= 20 && !bat.usb;
-    $('bPct').innerHTML = (bat.usb ? '~' : '') + bat.pct + ' %' +
-      (low ? ' <span class="pill bad">' + t('chargeMe') + '</span>' : '');
-    $('bMv').textContent = num(bat.mv / 1000, 2) + ' V';
-    $('bUsb').textContent = t(bat.usb ? 'usbCharging' : 'onBattery');
-    $('bBar').style.width = bat.pct + '%';
-    // Bar colour: red up to 20 %, yellow up to 30 %, green above.
-    $('bBar').style.background = bat.pct <= 20 ? 'var(--low)' : bat.pct <= 30 ? 'var(--high)' : 'var(--ok)';
-  } else {
-    $('bPct').textContent = t('noBattery');
-    $('bMv').textContent = '—';
-    $('bUsb').textContent = '—';
-    $('bBar').style.width = '0%';
+    const pct = Math.max(0, Math.min(100, bat.pct));
+    $('battFill').style.width = pct + '%';
+    // Red up to 20 %, yellow up to 30 %, green above.
+    $('battFill').style.background = pct <= 20 ? 'var(--low)' : pct <= 30 ? 'var(--high)' : 'var(--ok)';
+    $('battTxt').innerHTML = bat.usb ? BOLT : pct + '%';
+    const label = t(bat.usb ? 'batCharging' : 'batDesc', pct);
+    batt.setAttribute('aria-label', label);
+    batt.title = label;
   }
 
   $('pRssi').innerHTML = st.prssi !== undefined ? rssiText(st.prssi) : '—';
@@ -865,6 +861,8 @@ function render(st) {
 
   if (st.msg && st.msg !== 'ready') $('msg').textContent = 'Bridge: ' + st.msg;
 }
+
+const BOLT = '<svg viewBox="0 0 10 16" aria-hidden="true"><path d="M6.2 0 0.5 9.3h4L3.5 16l6-9.6h-4z"/></svg>';
 
 function rssiText(r) {
   const [label, cls] = r >= -70 ? [t('rssiGood'), 'good'] : r >= -85 ? [t('rssiMid'), 'warn'] : [t('rssiBad'), 'bad'];
@@ -899,7 +897,7 @@ function setConnected(on) {
   $('dot').classList.toggle('on', on);
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
-  for (const id of ['refreshBtn', 'unpairBtn']) $(id).disabled = !on;
+  $('unpairBtn').disabled = !on;
   $('certsBtn').disabled = !(on && certsChr);
   validateCode();
   if (timer) clearInterval(timer);
@@ -1010,7 +1008,6 @@ $('pairForm').addEventListener('submit', (e) => {
   send('code ' + code);
 });
 $('connectBtn').addEventListener('click', connect);
-$('refreshBtn').addEventListener('click', readStatus);
 $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = false; });
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {
