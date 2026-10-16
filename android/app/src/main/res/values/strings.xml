@@ -162,7 +162,7 @@
     <string name="msg_bridge">Bridge: %1$s</string>
 
     <!-- notifications -->
-    <string name="xd6">Turn on the “Missed readings” alert in xDrip+ (e.g. after 20 min) and let it through Do Not Disturb — it is the safety net. G7 Bridge only tells you the reason and warns about the bridge’s battery.</string>
+    <string name="xd6">xDrip+ is still the main app: set up its settings and alerts as the xDrip+ documentation describes, including the “Missed readings” alert (e.g. after 20 min) allowed through Do Not Disturb. G7 Bridge only tells you the reason and warns about the bridge’s battery.</string>
     <string name="ch_battery">Bridge battery low</string>
     <string name="ch_battery_empty">Bridge battery almost empty</string>
     <string name="ch_diagnosis">Why no data arrives</string>

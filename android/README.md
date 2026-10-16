@@ -41,3 +41,7 @@ the link is open anyway because of xDrip+ — and tells you only what xDrip+ can
 | xDrip+ is not collecting from the bridge | for ~30 min (firmware 0.3.0 or newer) |
 | Sensor session ended / sensor failure | once per sensor |
 | App certificates are not loaded, new firmware available | once |
+
+These are quiet notifications except the battery. xDrip+ is still the main app: make sure its
+settings and alerts are set up as the [xDrip+ documentation](https://navid200.github.io/xDrip/) describes, including the
+**Missed readings** alert, allowed through Do Not Disturb.

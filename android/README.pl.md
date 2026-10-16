@@ -40,3 +40,7 @@ nie widzi:
 | xDrip+ nie odbiera odczytów z bridge’a | przez ok. 30 min (firmware 0.3.0 lub nowszy) |
 | Koniec sesji / awaria sensora | raz na sensor |
 | Brak certyfikatów aplikacji, nowy firmware | raz |
+
+Poza baterią to ciche powiadomienia. Główną aplikacją wciąż jest xDrip+: upewnij się, że jego
+ustawienia i alarmy są skonfigurowane zgodnie z [dokumentacją xDrip+](https://navid200.github.io/xDrip/), w tym alarm
+**Missed readings** (brak odczytów), któremu pozwolisz przebijać tryb Nie przeszkadzać.

@@ -157,7 +157,7 @@
     <string name="msg_bridge">Bridge: %1$s</string>
 
     <!-- powiadomienia -->
-    <string name="xd6">Włącz w xDrip+ alarm „Missed readings” (np. po 20 min) i pozwól mu przebijać tryb Nie przeszkadzać — to on jest siatką bezpieczeństwa. G7 Bridge podpowiada tylko przyczynę i ostrzega o baterii bridge’a.</string>
+    <string name="xd6">Główną aplikacją wciąż jest xDrip+: skonfiguruj jego ustawienia i alarmy zgodnie z dokumentacją xDrip+, w tym alarm „Missed readings” (np. po 20 min) z przebijaniem trybu Nie przeszkadzać. G7 Bridge podpowiada tylko przyczynę i ostrzega o baterii bridge’a.</string>
     <string name="ch_battery">Niska bateria bridge’a</string>
     <string name="ch_battery_empty">Bateria bridge’a prawie pusta</string>
     <string name="ch_diagnosis">Dlaczego nie ma danych</string>
