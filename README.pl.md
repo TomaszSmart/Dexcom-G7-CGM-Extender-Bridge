@@ -4,7 +4,7 @@
 
 ## Dlaczego G7 Bridge
 
-Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu piłki,
+Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu,
 na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo
 w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się
 psują.
@@ -14,7 +14,7 @@ odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni a
 do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon
 na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.
 
-**Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.**
+**Cel jest prosty: żeby dziecko mogło po prostu trenować, a rodzic nadal widział każdy odczyt.**
 
 ## Szybki start
 
@@ -36,7 +36,7 @@ sensora.
 5. **xDrip+** — Ustawienia → **Hardware Data Source** → **SmartGuide**, wybierz „G7 Bridge”
    i zatwierdź parowanie. Po parowaniu bridge raz rozłączy telefon; xDrip+ połączy się sam.
    AndroidAPS dalej korzysta z xDrip+ jako źródła BG.
-6. **Sensor** — wyłącz zbieranie danych w innym telefonie, który łączy się z sensorem, wpisz kod
+6. **Sensor** — wyłącz zbieranie danych na innym telefonie, który jest połączony z sensorem lub użyj nowego sensora, wpisz kod
    z aplikatora w panelu **Nowy sensor** i naciśnij **Paruj**. Do 30 minut bridge znajdzie
    sensor, a odczyty pojawią się w xDrip+.
 
@@ -45,7 +45,7 @@ Ustawienia, certyfikaty i parowania zostają.
 
 ## Strona
 
-Strona do obsługi domowego mostka Bluetooth, który odbiera odczyty
+Strona do obsługi G7 Bridge, który odbiera odczyty
 z sensora Dexcom G7 i przekazuje je do xDrip+ jako standardowa usługa Bluetooth CGM.
 
 **Strona:** https://g7bridge.b-hubit.com
@@ -55,7 +55,7 @@ Otwórz ją w Chrome na Androidzie (wymaga Web Bluetooth), naciśnij „Połącz
 radiowy oraz sensory w zasięgu, a przy wymianie sensora wystarczy wpisać 4-cyfrowy kod
 z aplikatora. Język strony przełączasz w prawym górnym rogu (EN / PL); domyślny jest angielski.
 
-Telefon można sparować z mostkiem tylko przez 10 minut od podłączenia jego zasilania.
+Telefon można sparować G7 Bridge tylko przez 10 minut od podłączenia jego zasilania.
 
 ## Łączenie bez klikania po odświeżeniu strony
 
@@ -76,21 +76,21 @@ eksperymentalna Chrome, więc w przyszłych wersjach może się zmienić.
 | Dioda | Co znaczy |
 |---|---|
 | zielona 1× co 5 s | sensor OK, świeży odczyt, xDrip połączony |
-| zielona 2× co 5 s | sensor OK, ale xDrip niepołączony, albo rozgrzewanie |
-| zielona + niebieska 3× co 5 s | problem: brak odczytu ponad 15 min, awaria lub koniec sesji |
+| zielona 2× co 5 s | sensor OK, ale xDrip niepołączony, albo trwa rozgrzewanie sensora |
+| zielona + niebieska 3× co 5 s | problem: brak odczytu ponad 15 min, awaria lub koniec sesji sensora |
 | zielona + niebieska 1× co 2 s | po włączeniu, czeka na pierwszy odczyt |
 | niebieska miga | szuka sensora po nowym kodzie |
 | niebieska 1× co 5 s | nie ustawiono kodu ani sensora |
-| czerwona świeci | dioda ładowania baterii (nie zależy od bridge'a) |
+| czerwona świeci | dioda ładowania baterii |
 
 ## Aplikacja na Androida
 
 [Aplikacja G7 Bridge](android/README.pl.md) robi to samo co strona, bez Chrome, i pilnuje bridge'a
-w tle: ostrzega o słabnącej baterii bridge'a i wyjaśnia, dlaczego nie ma danych (bridge poza
-zasięgiem, sensor niesłyszalny, xDrip+ nie odbiera, koniec sesji). Alarmy glukozy zostają
+w tle: ostrzega o słabnącej baterii bridge'a jak również raportuje błędy, np. dlaczego nie ma danych (bridge poza
+zasięgiem, sensor niesłyszalny, xDrip+ nie odbiera, koniec sesji sensora). Alarmy glukozy zostają
 w xDrip+. Plik APK pobierzesz z najnowszego wydania **app-v…**.
 
-## Firmware
+## Firmware Bridge'a
 
 Firmware bridge'a (RAKwireless RAK4631 WisBlock) jest w [firmware/](firmware/README.pl.md):
 płytki, instalacja, pierwsza konfiguracja i kompilacja ze źródeł. Certyfikatów aplikacji, o które
