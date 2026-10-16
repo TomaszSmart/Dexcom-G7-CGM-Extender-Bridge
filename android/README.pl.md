@@ -2,16 +2,14 @@
 
 [English](README.md) · **Polski**
 
-Aplikacja na Androida robi to samo co [strona konfiguracji](https://g7bridge.b-hubit.com), bez
-Chrome: łączy się z bridge’em, pokazuje odczyt, sensor i jego sesję, zasięg, baterię bridge’a
-i wersję firmware, paruje nowy sensor po kodzie i wczytuje certyfikaty aplikacji. Dodatkowo
-pilnuje bridge’a w tle.
+Aplikacja na Androida robi to samo co [strona konfiguracji](https://g7bridge.b-hubit.com): łączy się z bridge’em, pokazuje odczyt, sensor i jego sesję, zasięg, baterię bridge’a
+i wersję firmware, paruje nowy sensor po kodzie i wczytuje certyfikaty aplikacji. Dodatkowo pilnuje bridge’a w tle.
 
 > Projekt hobbystyczny, nie jest wyrobem medycznym. Alarmy glukozy zostają w xDrip+.
 
 ## Instalacja
 
-1. W telefonie otwórz [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases)
+1. W telefonie z Androidem otwórz [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases)
    i pobierz `g7-bridge-app-<wersja>.apk` z najnowszego wydania **app-v…**.
 2. Otwórz plik i zezwól na instalowanie aplikacji z tego źródła, gdy Android o to zapyta.
 3. Uruchom **G7 Bridge** i zezwól na Bluetooth („Urządzenia w pobliżu”) oraz powiadomienia.
@@ -21,8 +19,8 @@ Aktualizacje instaluje się tak samo, na starą wersję; ustawienia zostają.
 ## Pierwsze użycie
 
 Jeśli xDrip+ w tym telefonie jest już połączony z bridge’em, aplikacja sama go znajdzie.
-W przeciwnym razie naciśnij **Połącz**, wybierz „G7 Bridge” i zatwierdź parowanie — w ciągu
-10 minut od podłączenia zasilania bridge’a, jak każdy telefon.
+W przeciwnym razie naciśnij **Połącz**, wybierz „G7 Bridge” i zatwierdź parowanie w ciągu
+10 minut od podłączenia zasilania bridge’a.
 
 - **Certyfikaty aplikacji** — **Z dokumentacji xDrip+** (albo **Skanuj aparatem**), potem
   **Wyślij do bridge’a**. Raz na bridge.
@@ -42,16 +40,3 @@ nie widzi:
 | xDrip+ nie odbiera odczytów z bridge’a | przez ok. 30 min (firmware 0.3.0 lub nowszy) |
 | Koniec sesji / awaria sensora | raz na sensor |
 | Brak certyfikatów aplikacji, nowy firmware | raz |
-
-Poza baterią to ciche powiadomienia. Alarm **Missed readings** w xDrip+ trzymaj włączony
-i z przebijaniem trybu Nie przeszkadzać — to on jest siatką bezpieczeństwa.
-
-## Kompilacja
-
-Otwórz ten folder (`android/`) w Android Studio albo uruchom `./gradlew assembleDebug`. W Windows
-ścieżka ze znakiem `&` psuje Gradle — otwórz projekt przez junction, np. `C:\dev\g7android`.
-
-Wydania buduje GitHub Actions (`.github/workflows/android.yml`): wypchnięcie tagu `app-vX.Y.Z`
-buduje APK podpisany kluczem z sekretów repozytorium `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` i `ANDROID_KEY_PASSWORD` i dołącza go do wydania.
-Chroń ten klucz: bez niego zainstalowanych aplikacji nie da się zaktualizować.
