@@ -11,6 +11,7 @@ import com.bhubit.g7bridge.ble.BridgeClient.Problem
 import com.bhubit.g7bridge.certs.AppCerts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** A message for the status line, resolved to text in the UI language. */
@@ -24,6 +25,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val message = MutableStateFlow<Msg?>(null)
     val latest = MutableStateFlow<ReleaseCheck.Latest?>(null)
     val latestApp = MutableStateFlow<ReleaseCheck.Latest?>(null)
+    /** Declared before init: the first check runs from init and sets it. */
+    @Volatile private var releasesChecked = 0L
 
     /** Certificates read from a QR code and waiting for "Send to bridge". */
     private val _certs = MutableStateFlow<List<ByteArray>?>(null)
@@ -43,10 +46,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         private set(value) = prefs.edit().putString("address", value).apply()
 
     init {
+        // New releases: on start, every 30 min while on screen, and on return after 5 min
         viewModelScope.launch {
-            ReleaseCheck.releases()?.let {
-                latest.value = it.firmware
-                latestApp.value = it.app
+            while (true) {
+                if (client.polling) checkReleases()
+                delay(30 * 60_000L)
             }
         }
         viewModelScope.launch {
@@ -118,6 +122,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setForeground(on: Boolean) {
         client.polling = on
+        if (on && System.currentTimeMillis() - releasesChecked > 5 * 60_000L) {
+            viewModelScope.launch { checkReleases() }
+        }
+    }
+
+    private suspend fun checkReleases() {
+        releasesChecked = System.currentTimeMillis()
+        ReleaseCheck.releases()?.let {
+            latest.value = it.firmware
+            latestApp.value = it.app
+        }
     }
 
     fun refresh() = viewModelScope.launch { client.refreshStatus() }

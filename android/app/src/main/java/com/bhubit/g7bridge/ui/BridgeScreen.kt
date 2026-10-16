@@ -165,9 +165,8 @@ fun BridgeScreen(vm: MainViewModel) {
                             }
                         }
                     }
-                    // Full width below: an update notice must not squeeze next to the buttons
-                    Row(verticalAlignment = Alignment.Top) {
-                        Box(Modifier.weight(1f)) { VersionLines(vm, st) }
+                    Row {
+                        Spacer(Modifier.weight(1f))
                         LanguageSwitch()
                     }
                 }
@@ -200,6 +199,8 @@ fun BridgeScreen(vm: MainViewModel) {
             PairCard(vm, st, conn == Conn.CONNECTED)
             CertsCard(vm, st, conn == Conn.CONNECTED)
             HelpCard(vm, conn == Conn.CONNECTED) { chooser = true }
+            // Versions at the very bottom, each with its update check
+            Box(Modifier.padding(horizontal = 4.dp)) { VersionLines(vm, st) }
             Spacer(Modifier.height(24.dp))
         }
     }
@@ -223,9 +224,9 @@ private fun ConnLine(conn: Conn) {
         Conn.DISCONNECTED -> stringResource(R.string.conn_no) to MaterialTheme.colorScheme.outline
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(12.dp).background(color, CircleShape))
-        Spacer(Modifier.width(8.dp))
-        Text(text, style = MaterialTheme.typography.titleSmall)
+        Box(Modifier.size(16.dp).background(color, CircleShape))
+        Spacer(Modifier.width(10.dp))
+        Text(text, style = MaterialTheme.typography.titleMedium)
     }
 }
 

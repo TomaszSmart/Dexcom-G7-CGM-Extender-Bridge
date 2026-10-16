@@ -681,7 +681,11 @@ const RELEASES = 'https://github.com/' + REPO + '/releases/latest';
 const HOWTO = 'https://github.com/' + REPO + '/blob/main/firmware/README.md#install';
 let fwVersion = null, latest = null;
 
-(async () => {
+// Checked on load, when the tab comes back after 5 min and every 30 min while it stays open.
+let releasesChecked = 0;
+
+async function checkReleases() {
+  releasesChecked = Date.now();
   try {
     // The repository also has app releases (tags app-v…): only firmware tags (v…) count.
     const r = await fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=30');
@@ -700,7 +704,13 @@ let fwVersion = null, latest = null;
     latest = { ver: j.tag_name.replace(/^v/, ''), url: asset ? asset.browser_download_url : RELEASES };
     renderVersion();
   } catch (e) { /* offline: no update check */ }
-})();
+}
+
+checkReleases();
+setInterval(checkReleases, 30 * 60000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - releasesChecked > 5 * 60000) checkReleases();
+});
 
 // Until the release list arrives (or offline) the link opens the Releases page.
 let appApk = null;
