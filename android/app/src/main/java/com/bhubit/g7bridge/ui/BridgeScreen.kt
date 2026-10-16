@@ -165,10 +165,6 @@ fun BridgeScreen(vm: MainViewModel) {
                             }
                         }
                     }
-                    Row {
-                        Spacer(Modifier.weight(1f))
-                        LanguageSwitch()
-                    }
                 }
             }
         },
@@ -199,8 +195,11 @@ fun BridgeScreen(vm: MainViewModel) {
             PairCard(vm, st, conn == Conn.CONNECTED)
             CertsCard(vm, st, conn == Conn.CONNECTED)
             HelpCard(vm, conn == Conn.CONNECTED) { chooser = true }
-            // Versions at the very bottom, each with its update check
-            Box(Modifier.padding(horizontal = 4.dp)) { VersionLines(vm, st) }
+            // Versions (each with its update check) and the language switch at the very bottom
+            Row(Modifier.padding(horizontal = 4.dp), verticalAlignment = Alignment.Top) {
+                Box(Modifier.weight(1f)) { VersionLines(vm, st) }
+                LanguageSwitch()
+            }
             Spacer(Modifier.height(24.dp))
         }
     }
