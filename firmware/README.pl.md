@@ -42,12 +42,3 @@ w osobnej części pamięci i przetrwają aktualizację.
    kod, i sparuje się z nim (do 30 minut).
 
 Minęło 10 minut? Odłącz baterię i USB (albo naciśnij raz RESET) i sparuj ponownie.
-
-## Konsola szeregowa
-
-Port USB pokazuje logi i konsolę (115200 bodów). Przydatne polecenia: `g7 get_code`, `g7 get_id`,
-`g7 certs`, `g7 cert_selftest`, `g7 battery`, `g7 unpair_phone`, `g7 repair_sensor`.
-
-## Kompilacja
-
-Chcesz sam zbudować albo zmienić firmware? Zobacz [BUILDING.pl.md](BUILDING.pl.md).
