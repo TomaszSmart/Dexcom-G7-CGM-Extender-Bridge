@@ -2,8 +2,8 @@
 
 **English** · [Polski](README.pl.md)
 
-The Android app does what the [setup page](https://g7bridge.b-hubit.com) does, without Chrome:
-connects to the bridge, shows the reading, the sensor and its session, the range, the bridge's
+The Android app does what the [setup page](https://g7bridge.b-hubit.com) does: connects to the
+bridge, shows the reading, the sensor and its session, the range, the bridge's
 battery and firmware version, pairs a new sensor by its code and loads the app certificates.
 On top of that it watches the bridge in the background.
 
@@ -11,7 +11,7 @@ On top of that it watches the bridge in the background.
 
 ## Install
 
-1. On the phone, open [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases)
+1. On the Android phone, open [Releases](https://github.com/TomaszSmart/Dexcom-G7-CGM-Extender-Bridge/releases)
    and download `g7-bridge-app-<version>.apk` from the newest **app-v…** release.
 2. Open the file and allow installing apps from this source when Android asks.
 3. Start **G7 Bridge** and allow Bluetooth (“Nearby devices”) and notifications.
@@ -21,8 +21,8 @@ Updates install the same way, over the old version; settings are kept.
 ## First use
 
 If xDrip+ on this phone is already connected to the bridge, the app finds the bridge by itself.
-Otherwise tap **Connect**, choose “G7 Bridge” and accept the pairing request — within 10 minutes
-of powering the bridge up, like any phone.
+Otherwise tap **Connect**, choose “G7 Bridge” and accept the pairing request within 10 minutes
+of powering the bridge up.
 
 - **App certificates** — **From the xDrip+ documentation** (or **Scan with camera**), then
   **Send to bridge**. Needed once per bridge.
@@ -41,16 +41,3 @@ the link is open anyway because of xDrip+ — and tells you only what xDrip+ can
 | xDrip+ is not collecting from the bridge | for ~30 min (firmware 0.3.0 or newer) |
 | Sensor session ended / sensor failure | once per sensor |
 | App certificates are not loaded, new firmware available | once |
-
-These are quiet notifications except the battery. Keep the **Missed readings** alert in xDrip+
-switched on and allowed through Do Not Disturb: that is the safety net.
-
-## Building
-
-Open this folder (`android/`) in Android Studio, or run `./gradlew assembleDebug`. On Windows,
-a path with `&` breaks Gradle — open it through a junction such as `C:\dev\g7android`.
-
-Releases are built by GitHub Actions (`.github/workflows/android.yml`): pushing a tag
-`app-vX.Y.Z` builds an APK signed with the key from the repository secrets `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`, and attaches it to a
-release. Keep that key safe: without it, installed apps cannot be updated.

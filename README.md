@@ -4,7 +4,7 @@
 
 ## Why G7 Bridge
 
-A Dexcom G7 sensor only talks to a phone a few metres away. So at football practice, in PE or on
+A Dexcom G7 sensor only talks to a phone a few metres away. So at practice, in PE or on
 the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces
 with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.
 
@@ -14,7 +14,7 @@ bench — up to about 50 m away. xDrip+ and AndroidAPS keep working as usual, an
 phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is
 back.
 
-**The goal is simple: let the child just play — with the parent still seeing every reading.**
+**The goal is simple: let the child just train — with the parent still seeing every reading.**
 
 ## Quick start
 
@@ -36,8 +36,8 @@ sensor applicator.
 5. **xDrip+** — Settings → **Hardware Data Source** → **SmartGuide**, choose “G7 Bridge” and accept
    the pairing request. The bridge drops the phone once after pairing; xDrip+ reconnects by itself.
    AndroidAPS keeps xDrip+ as its BG source.
-6. **Sensor** — stop data collection on any other phone that talks to the sensor, enter the
-   applicator code under **New sensor** and tap **Pair**. Within up to 30 minutes the bridge finds
+6. **Sensor** — stop data collection on any other phone connected to the sensor, or use a new
+   sensor, enter the applicator code under **New sensor** and tap **Pair**. Within up to 30 minutes the bridge finds
    the sensor and readings appear in xDrip+.
 
 Updating later: the page shows when a newer firmware is available; flash it the same way as in
@@ -45,7 +45,7 @@ step 1. Settings, certificates and pairings are kept.
 
 ## The page
 
-Web page for a home-made Bluetooth bridge that receives readings from a
+Web page for G7 Bridge, which receives readings from a
 Dexcom G7 sensor and forwards them to xDrip+ as a standard Bluetooth CGM service.
 
 **Page:** https://g7bridge.b-hubit.com
@@ -56,7 +56,7 @@ battery, the radio range and the sensors in range. When you change the sensor, j
 4-digit code from the applicator. The page language can be switched between English and Polish
 (top right); English is the default.
 
-A phone can only be paired with the bridge within 10 minutes of powering the bridge up.
+A phone can only be paired with G7 Bridge within 10 minutes of powering it up.
 
 ## Connect automatically after reloading the page
 
@@ -77,21 +77,22 @@ Chrome flag, so it may change in future versions.
 | LED | Meaning |
 |---|---|
 | green 1× every 5 s | sensor OK, fresh reading, xDrip connected |
-| green 2× every 5 s | sensor OK but xDrip not connected, or sensor warm-up |
-| green + blue 3× every 5 s | problem: no reading for over 15 min, sensor failure or session ended |
+| green 2× every 5 s | sensor OK but xDrip not connected, or the sensor is warming up |
+| green + blue 3× every 5 s | problem: no reading for over 15 min, sensor failure or end of the sensor session |
 | green + blue 1× every 2 s | after power-on, waiting for the first reading |
 | blue blinking | searching for the sensor that matches a new code |
 | blue 1× every 5 s | no pairing code or sensor set |
-| red steady | battery charging LED (not controlled by the bridge) |
+| red steady | battery charging LED |
 
 ## The Android app
 
 The [G7 Bridge app](android/README.md) does what the page does, without Chrome, and watches the
-bridge in the background: it warns when the bridge's battery runs low and explains why no data
-arrives (bridge out of reach, sensor not heard, xDrip+ not collecting, sensor ended). Glucose
+bridge in the background: it warns when the bridge's battery runs low and also reports problems,
+e.g. why no data arrives (bridge out of reach, sensor not heard, xDrip+ not collecting, end of the
+sensor session). Glucose
 alarms stay in xDrip+. Download the APK from the newest **app-v…** release.
 
-## Firmware
+## Bridge firmware
 
 The bridge firmware (RAKwireless RAK4631 WisBlock) is in [firmware/](firmware/README.md):
 boards, installation, first setup and building from source. The app certificates a new G7 asks for

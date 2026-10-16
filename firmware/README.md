@@ -41,12 +41,3 @@ are kept in a separate part of the flash and survive updates.
    to and pairs with it (up to 30 minutes).
 
 Missed the 10-minute window? Unplug the battery and USB (or press RESET once) and pair again.
-
-## Serial console
-
-The USB port shows logs and a shell (115200 baud). Useful commands: `g7 get_code`, `g7 get_id`,
-`g7 certs`, `g7 cert_selftest`, `g7 battery`, `g7 unpair_phone`, `g7 repair_sensor`.
-
-## Building
-
-Want to build or change the firmware yourself? See [BUILDING.md](BUILDING.md).
