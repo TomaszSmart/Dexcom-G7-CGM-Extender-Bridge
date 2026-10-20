@@ -10,6 +10,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.bhubit.g7bridge.ui.BridgeScreen
 import com.bhubit.g7bridge.ui.G7Theme
+import android.content.Intent
+import com.bhubit.g7bridge.watch.Alerts
 import com.bhubit.g7bridge.watch.BridgeWatch
 
 class MainActivity : ComponentActivity() {
@@ -27,10 +29,24 @@ class MainActivity : ComponentActivity() {
             override fun onStart(owner: LifecycleOwner) = vm.setForeground(true)
             override fun onStop(owner: LifecycleOwner) = vm.setForeground(false)
         })
+        handleIntent(intent)
         setContent {
             G7Theme {
                 BridgeScreen(vm)
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val entry = intent?.getLongExtra(Alerts.EXTRA_ENTRY, -1L) ?: -1L
+        if (entry >= 0) {
+            vm.openNotifications(entry)
+            intent?.removeExtra(Alerts.EXTRA_ENTRY) // not again after a rotation
         }
     }
 }

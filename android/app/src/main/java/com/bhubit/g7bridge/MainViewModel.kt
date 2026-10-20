@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.bhubit.g7bridge.ble.BridgeClient
 import com.bhubit.g7bridge.ble.BridgeClient.Problem
 import com.bhubit.g7bridge.certs.AppCerts
+import com.bhubit.g7bridge.watch.NotificationLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.delay
@@ -27,6 +28,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val latestApp = MutableStateFlow<ReleaseCheck.Latest?>(null)
     /** Declared before init: the first check runs from init and sets it. */
     @Volatile private var releasesChecked = 0L
+
+    val notifications = NotificationLog.load(app)
+    val notificationsOpen = MutableStateFlow(false)
+
+    /** Opens the notifications screen; [entry] = the one whose system notification was tapped. */
+    fun openNotifications(entry: Long?) {
+        entry?.let { NotificationLog.markRead(getApplication(), it) }
+        notificationsOpen.value = true
+    }
+
+    fun closeNotifications() {
+        notificationsOpen.value = false
+    }
+
+    fun markNotificationRead(id: Long) = NotificationLog.markRead(getApplication(), id)
+    fun markAllNotificationsRead() = NotificationLog.markAllRead(getApplication())
+    fun clearNotifications() = NotificationLog.clear(getApplication())
 
     /** Certificates read from a QR code and waiting for "Send to bridge". */
     private val _certs = MutableStateFlow<List<ByteArray>?>(null)

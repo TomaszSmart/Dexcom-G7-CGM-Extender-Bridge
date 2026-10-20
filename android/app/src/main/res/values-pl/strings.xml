@@ -181,4 +181,11 @@
     <string name="n_fail_text">%1$s zgłasza awarię i nie wysyła użytecznych odczytów. Wymień sensor i wpisz nowy kod w G7 Bridge.</string>
     <string name="n_certs_title">Certyfikaty aplikacji nie są wczytane</string>
     <string name="n_certs_text">Bez nich bridge nie sparuje nowego G7. Otwórz G7 Bridge i wczytaj je z dokumentacji xDrip+.</string>
+
+    <!-- notifications screen -->
+    <string name="notif_title">Powiadomienia</string>
+    <string name="notif_none">Nie ma jeszcze powiadomień.</string>
+    <string name="notif_read_all">Oznacz wszystkie jako przeczytane</string>
+    <string name="notif_clear">Wyczyść</string>
+    <string name="notif_back">Wstecz</string>
 </resources>

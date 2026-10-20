@@ -186,4 +186,11 @@
     <string name="n_fail_text">%1$s reports a failure and sends no usable readings. Replace the sensor and enter the new code in G7 Bridge.</string>
     <string name="n_certs_title">App certificates are not loaded</string>
     <string name="n_certs_text">Without them the bridge cannot pair a new G7. Open G7 Bridge and load them from the xDrip+ documentation.</string>
+
+    <!-- notifications screen -->
+    <string name="notif_title">Notifications</string>
+    <string name="notif_none">No notifications yet.</string>
+    <string name="notif_read_all">Mark all as read</string>
+    <string name="notif_clear">Clear</string>
+    <string name="notif_back">Back</string>
 </resources>

@@ -93,6 +93,14 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
 
     private val opLock = Mutex()
     @Volatile private var pendingOp: CompletableDeferred<Result>? = null
+    /**
+     * What the pending operation waits for. Android reports some events (MTU changes) to every
+     * client on the same link, e.g. the background check running next to the screen: only the
+     * matching kind may complete the operation.
+     */
+    @Volatile private var pendingKind: OpKind? = null
+
+    private enum class OpKind { MTU, DISCOVER, READ, WRITE }
     @Volatile private var linkUp: CompletableDeferred<Unit>? = null
     @Volatile private var linkDown = CompletableDeferred<Unit>()
     private val wake = Channel<Unit>(Channel.CONFLATED)
@@ -146,10 +154,10 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
                     wanted = null
                     break
                 } catch (e: NotABridgeException) {
+                    // Only "G7 Bridge" devices can be chosen: a missing service is most likely an
+                    // incomplete discovery, so say so and try again like after any failed connection.
                     closeGatt()
                     _problems.tryEmit(Problem.NotABridge)
-                    wanted = null
-                    break
                 } catch (e: Exception) {
                     val wasConnected = _conn.value == Conn.CONNECTED
                     closeGatt()
@@ -198,7 +206,7 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
         if (device.bondState != BluetoothDevice.BOND_BONDED) throw IOException("not paired")
         try {
             open(device)
-            val r = op { readChr(it, statusChr ?: throw IOException("disconnected")) }
+            val r = op(OpKind.READ) { readChr(it, statusChr ?: throw IOException("disconnected")) }
             if (r.status != BluetoothGatt.GATT_SUCCESS) throw IOException("GATT status ${r.status}")
             return BridgeStatus.parse(r.value?.decodeToString() ?: "")
         } finally {
@@ -215,8 +223,8 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
             ?: throw IOException("connectGatt failed")
         withTimeout(20_000) { up.await() }
 
-        op { it.requestMtu(247) } // larger writes and fewer long-read rounds; failure is fine
-        val discovered = op { it.discoverServices() }
+        op(OpKind.MTU) { it.requestMtu(247) } // larger writes and fewer long-read rounds; failure is fine
+        val discovered = op(OpKind.DISCOVER) { it.discoverServices() }
         if (discovered.status != BluetoothGatt.GATT_SUCCESS) throw IOException("service discovery failed")
         val g = gatt ?: throw IOException("disconnected")
         val svc = g.getService(SVC) ?: throw NotABridgeException()
@@ -225,7 +233,7 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
         certsChr = svc.getCharacteristic(CERTS) // older firmware: none
         _canLoadCerts.value = certsChr != null
         g.getService(DIS)?.getCharacteristic(FW_REV)?.let { chr ->
-            val r = op { readChr(it, chr) }
+            val r = op(OpKind.READ) { readChr(it, chr) }
             if (r.status == BluetoothGatt.GATT_SUCCESS) {
                 _fwRevision.value = r.value?.decodeToString()?.trim()
             }
@@ -280,7 +288,7 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
     suspend fun refreshStatus() {
         val chr = statusChr ?: return
         try {
-            val r = op { readChr(it, chr) }
+            val r = op(OpKind.READ) { readChr(it, chr) }
             if (r.status != BluetoothGatt.GATT_SUCCESS) throw IOException("GATT status ${r.status}")
             _status.value = BridgeStatus.parse(r.value?.decodeToString() ?: "")
         } catch (e: CancellationException) {
@@ -330,7 +338,7 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
     }
 
     private suspend fun write(chr: BluetoothGattCharacteristic, value: ByteArray) {
-        val r = op { g ->
+        val r = op(OpKind.WRITE) { g ->
             if (Build.VERSION.SDK_INT >= 33) {
                 g.writeCharacteristic(chr, value, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) ==
                     BluetoothGatt.GATT_SUCCESS
@@ -348,20 +356,22 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
     private fun readChr(g: BluetoothGatt, chr: BluetoothGattCharacteristic) = g.readCharacteristic(chr)
 
     /** Runs one GATT operation and waits for its callback. */
-    private suspend fun op(start: (BluetoothGatt) -> Boolean): Result = opLock.withLock {
+    private suspend fun op(kind: OpKind, start: (BluetoothGatt) -> Boolean): Result = opLock.withLock {
         val g = gatt ?: throw IOException("disconnected")
         val d = CompletableDeferred<Result>()
         pendingOp = d
+        pendingKind = kind
         try {
             if (!start(g)) throw IOException("busy")
             withTimeout(10_000) { d.await() }
         } finally {
             pendingOp = null
+            pendingKind = null
         }
     }
 
-    private fun finishOp(status: Int, value: ByteArray? = null) {
-        pendingOp?.complete(Result(status, value))
+    private fun finishOp(kind: OpKind, status: Int, value: ByteArray? = null) {
+        if (pendingKind == kind) pendingOp?.complete(Result(status, value))
     }
 
     private val callback = object : BluetoothGattCallback() {
@@ -377,22 +387,22 @@ class BridgeClient(context: Context, private val scope: CoroutineScope) {
             }
         }
 
-        override fun onMtuChanged(g: BluetoothGatt, mtu: Int, status: Int) = finishOp(status)
+        override fun onMtuChanged(g: BluetoothGatt, mtu: Int, status: Int) = finishOp(OpKind.MTU, status)
 
-        override fun onServicesDiscovered(g: BluetoothGatt, status: Int) = finishOp(status)
+        override fun onServicesDiscovered(g: BluetoothGatt, status: Int) = finishOp(OpKind.DISCOVER, status)
 
         override fun onCharacteristicRead(
             g: BluetoothGatt, chr: BluetoothGattCharacteristic, value: ByteArray, status: Int,
-        ) = finishOp(status, value)
+        ) = finishOp(OpKind.READ, status, value)
 
         @Deprecated("Android 12 and older")
         override fun onCharacteristicRead(g: BluetoothGatt, chr: BluetoothGattCharacteristic, status: Int) {
             @Suppress("DEPRECATION")
-            finishOp(status, chr.value)
+            finishOp(OpKind.READ, status, chr.value)
         }
 
         override fun onCharacteristicWrite(g: BluetoothGatt, chr: BluetoothGattCharacteristic, status: Int) =
-            finishOp(status)
+            finishOp(OpKind.WRITE, status)
     }
 
     private class DeniedException : Exception()

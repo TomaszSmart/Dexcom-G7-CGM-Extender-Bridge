@@ -204,7 +204,7 @@ class BridgeWatch(private val ctx: Context) {
         if (ReleaseCheck.compare(st.fw, latest) == ReleaseCheck.Verdict.UPDATE &&
             prefs.getString("fw_notified", null) != latest.version
         ) {
-            Alerts.firmwareUpdate(ctx, latest.version, latest.downloadUrl)
+            Alerts.firmwareUpdate(ctx, latest.version)
             prefs.edit { putString("fw_notified", latest.version) }
         }
     }

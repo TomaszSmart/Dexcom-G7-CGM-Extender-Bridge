@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -70,17 +69,23 @@ object Alerts {
         ctx, ID_CERTS, CH_INFO, ctx.getString(R.string.n_certs_title), ctx.getString(R.string.n_certs_text),
     )
 
-    fun firmwareUpdate(ctx: Context, version: String, url: String) = show(
+    fun firmwareUpdate(ctx: Context, version: String) = show(
         ctx, ID_FIRMWARE, CH_INFO, ctx.getString(R.string.fw_new, version), ctx.getString(R.string.fw_update_text),
-        Intent(Intent.ACTION_VIEW, Uri.parse(url)),
     )
 
     fun cancel(ctx: Context, id: Int) = NotificationManagerCompat.from(ctx).cancel(id)
 
     @android.annotation.SuppressLint("MissingPermission") // checked in canNotify()
-    private fun show(ctx: Context, id: Int, channel: String, title: String, text: String, open: Intent? = null) {
+    /** Intent extra: the history entry a tapped notification belongs to. */
+    const val EXTRA_ENTRY = "notification_entry"
+
+    private fun show(ctx: Context, id: Int, channel: String, title: String, text: String) {
+        // Kept in the app's own history even when Android may not show it
+        val entry = NotificationLog.add(ctx, title, text)
         if (!canNotify(ctx)) return
-        val intent = open ?: Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val intent = Intent(ctx, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra(EXTRA_ENTRY, entry)
         val pi = PendingIntent.getActivity(
             ctx, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )

@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -41,6 +42,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -65,6 +67,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -100,6 +103,11 @@ private val BT_PERMISSIONS =
 @SuppressLint("MissingPermission")
 @Composable
 fun BridgeScreen(vm: MainViewModel) {
+    val notificationsOpen by vm.notificationsOpen.collectAsStateWithLifecycle()
+    if (notificationsOpen) {
+        NotificationsScreen(vm)
+        return
+    }
     val ctx = LocalContext.current
     val conn by vm.client.conn.collectAsStateWithLifecycle()
     val st by vm.client.status.collectAsStateWithLifecycle()
@@ -147,6 +155,8 @@ fun BridgeScreen(vm: MainViewModel) {
                             Spacer(Modifier.height(4.dp))
                             ConnLine(conn)
                         }
+                        Bell(vm) { vm.openNotifications(null) }
+                        Spacer(Modifier.width(6.dp))
                         st?.battery?.let {
                             BatteryCapsule(it)
                             Spacer(Modifier.width(10.dp))
@@ -860,4 +870,120 @@ private fun ChooserDialog(vm: MainViewModel, onDismiss: () -> Unit) {
         confirmButton = {},
         dismissButton = { TextButton(onClick = close) { Text(stringResource(R.string.btn_cancel)) } },
     )
+}
+
+// ---- notifications ---------------------------------------------------------------------
+
+/** The bell left of the battery, with the number of unread notifications. */
+@Composable
+private fun Bell(vm: MainViewModel, onClick: () -> Unit) {
+    val entries by vm.notifications.collectAsStateWithLifecycle()
+    val unread = entries.count { !it.read }
+    val label = stringResource(R.string.notif_title)
+    Box(
+        Modifier
+            .size(44.dp)
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(painterResource(R.drawable.ic_bell), null, Modifier.size(28.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (unread > 0) {
+            Text(
+                if (unread > 9) "9+" else unread.toString(),
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .background(Tone.Bad, CircleShape)
+                    .padding(horizontal = 5.dp),
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotificationsScreen(vm: MainViewModel) {
+    val entries by vm.notifications.collectAsStateWithLifecycle()
+    BackHandler { vm.closeNotifications() }
+    val fmt = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
+    var open by remember { mutableStateOf<Long?>(null) }
+    Scaffold(
+        topBar = {
+            Surface(color = MaterialTheme.colorScheme.surface) {
+                Row(
+                    Modifier
+                        .statusBarsPadding()
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        Modifier.size(48.dp).clickable { vm.closeNotifications() },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(painterResource(R.drawable.ic_back), stringResource(R.string.notif_back), Modifier.size(24.dp))
+                    }
+                    Text(stringResource(R.string.notif_title), style = MaterialTheme.typography.headlineSmall)
+                }
+            }
+        },
+    ) { pad ->
+        Column(
+            Modifier
+                .padding(pad)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            if (entries.isEmpty()) {
+                Text(stringResource(R.string.notif_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                FlowRowCentered {
+                    TextButton(onClick = vm::markAllNotificationsRead, enabled = entries.any { !it.read }) {
+                        Text(stringResource(R.string.notif_read_all))
+                    }
+                    TextButton(onClick = vm::clearNotifications) { Text(stringResource(R.string.notif_clear)) }
+                }
+            }
+            entries.forEach { e ->
+                Card(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            vm.markNotificationRead(e.id)
+                            open = if (open == e.id) null else e.id
+                        },
+                ) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (!e.read) {
+                                Box(Modifier.size(9.dp).background(Tone.Bad, CircleShape))
+                                Spacer(Modifier.width(8.dp))
+                            }
+                            Text(
+                                e.title,
+                                Modifier.weight(1f),
+                                fontWeight = if (e.read) FontWeight.Normal else FontWeight.Bold,
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
+                        Text(
+                            fmt.format(Date(e.timeMs)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                        Text(
+                            e.text,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (e.read) FontWeight.Normal else FontWeight.SemiBold,
+                            maxLines = if (open == e.id || !e.read) Int.MAX_VALUE else 2,
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+        }
+    }
 }
