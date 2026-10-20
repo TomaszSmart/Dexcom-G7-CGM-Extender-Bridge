@@ -16,6 +16,17 @@ back.
 
 **The goal is simple: let the child just train — with the parent still seeing every reading.**
 
+## What it looks like
+
+<p>
+  <img src="docs/images/g7-bridge-case.jpg" width="32%" alt="G7 Bridge in its case">
+  <img src="docs/images/g7-bridge-usb.jpg" width="32%" alt="USB-C port, button and LEDs">
+  <img src="docs/images/g7-bridge-back.jpg" width="32%" alt="G7 Bridge — back view">
+</p>
+
+The finished G7 Bridge: a RAK4631 on a RAK19003 base board with a battery, in a 3D-printed case.
+On the front: the USB-C port for charging, the RESET button and the LEDs.
+
 ## Quick start
 
 You need: a RAKwireless **RAK4631** on a **RAK19007/RAK19003** base board with a BLE antenna and a

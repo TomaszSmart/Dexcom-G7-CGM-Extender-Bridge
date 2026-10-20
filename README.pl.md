@@ -16,6 +16,17 @@ na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko poł�
 
 **Cel jest prosty: żeby dziecko mogło po prostu trenować, a rodzic nadal widział każdy odczyt.**
 
+## Jak wygląda
+
+<p>
+  <img src="docs/images/g7-bridge-case.jpg" width="32%" alt="G7 Bridge w obudowie">
+  <img src="docs/images/g7-bridge-usb.jpg" width="32%" alt="Złącze USB-C, przycisk i diody">
+  <img src="docs/images/g7-bridge-back.jpg" width="32%" alt="G7 Bridge — widok z tyłu">
+</p>
+
+Gotowy G7 Bridge: RAK4631 na płytce RAK19003 z akumulatorem, w obudowie wydrukowanej w 3D.
+Z przodu złącze USB-C do ładowania, przycisk RESET i diody.
+
 ## Szybki start
 
 Potrzebujesz: **RAK4631** firmy RAKwireless na płytce **RAK19007/RAK19003** z anteną BLE i małym
