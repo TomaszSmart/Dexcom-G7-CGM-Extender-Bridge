@@ -23,16 +23,14 @@ reverse-polarity protection. Build target: `rak4631/nrf52840`.
    reports a copy error (“device not ready”) because the drive disappears as soon as the last block
    arrives — that is normal; the setup page shows the new version afterwards.
 
-Updates are installed the same way. The pairing code, the sensor, its keys and the app certificates
-are kept in a separate part of the flash and survive updates.
+Updates are installed the same way. The pairing code, the sensor and the G7 configuration are kept in a separate part of the flash and survive updates.
 
 ## First setup
 
 1. Open the setup page in Chrome on Android: https://g7bridge.b-hubit.com
 2. Within 10 minutes of powering the bridge up, connect to “G7 Bridge” and accept the pairing.
-3. **App certificates** — a new G7 asks for them on its first pairing. They are not part of this
-   firmware: on the page tap **From the xDrip+ documentation** (it reads the QR code from xDrip+'s
-   G7 guide) and **Send to bridge**. They stay on your bridge only.
+3. **G7 configuration** — once, before the first G7: on the page tap **From the xDrip+ documentation**
+   and **Send to bridge**. It stays on your bridge only.
 4. **xDrip+** — within the same 10 minutes: xDrip+ → Settings → **Hardware Data Source** →
    **SmartGuide**, choose “G7 Bridge” and accept the pairing request. The bridge drops the phone
    once right after pairing; xDrip+ reconnects by itself. AndroidAPS keeps xDrip+ as its BG source.

@@ -31,7 +31,7 @@ sensora.
 3. **Strona lub aplikacja** — otwórz https://g7bridge.b-hubit.com w Chrome i naciśnij
    **Połącz z bridge'em** albo zainstaluj [aplikację na Androida](android/README.pl.md) i naciśnij
    **Połącz**; wybierz „G7 Bridge” i zatwierdź parowanie.
-4. **Certyfikaty aplikacji** — w panelu „Certyfikaty aplikacji” naciśnij **Z dokumentacji xDrip+**,
+4. **Konfiguracja G7** — w panelu „Konfiguracja G7” naciśnij **Z dokumentacji xDrip+**,
    a potem **Wyślij do bridge'a** (jednorazowa procedura).
 5. **xDrip+** — Ustawienia → **Hardware Data Source** → **SmartGuide**, wybierz „G7 Bridge”
    i zatwierdź parowanie. Po parowaniu bridge raz rozłączy telefon; xDrip+ połączy się sam.
@@ -41,7 +41,7 @@ sensora.
    sensor, a odczyty pojawią się w xDrip+.
 
 Aktualizacje: strona pokaże, kiedy jest nowszy firmware; wgrywasz go tak samo jak w kroku 1.
-Ustawienia, certyfikaty i parowania zostają.
+Ustawienia, konfiguracja G7 i parowania zostają.
 
 ## Strona
 
@@ -93,8 +93,8 @@ w xDrip+. Plik APK pobierzesz z najnowszego wydania **app-v…**.
 ## Firmware Bridge'a
 
 Firmware bridge'a (RAKwireless RAK4631 WisBlock) jest w [firmware/](firmware/README.pl.md):
-płytki, instalacja, pierwsza konfiguracja i kompilacja ze źródeł. Certyfikatów aplikacji, o które
-prosi nowy G7, w nim nie ma — wczytujesz je do swojego bridge'a ze strony.
+płytki, instalacja, pierwsza konfiguracja i kompilacja ze źródeł. Konfiguracji G7 (kodu QR z dokumentacji xDrip+) w nim nie ma — wczytujesz ją do
+swojego bridge'a ze strony lub aplikacji.
 
 ## Repozytorium
 
@@ -111,7 +111,7 @@ GPL-3.0 (zob. [LICENSE](LICENSE)). Uwierzytelnianie G7 jest wzorowane na xDrip+ 
 ## Prywatność
 
 Strona działa w całości w przeglądarce, a aplikacja w całości w telefonie; żadna nie wysyła
-nigdzie danych. Pytają tylko GitHuba o najnowszą wersję firmware i pobierają kod QR certyfikatów
+nigdzie danych. Pytają tylko GitHuba o najnowszą wersję firmware i pobierają kod QR konfiguracji G7
 z dokumentacji xDrip+.
 
 > Projekt hobbystyczny, nie jest wyrobem medycznym. Decyzje terapeutyczne podejmuj na podstawie

@@ -95,24 +95,24 @@
     <string name="pill_check">to check</string>
     <string name="pill_other">other</string>
 
-    <!-- certificates -->
-    <string name="h_certs">App certificates</string>
-    <string name="certs_none">not loaded — a new G7 cannot be paired</string>
+    <!-- G7 configuration (the QR code from the xDrip+ documentation) -->
+    <string name="h_certs">G7 configuration</string>
+    <string name="certs_none">missing — the bridge cannot pair a new G7</string>
     <string name="certs_stored">loaded</string>
     <string name="certs_builtin">built into this firmware</string>
-    <string name="certs_old">this firmware cannot load certificates (update it)</string>
-    <string name="certs_what">What are these certificates?</string>
-    <string name="certs_hint">A new G7 asks for the app certificates on its first pairing — the same ones xDrip+ loads from the QR code in its G7 documentation. Easiest: tap “From the xDrip+ documentation”, then “Send to bridge”. You can also scan that QR code with the camera. Everything is unpacked on this phone and sent only to your bridge.</string>
+    <string name="certs_old">this firmware cannot load the G7 configuration (update it)</string>
+    <string name="certs_what">What is this?</string>
+    <string name="certs_hint">The G7 configuration is a one-time setup that lets the bridge collect data from G7 sensors — the same QR code xDrip+ loads as its G7 documentation describes (Settings → Auto configure). How to do it: 1) tap “From the xDrip+ documentation” or scan that QR code with the camera, 2) tap “Send to bridge”. Once per bridge is enough — it does not need to be repeated for each sensor and survives firmware updates. The QR code is read on this phone and sent only to your bridge.</string>
     <string name="certs_doc">From the xDrip+ documentation</string>
     <string name="certs_cam">Scan with camera</string>
     <string name="certs_send">Send to bridge</string>
-    <string name="certs_ready">Certificates read — tap “Send to bridge”.</string>
+    <string name="certs_ready">QR code read — tap “Send to bridge”.</string>
     <string name="certs_doc_fail">Could not load the QR code from the xDrip+ documentation: %1$s</string>
-    <string name="certs_missing">Not recognised: keks_p1, keks_p2 and keks_p3 not found.</string>
-    <string name="certs_short">Not recognised: certificate too short.</string>
+    <string name="certs_missing">This is not the G7 configuration QR code from the xDrip+ documentation.</string>
+    <string name="certs_short">The QR code is incomplete — scan it again.</string>
     <string name="certs_malformed">Not recognised: the QR code data is damaged.</string>
     <string name="certs_sending">Sending… %1$d%%</string>
-    <string name="cam_prompt">Point the camera at the G7 certificates QR code from the xDrip+ documentation</string>
+    <string name="cam_prompt">Point the camera at the G7 QR code from the xDrip+ documentation</string>
 
     <!-- help -->
     <string name="xd_title">Connect xDrip+ to the bridge</string>
@@ -142,9 +142,9 @@
     <string name="unp_yes">Yes, remove</string>
     <string name="forget_btn">Use another bridge</string>
     <string name="h_about">Why G7 Bridge</string>
-    <string name="about1">A Dexcom G7 sensor only talks to a phone a few metres away. So at football practice, in PE or on the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.</string>
+    <string name="about1">A Dexcom G7 sensor only talks to a phone a few metres away. So at practice, in PE or on the playground the phone has to come along — in a running belt, a hip bag or a pocket that bounces with every step. It is uncomfortable, it gets in the way of the game, and phones get broken.</string>
     <string name="about2">G7 Bridge is a small, light module that fits in a pocket. It stays close to the sensor, reads the glucose every 5 minutes and passes it on to the phone, which can stay in the locker room or on the bench — up to about 50 m away. xDrip+ and AndroidAPS keep working as usual, and if the phone is briefly out of range, the bridge keeps the readings and sends them as soon as the link is back.</string>
-    <string name="about3">The goal is simple: let the child just play — with the parent still seeing every reading.</string>
+    <string name="about3">The goal is simple: let the child just train — with the parent still seeing every reading.</string>
     <string name="disclaimer">Hobby project, not a medical device. Make treatment decisions based on approved devices.</string>
     <string name="app_version">App %1$s</string>
 
@@ -166,7 +166,7 @@
     <string name="ch_battery">Bridge battery low</string>
     <string name="ch_battery_empty">Bridge battery almost empty</string>
     <string name="ch_diagnosis">Why no data arrives</string>
-    <string name="ch_info">Certificates and updates</string>
+    <string name="ch_info">Configuration and updates</string>
     <string name="n_bat_low_title">Bridge battery %1$d%%</string>
     <string name="n_bat_empty_title">Bridge battery almost empty: %1$d%%</string>
     <string name="n_bat_text">Charge the bridge soon (USB-C), otherwise xDrip+ will stop getting readings.</string>
@@ -186,8 +186,8 @@
     <string name="n_fail_text">%1$s reports a failure and sends no usable readings. Replace the sensor and enter the new code in G7 Bridge.</string>
     <string name="n_fw_title">New bridge firmware %1$s</string>
     <string name="n_app_title">New app version %1$s</string>
-    <string name="n_certs_title">App certificates are not loaded</string>
-    <string name="n_certs_text">Without them the bridge cannot pair a new G7. Open G7 Bridge and load them from the xDrip+ documentation.</string>
+    <string name="n_certs_title">G7 configuration missing</string>
+    <string name="n_certs_text">Without it the bridge cannot pair a new G7. Open G7 Bridge and load the QR code from the xDrip+ documentation.</string>
 
     <!-- notifications screen -->
     <string name="notif_title">Notifications</string>

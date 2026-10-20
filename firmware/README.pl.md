@@ -24,16 +24,15 @@ podłączeniem. Cel kompilacji: `rak4631/nrf52840`.
    często zgłasza błąd kopiowania („urządzenie nie jest gotowe”), bo dysk znika zaraz po odebraniu
    ostatniej części pliku — to normalne; strona pokaże potem nową wersję.
 
-Aktualizacje instaluje się tak samo. Kod parowania, sensor, jego klucze i certyfikaty aplikacji są
+Aktualizacje instaluje się tak samo. Kod parowania, sensor i konfiguracja G7 są
 w osobnej części pamięci i przetrwają aktualizację.
 
 ## Pierwsza konfiguracja
 
 1. Otwórz stronę konfiguracji w Chrome na Androidzie: https://g7bridge.b-hubit.com
 2. W ciągu 10 minut od podłączenia zasilania bridge'a połącz się z „G7 Bridge” i zatwierdź parowanie.
-3. **Certyfikaty aplikacji** — nowy G7 prosi o nie przy pierwszym parowaniu. Nie ma ich w tym
-   firmware: na stronie naciśnij **Z dokumentacji xDrip+** (strona odczyta kod QR z przewodnika G7
-   xDrip+) i **Wyślij do bridge'a**. Zostają tylko w Twoim bridge'u.
+3. **Konfiguracja G7** — jednorazowo, przed pierwszym G7: na stronie naciśnij **Z dokumentacji xDrip+**
+   i **Wyślij do bridge’a**. Zostaje tylko w Twoim bridge’u.
 4. **xDrip+** — w tych samych 10 minutach: xDrip+ → Ustawienia → **Hardware Data Source** →
    **SmartGuide**, wybierz „G7 Bridge” i zatwierdź parowanie. Zaraz po parowaniu bridge raz rozłączy
    telefon; xDrip+ połączy się sam. AndroidAPS dalej korzysta z xDrip+ jako źródła BG.

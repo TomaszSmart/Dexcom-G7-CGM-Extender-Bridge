@@ -90,24 +90,24 @@
     <string name="pill_check">do sprawdzenia</string>
     <string name="pill_other">inny</string>
 
-    <!-- certyfikaty -->
-    <string name="h_certs">Certyfikaty aplikacji</string>
-    <string name="certs_none">nie wczytane — nowego G7 nie da się sparować</string>
-    <string name="certs_stored">wczytane</string>
-    <string name="certs_builtin">wbudowane w ten firmware</string>
-    <string name="certs_old">ten firmware nie obsługuje wczytywania (zaktualizuj go)</string>
-    <string name="certs_what">Co to za certyfikaty?</string>
-    <string name="certs_hint">Nowy G7 przy pierwszym parowaniu prosi o certyfikaty aplikacji — te same, które xDrip+ wczytuje z kodu QR w swojej dokumentacji G7. Najprościej: naciśnij „Z dokumentacji xDrip+”, a potem „Wyślij do bridge’a”. Możesz też zeskanować ten kod aparatem. Wszystko jest rozpakowywane w tym telefonie i wysyłane tylko do Twojego bridge’a.</string>
+    <!-- konfiguracja G7 (kod QR z dokumentacji xDrip+) -->
+    <string name="h_certs">Konfiguracja G7</string>
+    <string name="certs_none">brak — bridge nie sparuje nowego G7</string>
+    <string name="certs_stored">wczytana</string>
+    <string name="certs_builtin">wbudowana w ten firmware</string>
+    <string name="certs_old">ten firmware nie obsługuje wczytywania konfiguracji G7 (zaktualizuj go)</string>
+    <string name="certs_what">Co to jest?</string>
+    <string name="certs_hint">Konfiguracja G7 to jednorazowe ustawienie, które pozwala bridge’owi zbierać dane z sensorów G7 — ten sam kod QR, który xDrip+ wczytuje według swojej dokumentacji G7 (Ustawienia → Auto configure). Jak ją zrobić: 1) naciśnij „Z dokumentacji xDrip+” albo zeskanuj ten kod QR aparatem, 2) naciśnij „Wyślij do bridge’a”. Wystarczy raz na bridge — nie trzeba jej powtarzać dla każdego sensora i zostaje po aktualizacjach firmware. Kod QR jest odczytywany w tym telefonie i wysyłany tylko do Twojego bridge’a.</string>
     <string name="certs_doc">Z dokumentacji xDrip+</string>
     <string name="certs_cam">Skanuj aparatem</string>
     <string name="certs_send">Wyślij do bridge’a</string>
-    <string name="certs_ready">Certyfikaty odczytane — naciśnij „Wyślij do bridge’a”.</string>
+    <string name="certs_ready">Kod QR odczytany — naciśnij „Wyślij do bridge’a”.</string>
     <string name="certs_doc_fail">Nie udało się pobrać kodu QR z dokumentacji xDrip+: %1$s</string>
-    <string name="certs_missing">Nie rozpoznano: nie znaleziono keks_p1, keks_p2 i keks_p3.</string>
-    <string name="certs_short">Nie rozpoznano: za krótki certyfikat.</string>
+    <string name="certs_missing">To nie jest kod QR konfiguracji G7 z dokumentacji xDrip+.</string>
+    <string name="certs_short">Kod QR jest niepełny — zeskanuj go jeszcze raz.</string>
     <string name="certs_malformed">Nie rozpoznano: dane kodu QR są uszkodzone.</string>
     <string name="certs_sending">Wysyłam… %1$d%%</string>
-    <string name="cam_prompt">Skieruj aparat na kod QR certyfikatów G7 z dokumentacji xDrip+</string>
+    <string name="cam_prompt">Skieruj aparat na kod QR G7 z dokumentacji xDrip+</string>
 
     <!-- pomoc -->
     <string name="xd_title">Połącz xDrip+ z bridge’em</string>
@@ -137,9 +137,9 @@
     <string name="unp_yes">Tak, usuń</string>
     <string name="forget_btn">Użyj innego bridge’a</string>
     <string name="h_about">Dlaczego G7 Bridge</string>
-    <string name="about1">Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu piłki, na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się psują.</string>
+    <string name="about1">Sensor Dexcom G7 rozmawia z telefonem tylko z odległości kilku metrów. Dlatego na treningu, na WF-ie czy na boisku telefon musi być przy dziecku — w pasku biegowym, w saszetce, w nerce albo w kieszeni, która podskakuje przy każdym kroku. To niewygodne, przeszkadza w grze, a telefony się psują.</string>
     <string name="about2">G7 Bridge to mały, lekki moduł, który mieści się w kieszeni. Jest blisko sensora, co 5 minut odczytuje glukozę i przekazuje ją do telefonu, który może zostać w szatni albo na ławce — nawet do około 50 m. xDrip+ i AndroidAPS działają jak zwykle, a gdy telefon na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko połączenie wróci.</string>
-    <string name="about3">Cel jest prosty: żeby dziecko mogło po prostu grać, a rodzic nadal widział każdy odczyt.</string>
+    <string name="about3">Cel jest prosty: żeby dziecko mogło po prostu trenować, a rodzic nadal widział każdy odczyt.</string>
     <string name="disclaimer">Projekt hobbystyczny, nie jest wyrobem medycznym. Decyzje terapeutyczne podejmuj na podstawie zatwierdzonych urządzeń.</string>
     <string name="app_version">Aplikacja %1$s</string>
 
@@ -161,7 +161,7 @@
     <string name="ch_battery">Niska bateria bridge’a</string>
     <string name="ch_battery_empty">Bateria bridge’a prawie pusta</string>
     <string name="ch_diagnosis">Dlaczego nie ma danych</string>
-    <string name="ch_info">Certyfikaty i aktualizacje</string>
+    <string name="ch_info">Konfiguracja i aktualizacje</string>
     <string name="n_bat_low_title">Bateria bridge’a %1$d%%</string>
     <string name="n_bat_empty_title">Bateria bridge’a prawie pusta: %1$d%%</string>
     <string name="n_bat_text">Naładuj wkrótce bridge (USB-C), inaczej xDrip+ przestanie dostawać odczyty.</string>
@@ -181,8 +181,8 @@
     <string name="n_fail_text">%1$s zgłasza awarię i nie wysyła użytecznych odczytów. Wymień sensor i wpisz nowy kod w G7 Bridge.</string>
     <string name="n_fw_title">Nowy firmware bridge’a %1$s</string>
     <string name="n_app_title">Nowa wersja aplikacji %1$s</string>
-    <string name="n_certs_title">Certyfikaty aplikacji nie są wczytane</string>
-    <string name="n_certs_text">Bez nich bridge nie sparuje nowego G7. Otwórz G7 Bridge i wczytaj je z dokumentacji xDrip+.</string>
+    <string name="n_certs_title">Brak konfiguracji G7</string>
+    <string name="n_certs_text">Bez niej bridge nie sparuje nowego G7. Otwórz G7 Bridge i wczytaj kod QR z dokumentacji xDrip+.</string>
 
     <!-- notifications screen -->
     <string name="notif_title">Powiadomienia</string>

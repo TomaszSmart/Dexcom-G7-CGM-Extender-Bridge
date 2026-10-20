@@ -3,7 +3,7 @@
 [English](README.md) · **Polski**
 
 Aplikacja na Androida robi to samo co [strona konfiguracji](https://g7bridge.b-hubit.com): łączy się z bridge’em, pokazuje odczyt, sensor i jego sesję, zasięg, baterię bridge’a
-i wersję firmware, paruje nowy sensor po kodzie i wczytuje certyfikaty aplikacji. Dodatkowo pilnuje bridge’a w tle.
+i wersję firmware, paruje nowy sensor po kodzie i wczytuje konfigurację G7. Dodatkowo pilnuje bridge’a w tle.
 
 > Projekt hobbystyczny, nie jest wyrobem medycznym. Alarmy glukozy zostają w xDrip+.
 
@@ -22,7 +22,7 @@ Jeśli xDrip+ w tym telefonie jest już połączony z bridge’em, aplikacja sam
 W przeciwnym razie naciśnij **Połącz**, wybierz „G7 Bridge” i zatwierdź parowanie w ciągu
 10 minut od podłączenia zasilania bridge’a.
 
-- **Certyfikaty aplikacji** — **Z dokumentacji xDrip+** (albo **Skanuj aparatem**), potem
+- **Konfiguracja G7** — **Z dokumentacji xDrip+** (albo **Skanuj aparatem**), potem
   **Wyślij do bridge’a**. Raz na bridge.
 - **Nowy sensor** — wpisz kod z aplikatora i naciśnij **Paruj**.
 
@@ -39,7 +39,7 @@ nie widzi:
 | Bridge nie słyszy sensora / nie dostaje odczytów | brak odczytu ponad 20 min |
 | xDrip+ nie odbiera odczytów z bridge’a | przez ok. 30 min (firmware 0.3.0 lub nowszy) |
 | Koniec sesji / awaria sensora | raz na sensor |
-| Brak certyfikatów aplikacji, nowy firmware | raz |
+| Brak konfiguracji G7, nowa wersja | raz |
 
 Poza baterią to ciche powiadomienia. Główną aplikacją wciąż jest xDrip+: upewnij się, że jego
 ustawienia i alarmy są skonfigurowane zgodnie z [dokumentacją xDrip+](https://navid200.github.io/xDrip/), w tym alarm

@@ -264,13 +264,13 @@ static void run_command(struct k_work *work)
 		int err = g7_certs_commit();
 
 		snprintf(last_msg, sizeof(last_msg), "%s",
-			 !err ? "certificates saved"
-			 : err == -EBADMSG ? "certificates: key does not match certificate B"
-			 : err == -EINVAL ? "certificates: upload incomplete or malformed"
-					  : "certificates: saving failed");
+			 !err ? "G7 configuration saved"
+			 : err == -EBADMSG ? "G7 configuration: QR code data does not match"
+			 : err == -EINVAL ? "G7 configuration: upload incomplete"
+					  : "G7 configuration: saving failed");
 	} else if (strcmp(cmd, "certs_clear") == 0) {
 		g7_certs_clear();
-		snprintf(last_msg, sizeof(last_msg), "certificates removed");
+		snprintf(last_msg, sizeof(last_msg), "G7 configuration removed");
 	} else {
 		snprintf(last_msg, sizeof(last_msg), "unknown command");
 	}

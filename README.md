@@ -31,7 +31,7 @@ sensor applicator.
 3. **Page or app** — open https://g7bridge.b-hubit.com in Chrome and tap **Connect to bridge**,
    or install the [Android app](android/README.md) and tap **Connect**; choose “G7 Bridge” and
    accept the pairing request.
-4. **App certificates** — in “App certificates” tap **From the xDrip+ documentation**, then
+4. **G7 configuration** — in “G7 configuration” tap **From the xDrip+ documentation**, then
    **Send to bridge** (once per bridge; they survive updates).
 5. **xDrip+** — Settings → **Hardware Data Source** → **SmartGuide**, choose “G7 Bridge” and accept
    the pairing request. The bridge drops the phone once after pairing; xDrip+ reconnects by itself.
@@ -41,7 +41,7 @@ sensor applicator.
    the sensor and readings appear in xDrip+.
 
 Updating later: the page shows when a newer firmware is available; flash it the same way as in
-step 1. Settings, certificates and pairings are kept.
+step 1. Settings, the G7 configuration and pairings are kept.
 
 ## The page
 
@@ -95,8 +95,8 @@ alarms stay in xDrip+. Download the APK from the newest **app-v…** release.
 ## Bridge firmware
 
 The bridge firmware (RAKwireless RAK4631 WisBlock) is in [firmware/](firmware/README.md):
-boards, installation, first setup and building from source. The app certificates a new G7 asks for
-are not part of it; you load them into your own bridge from the page.
+boards, installation, first setup and building from source. The G7 configuration (the QR code from the xDrip+
+documentation) is not part of it; you load it into your own bridge from the page or the app.
 
 ## Repository
 
@@ -113,7 +113,7 @@ GPL-3.0 (see [LICENSE](LICENSE)). The G7 authentication follows xDrip+ (libkeks)
 ## Privacy
 
 The page runs entirely in the browser and the app entirely on the phone; neither sends any data
-anywhere. They only ask GitHub for the latest firmware version and load the certificates QR code
+anywhere. They only ask GitHub for the latest firmware version and load the G7 configuration QR code
 from the xDrip+ documentation.
 
 > Hobby project, not a medical device. Make treatment decisions based on approved devices.

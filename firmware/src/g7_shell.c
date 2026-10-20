@@ -205,13 +205,13 @@ static int cmd_g7_cert_selftest(const struct shell *sh, size_t argc, char **argv
 
 static int cmd_g7_certs(const struct shell *sh, size_t argc, char **argv)
 {
-	static const char *const src[] = {"none (load them from the setup page)",
+	static const char *const src[] = {"none (load it from the setup page or app)",
 					  "stored in flash", "built into this firmware"};
 
 	if (argc > 1 && strcmp(argv[1], "clear") == 0) {
 		g7_certs_clear();
 	}
-	shell_print(sh, "App certificates: %s", src[g7_certs_source()]);
+	shell_print(sh, "G7 configuration: %s", src[g7_certs_source()]);
 	return 0;
 }
 
