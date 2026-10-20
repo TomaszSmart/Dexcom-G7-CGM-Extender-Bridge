@@ -681,6 +681,16 @@ const RELEASES = 'https://github.com/' + REPO + '/releases/latest';
 const HOWTO = 'https://github.com/' + REPO + '/blob/main/firmware/README.md#install';
 let fwVersion = null, latest = null;
 
+// The highest version with this tag prefix, not the first in the list: releases made in the
+// same second come back in any order (app-v0.1.9 was listed before app-v0.1.10).
+function newestRelease(all, prefix) {
+  const re = new RegExp('^' + prefix + '\\d');
+  return all.filter((x) => !x.draft && !x.prerelease && re.test(x.tag_name))
+    .map((x) => ({ x, v: verNum(x.tag_name.slice(prefix.length)) || [] }))
+    .sort((a, b) => (newer(a.v, b.v) ? -1 : newer(b.v, a.v) ? 1 : 0))
+    .map((e) => e.x)[0];
+}
+
 // Checked on load, when the tab comes back after 5 min and every 30 min while it stays open.
 let releasesChecked = 0;
 
@@ -692,13 +702,13 @@ async function checkReleases() {
     if (!r.ok) return;
     const all = await r.json();
     // The newest Android app release (tags app-v…), for the download link at the top.
-    const app = all.find((x) => !x.draft && !x.prerelease && /^app-v\d/.test(x.tag_name));
+    const app = newestRelease(all, 'app-v');
     const apk = app && (app.assets || []).find((a) => /\.apk$/.test(a.name));
     if (apk) {
       appApk = { ver: app.tag_name.replace(/^app-v/, ''), url: apk.browser_download_url };
       renderApk();
     }
-    const j = all.find((x) => !x.draft && !x.prerelease && /^v\d/.test(x.tag_name));
+    const j = newestRelease(all, 'v');
     if (!j) return;
     const asset = (j.assets || []).find((a) => /rak4631.*\.uf2$/.test(a.name));
     latest = { ver: j.tag_name.replace(/^v/, ''), url: asset ? asset.browser_download_url : RELEASES };

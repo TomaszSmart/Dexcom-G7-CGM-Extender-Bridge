@@ -48,8 +48,19 @@ object ReleaseCheck {
     suspend fun latest(): Latest? = releases()?.firmware
 
     private fun newest(list: List<JSONObject>, prefix: String, asset: Regex): Latest? {
-        val j = list.firstOrNull { Regex("^" + Regex.escape(prefix) + "\\d").containsMatchIn(it.optString("tag_name")) }
-            ?: return null
+        // The highest version, not the first in the list: releases made in the same second come
+        // back in any order (app-v0.1.9 was listed before app-v0.1.10).
+        val tag = Regex("^" + Regex.escape(prefix) + "\\d")
+        val j = list.filter { tag.containsMatchIn(it.optString("tag_name")) }
+            .maxWithOrNull { a, b ->
+                val x = parse(a.getString("tag_name").removePrefix(prefix)) ?: emptyList()
+                val y = parse(b.getString("tag_name").removePrefix(prefix)) ?: emptyList()
+                when {
+                    newer(x, y) -> 1
+                    newer(y, x) -> -1
+                    else -> 0
+                }
+            } ?: return null
         val assets = j.optJSONArray("assets")
         val file = (0 until (assets?.length() ?: 0)).map { assets!!.getJSONObject(it) }
             .firstOrNull { asset.containsMatchIn(it.optString("name")) }
