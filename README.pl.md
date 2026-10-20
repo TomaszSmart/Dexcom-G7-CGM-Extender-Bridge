@@ -26,6 +26,7 @@ na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko poł�
 
 Gotowy G7 Bridge: RAK4631 na płytce RAK19003 z akumulatorem, w obudowie wydrukowanej w 3D.
 Z przodu złącze USB-C do ładowania, przycisk RESET i diody.
+Wymiary: **47 × 50 × 24 mm** (szerokość × długość × grubość).
 
 ## Szybki start
 

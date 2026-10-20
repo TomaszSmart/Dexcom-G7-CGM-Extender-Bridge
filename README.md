@@ -26,6 +26,7 @@ back.
 
 The finished G7 Bridge: a RAK4631 on a RAK19003 base board with a battery, in a 3D-printed case.
 On the front: the USB-C port for charging, the RESET button and the LEDs.
+Size: **47 × 50 × 24 mm** (width × length × thickness).
 
 ## Quick start
 
