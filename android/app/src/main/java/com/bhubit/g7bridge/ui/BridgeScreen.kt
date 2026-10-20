@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
@@ -151,7 +153,13 @@ fun BridgeScreen(vm: MainViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
+                            Text(
+                                stringResource(R.string.app_name),
+                                style = if (compactHeader()) MaterialTheme.typography.titleLarge
+                                else MaterialTheme.typography.headlineSmall,
+                                maxLines = 1,
+                                softWrap = false,
+                            )
                             Spacer(Modifier.height(4.dp))
                             ConnLine(conn)
                         }
@@ -164,13 +172,16 @@ fun BridgeScreen(vm: MainViewModel) {
                         if (hasPerm && btOn) {
                             // A full button, like "Pair": the main action when the link is down
                             if (conn == Conn.DISCONNECTED) {
-                                Button(onClick = {
-                                    val saved = vm.savedAddress
-                                    if (saved != null) vm.connect(saved) else chooser = true
-                                }) { Text(stringResource(R.string.btn_connect)) }
+                                Button(
+                                    onClick = {
+                                        val saved = vm.savedAddress
+                                        if (saved != null) vm.connect(saved) else chooser = true
+                                    },
+                                    contentPadding = headerButtonPadding(),
+                                ) { Text(stringResource(R.string.btn_connect), maxLines = 1) }
                             } else {
-                                FilledTonalButton(onClick = vm::disconnect) {
-                                    Text(stringResource(R.string.btn_disconnect))
+                                FilledTonalButton(onClick = vm::disconnect, contentPadding = headerButtonPadding()) {
+                                    Text(stringResource(R.string.btn_disconnect), maxLines = 1)
                                 }
                             }
                         }
@@ -232,12 +243,29 @@ private fun ConnLine(conn: Conn) {
         Conn.BONDING -> stringResource(R.string.conn_bonding) to Tone.Warn
         Conn.DISCONNECTED -> stringResource(R.string.conn_no) to MaterialTheme.colorScheme.outline
     }
+    val compact = compactHeader()
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(16.dp).background(color, CircleShape))
-        Spacer(Modifier.width(10.dp))
-        Text(text, style = MaterialTheme.typography.titleMedium)
+        Box(Modifier.size(if (compact) 13.dp else 16.dp).background(color, CircleShape))
+        Spacer(Modifier.width(if (compact) 8.dp else 10.dp))
+        Text(
+            text,
+            style = if (compact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }
+
+/**
+ * English needs a smaller header: "Disconnect" is much wider than "Rozłącz" and squeezed the title
+ * and the connection state onto two lines each.
+ */
+@Composable
+private fun compactHeader() = LocalConfiguration.current.locales[0].language != "pl"
+
+@Composable
+private fun headerButtonPadding() =
+    if (compactHeader()) PaddingValues(horizontal = 16.dp, vertical = 8.dp) else ButtonDefaults.ContentPadding
 
 @Composable
 private fun Notice(text: String, button: String, onClick: () -> Unit) {
