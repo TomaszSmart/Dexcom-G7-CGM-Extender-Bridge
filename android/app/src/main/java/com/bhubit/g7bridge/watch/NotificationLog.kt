@@ -15,7 +15,15 @@ object NotificationLog {
     private const val MAX = 100
     private const val FILE = "notifications.json"
 
-    data class Entry(val id: Long, val timeMs: Long, val title: String, val text: String, val read: Boolean)
+    data class Entry(
+        val id: Long,
+        val timeMs: Long,
+        val title: String,
+        val text: String,
+        val read: Boolean,
+        /** A download (new app or firmware), shown as a button. */
+        val url: String? = null,
+    )
 
     private val _entries = MutableStateFlow<List<Entry>>(emptyList())
     val entries: StateFlow<List<Entry>> = _entries
@@ -34,11 +42,11 @@ object NotificationLog {
     }
 
     /** Returns the new entry's id (passed along by the notification's tap). */
-    fun add(ctx: Context, title: String, text: String): Long = synchronized(this) {
+    fun add(ctx: Context, title: String, text: String, url: String? = null): Long = synchronized(this) {
         load(ctx)
         val now = System.currentTimeMillis()
         val id = maxOf(now, (_entries.value.firstOrNull()?.id ?: 0) + 1)
-        update(ctx, (listOf(Entry(id, now, title, text, read = false)) + _entries.value).take(MAX))
+        update(ctx, (listOf(Entry(id, now, title, text, read = false, url = url)) + _entries.value).take(MAX))
         id
     }
 
@@ -62,7 +70,7 @@ object NotificationLog {
         list.forEach {
             json.put(
                 JSONObject().put("id", it.id).put("t", it.timeMs).put("title", it.title)
-                    .put("text", it.text).put("read", it.read),
+                    .put("text", it.text).put("read", it.read).put("url", it.url ?: ""),
             )
         }
         File(ctx.filesDir, FILE).writeText(json.toString())
@@ -72,7 +80,10 @@ object NotificationLog {
         val json = JSONArray(File(ctx.filesDir, FILE).readText())
         (0 until json.length()).map { i ->
             json.getJSONObject(i).let {
-                Entry(it.getLong("id"), it.getLong("t"), it.getString("title"), it.getString("text"), it.getBoolean("read"))
+                Entry(
+                    it.getLong("id"), it.getLong("t"), it.getString("title"), it.getString("text"),
+                    it.getBoolean("read"), it.optString("url").ifEmpty { null },
+                )
             }
         }
     } catch (e: Exception) {

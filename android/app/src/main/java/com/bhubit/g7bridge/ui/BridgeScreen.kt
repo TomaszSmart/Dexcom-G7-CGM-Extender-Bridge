@@ -909,6 +909,7 @@ private fun NotificationsScreen(vm: MainViewModel) {
     BackHandler { vm.closeNotifications() }
     val fmt = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
     var open by remember { mutableStateOf<Long?>(null) }
+    val uri = LocalUriHandler.current
     Scaffold(
         topBar = {
             Surface(color = MaterialTheme.colorScheme.surface) {
@@ -940,7 +941,7 @@ private fun NotificationsScreen(vm: MainViewModel) {
             if (entries.isEmpty()) {
                 Text(stringResource(R.string.notif_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
-                FlowRowCentered {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = vm::markAllNotificationsRead, enabled = entries.any { !it.read }) {
                         Text(stringResource(R.string.notif_read_all))
                     }
@@ -980,6 +981,12 @@ private fun NotificationsScreen(vm: MainViewModel) {
                             fontWeight = if (e.read) FontWeight.Normal else FontWeight.SemiBold,
                             maxLines = if (open == e.id || !e.read) Int.MAX_VALUE else 2,
                         )
+                        e.url?.let { url ->
+                            Button(onClick = {
+                                vm.markNotificationRead(e.id)
+                                uri.openUri(url)
+                            }) { Text(stringResource(R.string.fw_get)) }
+                        }
                     }
                 }
             }

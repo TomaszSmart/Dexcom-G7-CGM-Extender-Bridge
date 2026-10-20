@@ -192,7 +192,7 @@
     <!-- notifications screen -->
     <string name="notif_title">Notifications</string>
     <string name="notif_none">No notifications yet.</string>
-    <string name="notif_read_all">Mark all as read</string>
+    <string name="notif_read_all">Mark all read</string>
     <string name="notif_clear">Clear</string>
     <string name="notif_back">Back</string>
 </resources>

@@ -206,14 +206,14 @@ class BridgeWatch(private val ctx: Context) {
         if (fw != null && ReleaseCheck.compare(st.fw, fw) == ReleaseCheck.Verdict.UPDATE &&
             prefs.getString("fw_notified", null) != fw.version
         ) {
-            Alerts.firmwareUpdate(ctx, fw.version)
+            Alerts.firmwareUpdate(ctx, fw.version, fw.downloadUrl)
             prefs.edit { putString("fw_notified", fw.version) }
         }
         val app = releases.app
         if (app != null && ReleaseCheck.compare(BuildConfig.VERSION_NAME, app) == ReleaseCheck.Verdict.UPDATE &&
             prefs.getString("app_notified", null) != app.version
         ) {
-            Alerts.appUpdate(ctx, app.version)
+            Alerts.appUpdate(ctx, app.version, app.downloadUrl)
             prefs.edit { putString("app_notified", app.version) }
         }
     }

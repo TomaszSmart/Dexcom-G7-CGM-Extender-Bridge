@@ -187,7 +187,7 @@
     <!-- notifications screen -->
     <string name="notif_title">Powiadomienia</string>
     <string name="notif_none">Nie ma jeszcze powiadomień.</string>
-    <string name="notif_read_all">Oznacz wszystkie jako przeczytane</string>
+    <string name="notif_read_all">Oznacz przeczytane</string>
     <string name="notif_clear">Wyczyść</string>
     <string name="notif_back">Wstecz</string>
 </resources>

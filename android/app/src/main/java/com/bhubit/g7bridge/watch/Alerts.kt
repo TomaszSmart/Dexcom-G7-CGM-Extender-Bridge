@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -70,12 +71,12 @@ object Alerts {
         ctx, ID_CERTS, CH_INFO, ctx.getString(R.string.n_certs_title), ctx.getString(R.string.n_certs_text),
     )
 
-    fun firmwareUpdate(ctx: Context, version: String) = show(
-        ctx, ID_FIRMWARE, CH_INFO, ctx.getString(R.string.n_fw_title, version), ctx.getString(R.string.fw_update_text),
+    fun firmwareUpdate(ctx: Context, version: String, url: String) = show(
+        ctx, ID_FIRMWARE, CH_INFO, ctx.getString(R.string.n_fw_title, version), ctx.getString(R.string.fw_update_text), url,
     )
 
-    fun appUpdate(ctx: Context, version: String) = show(
-        ctx, ID_APP, CH_INFO, ctx.getString(R.string.n_app_title, version), ctx.getString(R.string.app_update_text),
+    fun appUpdate(ctx: Context, version: String, url: String) = show(
+        ctx, ID_APP, CH_INFO, ctx.getString(R.string.n_app_title, version), ctx.getString(R.string.app_update_text), url,
     )
 
     fun cancel(ctx: Context, id: Int) = NotificationManagerCompat.from(ctx).cancel(id)
@@ -84,9 +85,9 @@ object Alerts {
     /** Intent extra: the history entry a tapped notification belongs to. */
     const val EXTRA_ENTRY = "notification_entry"
 
-    private fun show(ctx: Context, id: Int, channel: String, title: String, text: String) {
+    private fun show(ctx: Context, id: Int, channel: String, title: String, text: String, url: String? = null) {
         // Kept in the app's own history even when Android may not show it
-        val entry = NotificationLog.add(ctx, title, text)
+        val entry = NotificationLog.add(ctx, title, text, url)
         if (!canNotify(ctx)) return
         val intent = Intent(ctx, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -102,6 +103,15 @@ object Alerts {
             .setContentIntent(pi)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
+            .apply {
+                if (url != null) {
+                    val download = PendingIntent.getActivity(
+                        ctx, id + 100, Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                    )
+                    addAction(0, ctx.getString(R.string.fw_get), download)
+                }
+            }
             .build()
         NotificationManagerCompat.from(ctx).notify(id, n)
     }
