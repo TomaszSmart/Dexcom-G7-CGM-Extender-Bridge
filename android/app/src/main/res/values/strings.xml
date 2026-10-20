@@ -184,6 +184,8 @@
     <string name="n_end_text">%1$s no longer sends readings. Put on a new sensor and enter its code in G7 Bridge.</string>
     <string name="n_fail_title">Sensor failure (0x%1$02x)</string>
     <string name="n_fail_text">%1$s reports a failure and sends no usable readings. Replace the sensor and enter the new code in G7 Bridge.</string>
+    <string name="n_fw_title">New bridge firmware %1$s</string>
+    <string name="n_app_title">New app version %1$s</string>
     <string name="n_certs_title">App certificates are not loaded</string>
     <string name="n_certs_text">Without them the bridge cannot pair a new G7. Open G7 Bridge and load them from the xDrip+ documentation.</string>
 

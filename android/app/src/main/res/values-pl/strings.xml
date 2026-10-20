@@ -179,6 +179,8 @@
     <string name="n_end_text">%1$s nie wysyła już odczytów. Załóż nowy sensor i wpisz jego kod w G7 Bridge.</string>
     <string name="n_fail_title">Awaria sensora (0x%1$02x)</string>
     <string name="n_fail_text">%1$s zgłasza awarię i nie wysyła użytecznych odczytów. Wymień sensor i wpisz nowy kod w G7 Bridge.</string>
+    <string name="n_fw_title">Nowy firmware bridge’a %1$s</string>
+    <string name="n_app_title">Nowa wersja aplikacji %1$s</string>
     <string name="n_certs_title">Certyfikaty aplikacji nie są wczytane</string>
     <string name="n_certs_text">Bez nich bridge nie sparuje nowego G7. Otwórz G7 Bridge i wczytaj je z dokumentacji xDrip+.</string>
 

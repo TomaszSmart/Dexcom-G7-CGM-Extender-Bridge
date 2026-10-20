@@ -15,6 +15,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.bhubit.g7bridge.AppLanguage
+import com.bhubit.g7bridge.BuildConfig
 import com.bhubit.g7bridge.R
 import com.bhubit.g7bridge.ReleaseCheck
 import com.bhubit.g7bridge.ble.BridgeClient
@@ -82,7 +83,7 @@ class BridgeWatch(private val ctx: Context) {
         battery(st)
         certs(st)
         diagnose(st)
-        firmware(st)
+        updates(st)
     }
 
     // ---- 1. the bridge's battery ---------------------------------------------------
@@ -195,17 +196,25 @@ class BridgeWatch(private val ctx: Context) {
         }
     }
 
-    /** Asks GitHub at most once a day. */
-    private suspend fun firmware(st: BridgeStatus) {
+    /** New bridge firmware and new app versions, once per version; asks GitHub at most every 6 h. */
+    private suspend fun updates(st: BridgeStatus) {
         val now = System.currentTimeMillis()
-        if (now - prefs.getLong("fw_checked_ms", 0) < TimeUnit.DAYS.toMillis(1)) return
-        val latest = ReleaseCheck.latest() ?: return
+        if (now - prefs.getLong("fw_checked_ms", 0) < TimeUnit.HOURS.toMillis(6)) return
+        val releases = ReleaseCheck.releases() ?: return
         prefs.edit { putLong("fw_checked_ms", now) }
-        if (ReleaseCheck.compare(st.fw, latest) == ReleaseCheck.Verdict.UPDATE &&
-            prefs.getString("fw_notified", null) != latest.version
+        val fw = releases.firmware
+        if (fw != null && ReleaseCheck.compare(st.fw, fw) == ReleaseCheck.Verdict.UPDATE &&
+            prefs.getString("fw_notified", null) != fw.version
         ) {
-            Alerts.firmwareUpdate(ctx, latest.version)
-            prefs.edit { putString("fw_notified", latest.version) }
+            Alerts.firmwareUpdate(ctx, fw.version)
+            prefs.edit { putString("fw_notified", fw.version) }
+        }
+        val app = releases.app
+        if (app != null && ReleaseCheck.compare(BuildConfig.VERSION_NAME, app) == ReleaseCheck.Verdict.UPDATE &&
+            prefs.getString("app_notified", null) != app.version
+        ) {
+            Alerts.appUpdate(ctx, app.version)
+            prefs.edit { putString("app_notified", app.version) }
         }
     }
 

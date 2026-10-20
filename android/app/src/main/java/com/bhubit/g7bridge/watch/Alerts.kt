@@ -28,6 +28,7 @@ object Alerts {
     const val ID_DIAGNOSIS = 2
     const val ID_CERTS = 3
     const val ID_FIRMWARE = 4
+    const val ID_APP = 5
 
     fun createChannels(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
@@ -70,7 +71,11 @@ object Alerts {
     )
 
     fun firmwareUpdate(ctx: Context, version: String) = show(
-        ctx, ID_FIRMWARE, CH_INFO, ctx.getString(R.string.fw_new, version), ctx.getString(R.string.fw_update_text),
+        ctx, ID_FIRMWARE, CH_INFO, ctx.getString(R.string.n_fw_title, version), ctx.getString(R.string.fw_update_text),
+    )
+
+    fun appUpdate(ctx: Context, version: String) = show(
+        ctx, ID_APP, CH_INFO, ctx.getString(R.string.n_app_title, version), ctx.getString(R.string.app_update_text),
     )
 
     fun cancel(ctx: Context, id: Int) = NotificationManagerCompat.from(ctx).cancel(id)
