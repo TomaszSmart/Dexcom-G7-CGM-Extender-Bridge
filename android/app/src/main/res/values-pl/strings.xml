@@ -145,6 +145,7 @@
 
     <!-- linia stanu -->
     <string name="msg_bonding">Zatwierdź prośbę o parowanie…</string>
+    <string name="msg_add_xdrip">Sparowano. Teraz dodaj bridge w xDrip+ (instrukcja niżej) — gdy jesteś w xDrip+, ta aplikacja zwalnia połączenie, żeby xDrip+ mógł go znaleźć.</string>
     <string name="msg_denied">Bridge odmówił parowania. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.</string>
     <string name="msg_not_bridge">To urządzenie nie jest G7 Bridge.</string>
     <string name="msg_disc_retry">Rozłączono, łączę ponownie za chwilę…</string>

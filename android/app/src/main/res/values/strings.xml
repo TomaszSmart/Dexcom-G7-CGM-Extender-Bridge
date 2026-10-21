@@ -150,6 +150,7 @@
 
     <!-- status line -->
     <string name="msg_bonding">Accept the pairing request…</string>
+    <string name="msg_add_xdrip">Paired. Now add the bridge in xDrip+ (see below) — while you are in xDrip+ this app lets go of the connection so xDrip+ can find it.</string>
     <string name="msg_denied">The bridge refused the pairing. A new phone can only be paired within 10 minutes of powering up the bridge.</string>
     <string name="msg_not_bridge">This device is not a G7 Bridge.</string>
     <string name="msg_disc_retry">Disconnected, reconnecting shortly…</string>

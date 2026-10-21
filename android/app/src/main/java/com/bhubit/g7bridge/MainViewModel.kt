@@ -10,6 +10,7 @@ import com.bhubit.g7bridge.ble.BridgeClient
 import com.bhubit.g7bridge.ble.BridgeClient.Problem
 import com.bhubit.g7bridge.certs.AppCerts
 import com.bhubit.g7bridge.watch.NotificationLog
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.delay
@@ -56,6 +57,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     @Volatile private var awaitingAnswer = false
 
 
+    /**
+     * The bridge takes one phone link and stops advertising while it has one, so xDrip+ cannot find
+     * it in its scan while this app holds the link. If xDrip+ does not collect yet, the link is
+     * released in the background and taken again on return.
+     */
+    private var releaseJob: Job? = null
+    @Volatile private var releasedForXdrip = false
+    /** Set when this app bonded the bridge: the xDrip+ hint stays until xDrip+ collects. */
+    @Volatile private var bondedHere = false
+
     /** Bridges for the chooser: bonded ones and the ones found by scanning. */
     val found = MutableStateFlow<List<BluetoothDevice>>(emptyList())
 
@@ -85,13 +96,24 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
         viewModelScope.launch {
             client.conn.collect {
-                if (it == BridgeClient.Conn.CONNECTED) message.value = null // the status line says it
-                if (it == BridgeClient.Conn.BONDING) message.value = Msg(R.string.msg_bonding)
+                if (it == BridgeClient.Conn.CONNECTED) {
+                    // the status line says it; after a fresh pairing xDrip+ still has to be added
+                    // (the bridge drops the link once after pairing, so this comes twice)
+                    message.value = if (bondedHere) Msg(R.string.msg_add_xdrip) else null
+                }
+                if (it == BridgeClient.Conn.BONDING) {
+                    bondedHere = true
+                    message.value = Msg(R.string.msg_bonding)
+                }
             }
         }
         viewModelScope.launch {
             client.status.collect { st ->
                 if (st == null) return@collect
+                if (bondedHere && st.xdrip != false) {
+                    bondedHere = false
+                    if (message.value == Msg(R.string.msg_add_xdrip)) message.value = null
+                }
                 if (awaitingAnswer && st.msg.isNotEmpty() && st.msg != "ready") message.value = Msg(R.string.msg_bridge, listOf(st.msg))
             }
         }
@@ -140,6 +162,22 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setForeground(on: Boolean) {
         client.polling = on
+        releaseJob?.cancel()
+        if (on) {
+            if (releasedForXdrip) {
+                releasedForXdrip = false
+                savedAddress?.let { client.connect(it) }
+            }
+        } else {
+            releaseJob = viewModelScope.launch {
+                delay(3_000) // not for a quick look elsewhere
+                val st = client.status.value
+                if (client.conn.value == BridgeClient.Conn.CONNECTED && st?.xdrip == false && !certsBusy.value) {
+                    releasedForXdrip = true
+                    client.disconnect()
+                }
+            }
+        }
         if (on && System.currentTimeMillis() - releasesChecked > 5 * 60_000L) {
             viewModelScope.launch { checkReleases() }
         }
