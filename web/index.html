@@ -58,7 +58,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .batt-fill { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--ok); }
 .batt-txt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font: 700 0.85rem var(--font-body); color: var(--ink); }
-.batt-txt svg { width: 12px; height: 18px; fill: var(--ink); }
+.batt-txt svg { width: 7px; height: 12px; margin-right: 1px; fill: var(--ink); }
 h1 { font: 700 1.35rem/1.2 var(--font-display); margin: 0; letter-spacing: -0.01em; }
 h2 { font: 600 0.78rem/1.2 var(--font-body); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
@@ -857,7 +857,7 @@ function render(st) {
     $('battFill').style.width = pct + '%';
     // Red up to 20 %, yellow up to 30 %, green above.
     $('battFill').style.background = pct <= 20 ? 'var(--low)' : pct <= 30 ? 'var(--high)' : 'var(--ok)';
-    $('battTxt').innerHTML = bat.usb ? BOLT : pct + '%';
+    $('battTxt').innerHTML = (bat.usb ? BOLT : '') + pct + '%';
     const label = t(bat.usb ? 'batCharging' : 'batDesc', pct);
     batt.setAttribute('aria-label', label);
     batt.title = label;

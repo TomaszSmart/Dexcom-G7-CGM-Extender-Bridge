@@ -618,15 +618,19 @@ private fun BatteryCapsule(bat: BridgeStatus.Battery) {
                     .fillMaxWidth(pct / 100f)
                     .background(fill, RoundedCornerShape(4.dp)),
             )
-            if (bat.usb) {
-                Bolt(ink, Modifier.align(Alignment.Center).size(width = 12.dp, height = 18.dp))
-            } else {
+            // While charging a small bolt goes in front of the percentage
+            Row(
+                Modifier.align(Alignment.Center),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(1.dp),
+            ) {
+                if (bat.usb) Bolt(ink, Modifier.size(width = 7.dp, height = 12.dp))
                 Text(
                     "$pct%",
-                    Modifier.align(Alignment.Center),
                     color = ink,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = if (bat.usb && pct >= 100) MaterialTheme.typography.labelSmall
+                    else MaterialTheme.typography.labelMedium,
                 )
             }
         }
