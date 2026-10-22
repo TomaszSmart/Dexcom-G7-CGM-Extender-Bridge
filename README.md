@@ -16,7 +16,7 @@ back.
 
 **The goal is simple: let the child just train — with the parent still seeing every reading.**
 
-## What it looks like
+## How it looks like
 
 <p>
   <img src="docs/images/g7-bridge-case.jpg" width="32%" alt="G7 Bridge in its case">
