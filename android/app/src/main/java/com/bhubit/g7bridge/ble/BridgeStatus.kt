@@ -8,6 +8,8 @@ data class BridgeStatus(
     val id: String,
     val searching: Boolean,
     val searchLeftS: Int,
+    /** Seconds left in the phone pairing window (firmware 0.3.4+), 0 = closed. */
+    val pairLeftS: Int,
     val phone: Boolean,
     /** xDrip+ really collects (has used the CGM service); null on firmware before 0.3. */
     val xdrip: Boolean?,
@@ -52,6 +54,7 @@ data class BridgeStatus(
                 id = o.optString("id"),
                 searching = o.optInt("search") != 0,
                 searchLeftS = o.optInt("left"),
+                pairLeftS = o.optInt("pair"),
                 phone = o.optInt("phone") != 0,
                 xdrip = if (o.has("xdrip")) o.getInt("xdrip") != 0 else null,
                 reading = g?.let {

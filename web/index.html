@@ -275,6 +275,7 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
     <details>
       <summary data-i18n="unpTitle"></summary>
       <p class="sub" data-i18n="unpText"></p>
+      <p><span class="pill warn" id="pairOpen" hidden></span></p>
       <div class="confirm">
         <button type="button" class="danger" id="unpairBtn" disabled data-i18n="unpBtn"></button>
         <span id="unpairConfirm" hidden>
@@ -322,7 +323,7 @@ const TEXT = {
     fwGet: 'download', fwHow: 'how to update',
     xdTitle: 'Connect xDrip+ to the bridge',
     xd1: 'Use a recent xDrip+ that has the “SmartGuide” data source.',
-    xd2: 'Within 10 minutes of powering the bridge up: xDrip+ → Settings → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
+    xd2: 'Within 10 minutes of powering the bridge up or plugging in a USB-C charger: xDrip+ → Settings → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
     xd3: 'xDrip+ scans for devices: choose “G7 Bridge” and accept the Android pairing request.',
     xd4: 'The bridge drops the phone once right after pairing — this is expected; xDrip+ reconnects by itself and fetches up to 24 hours of history.',
     xd5: 'AndroidAPS keeps using xDrip+ as its BG source, nothing changes there.',
@@ -347,7 +348,7 @@ const TEXT = {
     autoL4: 'Open this page and connect to the bridge once with the button.',
     autoP2: 'After that Chrome remembers the bridge and the page connects by itself. After clearing the site data, connect once with the button again.',
     unpTitle: 'Phone cannot connect',
-    unpText: 'Removes the phones’ pairing with the bridge (the sensor stays). Then forget “G7 Bridge” in the phone’s Bluetooth settings, unplug and replug the bridge’s power and pair the phone again within 10 minutes.',
+    unpText: 'Removes the phones’ pairing with the bridge (the sensor stays) and opens pairing for 10 minutes. Then forget “G7 Bridge” in the phone’s Bluetooth settings and pair the phone again within those 10 minutes: in xDrip+ (SmartGuide) and here (Connect). If no phone can connect at all, plug a USB-C charger into the bridge — that opens pairing for 10 minutes too.',
     unpBtn: 'Remove phone pairing', unpYes: 'Yes, remove', unpNo: 'Cancel',
     hSeen: 'Sensors in range', seenInit: 'Connect to the bridge to see sensors in range.',
     hPair: 'New sensor', codeLabel: 'Applicator code', pairBtn: 'Pair',
@@ -379,7 +380,8 @@ const TEXT = {
     reconnecting: 'Reconnecting…', discRetry: 'Disconnected, reconnecting shortly…', disc: 'Disconnected.',
     pick: 'Choose “G7 Bridge” from the list…', noDevice: 'No device selected.', connFail: 'Connection failed: ',
     remembered: 'Connecting to the remembered bridge…',
-    denied: 'The bridge refused access. A new phone can only be paired within 10 minutes of powering up the bridge.',
+    denied: 'The bridge refused access. A new phone can only be paired within 10 minutes of powering up the bridge or plugging a USB-C charger into it.',
+    pairOpen: (m) => 'phone pairing open for ' + m + ' more min',
     unpairing: 'Removing phone pairing…',
     ago: (s) => s < 90 ? s + ' s ago' : s < 5400 ? Math.round(s / 60) + ' min ago'
       : s < 172800 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago',
@@ -405,7 +407,7 @@ const TEXT = {
     fwGet: 'pobierz', fwHow: 'jak zaktualizować',
     xdTitle: 'Połącz xDrip+ z bridge’em',
     xd1: 'Użyj aktualnego xDrip+, który ma źródło danych „SmartGuide”.',
-    xd2: 'W ciągu 10 minut od podłączenia zasilania bridge’a: xDrip+ → Ustawienia → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
+    xd2: 'W ciągu 10 minut od włączenia bridge’a albo podłączenia ładowarki USB-C: xDrip+ → Ustawienia → <b>Hardware Data Source</b> → <b>SmartGuide</b>.',
     xd3: 'xDrip+ szuka urządzeń: wybierz „G7 Bridge” i zatwierdź prośbę Androida o parowanie.',
     xd4: 'Zaraz po parowaniu bridge raz rozłączy telefon — tak ma być; xDrip+ połączy się sam i pobierze do 24 godzin historii.',
     xd5: 'AndroidAPS dalej korzysta z xDrip+ jako źródła BG, tu nic się nie zmienia.',
@@ -430,7 +432,7 @@ const TEXT = {
     autoL4: 'Otwórz tę stronę i raz połącz się z bridge’em przyciskiem.',
     autoP2: 'Potem Chrome pamięta bridge i strona łączy się sama. Po wyczyszczeniu danych strony trzeba raz połączyć się przyciskiem od nowa.',
     unpTitle: 'Telefon nie może się połączyć',
-    unpText: 'Usuwa parowanie telefonów z bridge’em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge’a i w ciągu 10 minut sparuj telefon ponownie.',
+    unpText: 'Usuwa parowanie telefonów z bridge’em (sensor zostaje) i na 10 minut otwiera parowanie. Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge” i w ciągu tych 10 minut sparuj telefon ponownie: w xDrip+ (SmartGuide) i tutaj (Połącz). Jeśli żaden telefon nie może się połączyć, podłącz do bridge’a ładowarkę USB-C — to też otwiera parowanie na 10 minut.',
     unpBtn: 'Usuń parowanie telefonów', unpYes: 'Tak, usuń', unpNo: 'Anuluj',
     hSeen: 'Sensory w zasięgu', seenInit: 'Połącz z bridge’em, żeby zobaczyć sensory w zasięgu.',
     hPair: 'Nowy sensor', codeLabel: 'Kod z aplikatora', pairBtn: 'Paruj',
@@ -462,7 +464,8 @@ const TEXT = {
     reconnecting: 'Łączę ponownie…', discRetry: 'Rozłączono, łączę ponownie za chwilę…', disc: 'Rozłączono.',
     pick: 'Wybierz „G7 Bridge” z listy…', noDevice: 'Nie wybrano urządzenia.', connFail: 'Połączenie nie powiodło się: ',
     remembered: 'Łączę z zapamiętanym bridge’em…',
-    denied: 'Bridge odmówił dostępu. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.',
+    denied: 'Bridge odmówił dostępu. Nowy telefon można sparować tylko przez 10 minut po włączeniu bridge’a albo podłączeniu do niego ładowarki USB-C.',
+    pairOpen: (m) => 'parowanie telefonu otwarte jeszcze ' + m + ' min',
     unpairing: 'Usuwam parowanie telefonów…',
     ago: (s) => s < 90 ? s + ' s temu' : s < 5400 ? Math.round(s / 60) + ' min temu'
       : s < 172800 ? Math.round(s / 3600) + ' h temu' : Math.round(s / 86400) + ' dni temu',
@@ -860,6 +863,9 @@ function render(st) {
     $('sEnd').textContent = '—';
   }
   $('sCode').textContent = st.code || t('codeNotSet');
+  // Firmware 0.3.4+: seconds left in the phone pairing window
+  $('pairOpen').hidden = !st.pair;
+  if (st.pair) $('pairOpen').textContent = t('pairOpen', Math.ceil(st.pair / 60));
   // "xdrip" (firmware 0.3+): xDrip+ really collects; "phone" also counts this page's link
   $('sPhone').textContent = t((st.xdrip !== undefined ? st.xdrip : st.phone) ? 'phoneOn' : 'phoneOff');
 

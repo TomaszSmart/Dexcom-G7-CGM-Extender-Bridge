@@ -35,6 +35,7 @@
 #include <zephyr/bluetooth/uuid.h>
 
 #include <bluetooth/gatt_dm.h>
+#include <hal/nrf_power.h>
 
 #include "g7_auth.h"
 #include "g7_bridge.h"
@@ -1235,12 +1236,45 @@ static void auth_cancel(struct bt_conn *conn)
 }
 
 /*
- * New phone bonds only within 10 minutes of power-on: bonding is Just Works,
- * so otherwise anyone in range could pair and change the pairing code through
- * the configuration service. Re-plug the bridge to pair a (new) phone.
+ * New phone bonds only within a 10-minute window: bonding is Just Works, so
+ * otherwise anyone in range could pair and change the pairing code through the
+ * configuration service. The window opens at power-on, when USB power is plugged
+ * in (someone holds the bridge: it has no switch and sits in a case), and after
+ * "unpair_phone" from an already paired phone.
  * Pairing with the sensor (we are central there) is never restricted.
  */
 #define PHONE_PAIRING_WINDOW_MS (10 * 60 * 1000)
+
+static int64_t phone_pairing_until = PHONE_PAIRING_WINDOW_MS;
+
+void g7_bridge_open_phone_pairing(void)
+{
+	phone_pairing_until = k_uptime_get() + PHONE_PAIRING_WINDOW_MS;
+	LOG_INF("Phone pairing open for 10 min");
+}
+
+uint16_t g7_bridge_phone_pairing_left_s(void)
+{
+	int64_t left = phone_pairing_until - k_uptime_get();
+
+	return left > 0 ? (uint16_t)(left / 1000) : 0;
+}
+
+static void usb_watch(struct k_work *work);
+static K_WORK_DELAYABLE_DEFINE(usb_watch_work, usb_watch);
+
+static void usb_watch(struct k_work *work)
+{
+	static bool was_usb = true; /* at power-on the window is open anyway */
+	bool usb = nrf_power_usbregstatus_vbusdet_get(NRF_POWER);
+
+	if (usb && !was_usb) {
+		LOG_INF("USB power plugged in");
+		g7_bridge_open_phone_pairing();
+	}
+	was_usb = usb;
+	k_work_schedule(&usb_watch_work, K_SECONDS(2));
+}
 
 static enum bt_security_err pairing_accept(struct bt_conn *conn,
 					   const struct bt_conn_pairing_feat *const feat)
@@ -1248,9 +1282,9 @@ static enum bt_security_err pairing_accept(struct bt_conn *conn,
 	struct bt_conn_info info;
 
 	if (bt_conn_get_info(conn, &info) == 0 && info.role == BT_CONN_ROLE_PERIPHERAL &&
-	    k_uptime_get() > PHONE_PAIRING_WINDOW_MS) {
-		LOG_WRN("Refusing phone pairing: only allowed in the first 10 min after power-on "
-			"(re-plug the bridge)");
+	    k_uptime_get() > phone_pairing_until) {
+		LOG_WRN("Refusing phone pairing: the 10-min window is closed "
+			"(plug in USB power, or restart the bridge)");
 		return BT_SECURITY_ERR_PAIR_NOT_ALLOWED;
 	}
 	return BT_SECURITY_ERR_SUCCESS;
@@ -1298,6 +1332,7 @@ int main(void)
 	bt_le_scan_cb_register(&scan_callbacks);
 
 	LOG_INF("BLE Bridge starting");
+	k_work_schedule(&usb_watch_work, K_SECONDS(2));
 	if (g7_config_get_id()[0] == '\0' && g7_config_get_code()[0] != '\0') {
 		g7_bridge_start_search();
 	}

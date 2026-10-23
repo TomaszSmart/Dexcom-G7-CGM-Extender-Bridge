@@ -112,7 +112,7 @@
     <!-- pomoc -->
     <string name="xd_title">Połącz xDrip+ z bridge’em</string>
     <string name="xd1">Użyj aktualnego xDrip+, który ma źródło danych „SmartGuide”.</string>
-    <string name="xd2">W ciągu 10 minut od podłączenia zasilania bridge’a: xDrip+ → Ustawienia → Hardware Data Source → SmartGuide.</string>
+    <string name="xd2">W ciągu 10 minut od włączenia bridge’a albo podłączenia ładowarki USB-C: xDrip+ → Ustawienia → Hardware Data Source → SmartGuide.</string>
     <string name="xd3">xDrip+ szuka urządzeń: wybierz „G7 Bridge” i zatwierdź prośbę Androida o parowanie.</string>
     <string name="xd4">Zaraz po parowaniu bridge raz rozłączy telefon — tak ma być; xDrip+ połączy się sam i pobierze do 24 godzin historii.</string>
     <string name="xd5">AndroidAPS dalej korzysta z xDrip+ jako źródła BG, tu nic się nie zmienia.</string>
@@ -139,7 +139,7 @@
     <string name="rel_none">Bridge nie łączy się z żadnym sensorem. Aby to zmienić, wpisz kod w sekcji Nowy sensor.</string>
     <string name="msg_releasing">Zwalniam sensor…</string>
     <string name="unp_title">Telefon nie może się połączyć</string>
-    <string name="unp_text">Usuwa parowanie telefonów z bridge’em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge’a i w ciągu 10 minut sparuj telefon ponownie.</string>
+    <string name="unp_text">Usuwa parowanie telefonów z bridge’em (sensor zostaje) i na 10 minut otwiera parowanie. Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge” i w ciągu tych 10 minut sparuj telefon ponownie: w xDrip+ (SmartGuide) i w tej aplikacji. Jeśli żaden telefon nie może się połączyć, podłącz do bridge’a ładowarkę USB-C — to też otwiera parowanie na 10 minut.</string>
     <string name="unp_btn">Usuń parowanie telefonów</string>
     <string name="unp_yes">Tak, usuń</string>
     <string name="forget_btn">Użyj innego bridge’a</string>
@@ -153,7 +153,8 @@
     <!-- linia stanu -->
     <string name="msg_bonding">Zatwierdź prośbę o parowanie…</string>
     <string name="msg_add_xdrip">Sparowano. Teraz dodaj bridge w xDrip+ (instrukcja niżej) — gdy jesteś w xDrip+, ta aplikacja zwalnia połączenie, żeby xDrip+ mógł go znaleźć.</string>
-    <string name="msg_denied">Bridge odmówił parowania. Nowy telefon można sparować tylko w ciągu 10 minut od podłączenia zasilania bridge’a.</string>
+    <string name="msg_denied">Bridge odmówił parowania. Nowy telefon można sparować tylko przez 10 minut po włączeniu bridge’a albo podłączeniu do niego ładowarki USB-C.</string>
+    <string name="pair_open">parowanie telefonu otwarte jeszcze %1$d min</string>
     <string name="msg_not_bridge">To urządzenie nie jest G7 Bridge.</string>
     <string name="msg_disc_retry">Rozłączono, łączę ponownie za chwilę…</string>
     <string name="msg_disc">Rozłączono.</string>

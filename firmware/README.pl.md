@@ -30,7 +30,7 @@ w osobnej części pamięci i przetrwają aktualizację.
 ## Pierwsza konfiguracja
 
 1. Otwórz stronę konfiguracji w Chrome na Androidzie: https://g7bridge.b-hubit.com
-2. W ciągu 10 minut od podłączenia zasilania bridge'a połącz się z „G7 Bridge” i zatwierdź parowanie.
+2. W ciągu 10 minut od włączenia bridge’a albo podłączenia ładowarki USB-C połącz się z „G7 Bridge” i zatwierdź parowanie.
 3. **Konfiguracja G7** — jednorazowo, przed pierwszym G7: na stronie naciśnij **Z dokumentacji xDrip+**
    i **Wyślij do bridge’a**. Zostaje tylko w Twoim bridge’u.
 4. **xDrip+** — w tych samych 10 minutach: xDrip+ → Ustawienia → **Hardware Data Source** →
@@ -40,4 +40,5 @@ w osobnej części pamięci i przetrwają aktualizację.
    w innym telefonie, który łączy się z tym sensorem. Bridge sam znajdzie sensor, do którego pasuje
    kod, i sparuje się z nim (do 30 minut).
 
-Minęło 10 minut? Odłącz baterię i USB (albo naciśnij raz RESET) i sparuj ponownie.
+Minęło 10 minut? Podłącz do bridge’a ładowarkę USB-C (albo naciśnij raz RESET) — parowanie
+otworzy się na kolejne 10 minut.

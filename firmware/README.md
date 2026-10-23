@@ -28,7 +28,7 @@ Updates are installed the same way. The pairing code, the sensor and the G7 conf
 ## First setup
 
 1. Open the setup page in Chrome on Android: https://g7bridge.b-hubit.com
-2. Within 10 minutes of powering the bridge up, connect to “G7 Bridge” and accept the pairing.
+2. Within 10 minutes of powering the bridge up or plugging in a USB-C charger, connect to “G7 Bridge” and accept the pairing.
 3. **G7 configuration** — once, before the first G7: on the page tap **From the xDrip+ documentation**
    and **Send to bridge**. It stays on your bridge only.
 4. **xDrip+** — within the same 10 minutes: xDrip+ → Settings → **Hardware Data Source** →
@@ -38,4 +38,5 @@ Updates are installed the same way. The pairing code, the sensor and the G7 conf
    any other phone that talks to that sensor first. The bridge finds the sensor the code belongs
    to and pairs with it (up to 30 minutes).
 
-Missed the 10-minute window? Unplug the battery and USB (or press RESET once) and pair again.
+Missed the 10-minute window? Plug a USB-C charger into the bridge (or press RESET once): pairing
+opens for another 10 minutes.

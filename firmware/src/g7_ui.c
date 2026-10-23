@@ -7,8 +7,8 @@
  *                                 last command result)
  *   command  a7c10003-...  write: "code 1234" | "search" | "id 18" | "release" | "unpair_phone"
  *
- * Both need an encrypted (bonded) link, and new bonds are only accepted in the
- * first 10 minutes after power-on (main.c pairing_accept).
+ * Both need an encrypted (bonded) link, and new bonds are only accepted within
+ * 10 minutes of power-on, plugging in USB or "unpair_phone" (main.c pairing_accept).
  */
 #include <errno.h>
 #include <stdio.h>
@@ -120,6 +120,9 @@ static void build_status(void)
 	       "\"xdrip\":%d",
 	       g7_config_get_code(), g7_config_get_id(), st.searching, st.search_left_s,
 	       g7_cgms_phone_connected(), g7_cgms_collecting());
+	if (g7_bridge_phone_pairing_left_s()) {
+		APPEND(",\"pair\":%u", g7_bridge_phone_pairing_left_s());
+	}
 
 	if (st.have_reading) {
 		APPEND(",\"g\":{\"mgdl\":%u,\"state\":%u,\"age\":%u", st.mgdl, st.state,
@@ -265,7 +268,10 @@ static void run_command(struct k_work *work)
 
 		ctx.have_sensor = g7_config_get_key_addr(&ctx.sensor);
 		bt_foreach_bond(BT_ID_DEFAULT, unpair_non_sensor, &ctx);
-		snprintf(last_msg, sizeof(last_msg), "%d phone bond(s) removed", ctx.removed);
+		/* The phone that asked may pair again right away, no restart needed */
+		g7_bridge_open_phone_pairing();
+		snprintf(last_msg, sizeof(last_msg), "%d phone bond(s) removed, pairing open 10 min",
+			 ctx.removed);
 	} else if (strcmp(cmd, "certs_commit") == 0) {
 		int err = g7_certs_commit();
 

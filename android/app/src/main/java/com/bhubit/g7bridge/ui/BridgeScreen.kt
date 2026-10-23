@@ -215,7 +215,7 @@ fun BridgeScreen(vm: MainViewModel) {
             SensorCard(vm, st, conn == Conn.CONNECTED)
             PairCard(vm, st, conn == Conn.CONNECTED)
             CertsCard(vm, st, conn == Conn.CONNECTED)
-            HelpCard(vm, conn == Conn.CONNECTED) { chooser = true }
+            HelpCard(vm, st, conn == Conn.CONNECTED) { chooser = true }
             // Versions (each with its update check) and the language switch at the very bottom
             Row(Modifier.padding(horizontal = 4.dp), verticalAlignment = Alignment.Top) {
                 Box(Modifier.weight(1f)) { VersionLines(vm, st) }
@@ -831,7 +831,7 @@ private fun Expandable(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun HelpCard(vm: MainViewModel, connected: Boolean, chooseBridge: () -> Unit) {
+private fun HelpCard(vm: MainViewModel, st: BridgeStatus?, connected: Boolean, chooseBridge: () -> Unit) {
     var confirm by remember { mutableStateOf(false) }
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -859,6 +859,9 @@ private fun HelpCard(vm: MainViewModel, connected: Boolean, chooseBridge: () -> 
             HorizontalDivider()
             Expandable(stringResource(R.string.unp_title)) {
                 Text(stringResource(R.string.unp_text), style = MaterialTheme.typography.bodySmall)
+                st?.pairLeftS?.takeIf { it > 0 }?.let {
+                    Pill(stringResource(R.string.pair_open, (it + 59) / 60), Tone.Warn)
+                }
                 OutlinedButton(onClick = { confirm = true }, enabled = connected) {
                     Text(stringResource(R.string.unp_btn))
                 }

@@ -22,7 +22,7 @@ Updates install the same way, over the old version; settings are kept.
 
 If xDrip+ on this phone is already connected to the bridge, the app finds the bridge by itself.
 Otherwise tap **Connect**, choose “G7 Bridge” and accept the pairing request within 10 minutes
-of powering the bridge up.
+of powering the bridge up or plugging in a USB-C charger.
 
 - **G7 configuration** — **From the xDrip+ documentation** (or **Scan with camera**), then
   **Send to bridge**. Needed once per bridge.

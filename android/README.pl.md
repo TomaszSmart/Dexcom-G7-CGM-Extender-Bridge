@@ -20,7 +20,7 @@ Aktualizacje instaluje się tak samo, na starą wersję; ustawienia zostają.
 
 Jeśli xDrip+ w tym telefonie jest już połączony z bridge’em, aplikacja sama go znajdzie.
 W przeciwnym razie naciśnij **Połącz**, wybierz „G7 Bridge” i zatwierdź parowanie w ciągu
-10 minut od podłączenia zasilania bridge’a.
+10 minut od włączenia bridge’a albo podłączenia ładowarki USB-C.
 
 - **Konfiguracja G7** — **Z dokumentacji xDrip+** (albo **Skanuj aparatem**), potem
   **Wyślij do bridge’a**. Raz na bridge.

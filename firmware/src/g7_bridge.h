@@ -54,4 +54,11 @@ int g7_bridge_repair_sensor(void);
  */
 void g7_bridge_release_sensor(void);
 
+/*
+ * New phones may pair for 10 minutes after power-on, after plugging in USB power, and after
+ * "unpair_phone". Opens that window now; the other returns the seconds left (0 = closed).
+ */
+void g7_bridge_open_phone_pairing(void);
+uint16_t g7_bridge_phone_pairing_left_s(void);
+
 #endif /* G7_BRIDGE_H_ */

@@ -117,7 +117,7 @@
     <!-- help -->
     <string name="xd_title">Connect xDrip+ to the bridge</string>
     <string name="xd1">Use a recent xDrip+ that has the “SmartGuide” data source.</string>
-    <string name="xd2">Within 10 minutes of powering the bridge up: xDrip+ → Settings → Hardware Data Source → SmartGuide.</string>
+    <string name="xd2">Within 10 minutes of powering the bridge up or plugging in a USB-C charger: xDrip+ → Settings → Hardware Data Source → SmartGuide.</string>
     <string name="xd3">xDrip+ scans for devices: choose “G7 Bridge” and accept the Android pairing request.</string>
     <string name="xd4">The bridge drops the phone once right after pairing — this is expected; xDrip+ reconnects by itself and fetches up to 24 hours of history.</string>
     <string name="xd5">AndroidAPS keeps using xDrip+ as its BG source, nothing changes there.</string>
@@ -144,7 +144,7 @@
     <string name="rel_none">The bridge is not connecting to any sensor. To change that, enter the code under New sensor.</string>
     <string name="msg_releasing">Releasing the sensor…</string>
     <string name="unp_title">Phone cannot connect</string>
-    <string name="unp_text">Removes the phones’ pairing with the bridge (the sensor stays). Then forget “G7 Bridge” in the phone’s Bluetooth settings, unplug and replug the bridge’s power and pair the phone again within 10 minutes.</string>
+    <string name="unp_text">Removes the phones’ pairing with the bridge (the sensor stays) and opens pairing for 10 minutes. Then forget “G7 Bridge” in the phone’s Bluetooth settings and pair the phone again within those 10 minutes: in xDrip+ (SmartGuide) and in this app. If no phone can connect at all, plug a USB-C charger into the bridge — that opens pairing for 10 minutes too.</string>
     <string name="unp_btn">Remove phone pairing</string>
     <string name="unp_yes">Yes, remove</string>
     <string name="forget_btn">Use another bridge</string>
@@ -158,7 +158,8 @@
     <!-- status line -->
     <string name="msg_bonding">Accept the pairing request…</string>
     <string name="msg_add_xdrip">Paired. Now add the bridge in xDrip+ (see below) — while you are in xDrip+ this app lets go of the connection so xDrip+ can find it.</string>
-    <string name="msg_denied">The bridge refused the pairing. A new phone can only be paired within 10 minutes of powering up the bridge.</string>
+    <string name="msg_denied">The bridge refused the pairing. A new phone can only be paired within 10 minutes of powering up the bridge or plugging a USB-C charger into it.</string>
+    <string name="pair_open">phone pairing open for %1$d more min</string>
     <string name="msg_not_bridge">This device is not a G7 Bridge.</string>
     <string name="msg_disc_retry">Disconnected, reconnecting shortly…</string>
     <string name="msg_disc">Disconnected.</string>
