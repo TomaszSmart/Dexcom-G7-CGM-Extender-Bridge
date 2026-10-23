@@ -199,6 +199,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         client.send("code $code")
     }
 
+    /** The bridge lets go of the sensor (for xDrip+ or the Dexcom app) until a code is set again. */
+    fun releaseSensor() {
+        message.value = Msg(R.string.msg_releasing)
+        awaitingAnswer = true
+        client.send("release")
+    }
+
     fun unpairPhones() {
         message.value = Msg(R.string.msg_unpairing)
         awaitingAnswer = true

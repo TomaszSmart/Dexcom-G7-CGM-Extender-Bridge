@@ -78,6 +78,7 @@ class BridgeWatch(private val ctx: Context) {
             putInt("fails", 0)
             if (st.xdrip != false) putBoolean("xdrip_missing", false)
             putLong("seen_ms", System.currentTimeMillis())
+            putBoolean("no_sensor", st.code.isEmpty() && st.id.isEmpty())
             st.battery?.let { putInt("last_bat", it.pct) }
         }
         battery(st)
@@ -113,6 +114,8 @@ class BridgeWatch(private val ctx: Context) {
         val fails = prefs.getInt("fails", 0) + 1
         prefs.edit { putInt("fails", fails) }
         if (fails < 2) return // ~30 min without contact before we say so
+        // A bridge with no sensor (released for xDrip+ or the Dexcom app) may be left at home
+        if (prefs.getBoolean("no_sensor", false)) return
         val seen = prefs.getLong("seen_ms", 0)
         val bat = prefs.getInt("last_bat", -1)
         val time = if (seen > 0) DateFormat.getTimeFormat(ctx).format(Date(seen)) else "—"
@@ -129,6 +132,7 @@ class BridgeWatch(private val ctx: Context) {
         val name = st.inUse?.name ?: st.id.takeIf { it.isNotEmpty() }?.let { "DXCM$it" } ?: "G7"
         when {
             st.searching -> clearDiagnosis() // a new sensor is being looked for: expected
+            st.code.isEmpty() && st.id.isEmpty() -> clearDiagnosis() // no sensor set up, or released
             // The sensor itself reports the end of its session or a failure
             g != null && g.state !in OK_STATES -> if (g.state in END_STATES) {
                 showDiagnosis(
@@ -148,7 +152,6 @@ class BridgeWatch(private val ctx: Context) {
             } else if (st.xdrip != false) {
                 clearDiagnosis()
             }
-            st.code.isEmpty() && st.id.isEmpty() -> clearDiagnosis() // no sensor set up yet
             st.inUse == null -> showDiagnosis(
                 "nosensor", ctx.getString(R.string.n_nosensor_title), ctx.getString(R.string.n_nosensor_text),
             )

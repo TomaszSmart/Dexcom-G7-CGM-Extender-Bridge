@@ -5,7 +5,7 @@
  *   status   a7c10002-...  read:  JSON snapshot (code, sensor, last reading,
  *                                 session, sensors in range, the reader's link RSSI,
  *                                 last command result)
- *   command  a7c10003-...  write: "code 1234" | "search" | "id 18" | "unpair_phone"
+ *   command  a7c10003-...  write: "code 1234" | "search" | "id 18" | "release" | "unpair_phone"
  *
  * Both need an encrypted (bonded) link, and new bonds are only accepted in the
  * first 10 minutes after power-on (main.c pairing_accept).
@@ -130,10 +130,13 @@ static void build_status(void)
 		APPEND("}");
 	}
 
-	bool have_info = g7_config_get_key_addr(&sensor) && g7_config_get_session(&sensor, &info);
+	/* No sensor set up (or released): the old sensor's session is not news any more */
+	bool none = g7_config_get_id()[0] == '\0' && g7_config_get_code()[0] == '\0';
+	bool have_info = !none && g7_config_get_key_addr(&sensor) &&
+			 g7_config_get_session(&sensor, &info);
 
 	APPEND(",\"sess\":{");
-	if (g7_history_now_s(&sensor_s)) {
+	if (!none && g7_history_now_s(&sensor_s)) {
 		APPEND("\"min\":%u,", sensor_s / 60);
 	}
 	if (have_info && info.length_s) {
@@ -254,6 +257,9 @@ static void run_command(struct k_work *work)
 	} else if (strncmp(cmd, "id ", 3) == 0) {
 		snprintf(last_msg, sizeof(last_msg),
 			 g7_config_set_id(cmd + 3) ? "invalid id" : "sensor id set");
+	} else if (strcmp(cmd, "release") == 0) {
+		g7_bridge_release_sensor();
+		snprintf(last_msg, sizeof(last_msg), "sensor released");
 	} else if (strcmp(cmd, "unpair_phone") == 0) {
 		struct unpair_ctx ctx = {0};
 

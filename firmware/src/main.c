@@ -262,6 +262,18 @@ int g7_bridge_repair_sensor(void)
 	return removed;
 }
 
+void g7_bridge_release_sensor(void)
+{
+	g7_config_set_id("");
+	g7_config_set_code("");
+	search_until = 0;
+	last_reading.valid = false;
+	if (default_conn) {
+		LOG_INF("Releasing the sensor: disconnecting");
+		bt_conn_disconnect(default_conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);
+	}
+}
+
 void g7_bridge_get_status(struct g7_bridge_status *st)
 {
 	int64_t now = k_uptime_get();

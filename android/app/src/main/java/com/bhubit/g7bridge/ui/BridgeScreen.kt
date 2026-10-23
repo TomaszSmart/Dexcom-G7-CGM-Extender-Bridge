@@ -212,7 +212,7 @@ fun BridgeScreen(vm: MainViewModel) {
 
             ReadingCard(st, conn == Conn.CONNECTED)
             RangeCard(st)
-            SensorCard(st)
+            SensorCard(vm, st, conn == Conn.CONNECTED)
             PairCard(vm, st, conn == Conn.CONNECTED)
             CertsCard(vm, st, conn == Conn.CONNECTED)
             HelpCard(vm, conn == Conn.CONNECTED) { chooser = true }
@@ -425,6 +425,7 @@ private fun ReadingCard(st: BridgeStatus?, connected: Boolean) {
                     Text(ago(g.ageS), style = MaterialTheme.typography.bodySmall)
                 }
             }
+            st != null && st.code.isEmpty() && st.id.isEmpty() -> Text(stringResource(R.string.no_sensor))
             st != null -> {
                 Text(stringResource(R.string.no_reading))
                 Pill(stringResource(R.string.wait_sensor))
@@ -442,7 +443,8 @@ private fun ReadingCard(st: BridgeStatus?, connected: Boolean) {
 }
 
 @Composable
-private fun SensorCard(st: BridgeStatus?) {
+private fun SensorCard(vm: MainViewModel, st: BridgeStatus?, connected: Boolean) {
+    var confirm by remember { mutableStateOf(false) }
     Section(stringResource(R.string.h_sensor)) {
         val using = st?.inUse
         Field(
@@ -493,7 +495,45 @@ private fun SensorCard(st: BridgeStatus?) {
             stringResource(R.string.s_phone),
             if (st == null) "—" else stringResource(if (st.xdrip ?: st.phone) R.string.phone_on else R.string.phone_off),
         )
+        // No code and no sensor id: a new bridge, or the sensor was released
+        if (st != null && st.code.isEmpty() && st.id.isEmpty()) {
+            Text(
+                stringResource(R.string.rel_none),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        } else if (st != null && fwAtLeast(st.fw, 0, 3, 3)) { // "release" came with firmware 0.3.3
+            OutlinedButton(onClick = { confirm = true }, enabled = connected) {
+                Text(stringResource(R.string.rel_btn))
+            }
+        }
     }
+    if (confirm) {
+        AlertDialog(
+            onDismissRequest = { confirm = false },
+            title = { Text(stringResource(R.string.rel_title)) },
+            text = { Text(stringResource(R.string.rel_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirm = false
+                    vm.releaseSensor()
+                }) { Text(stringResource(R.string.rel_yes)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirm = false }) { Text(stringResource(R.string.btn_cancel)) }
+            },
+        )
+    }
+}
+
+/** True if the firmware is at least [want]; "0.3.3-dev" counts as 0.3.3. */
+private fun fwAtLeast(fw: String?, vararg want: Int): Boolean {
+    val v = fw?.substringBefore('-')?.split('.')?.map { it.toIntOrNull() ?: return false } ?: return false
+    for (i in want.indices) {
+        val x = v.getOrElse(i) { 0 }
+        if (x != want[i]) return x > want[i]
+    }
+    return true
 }
 
 /** PL · EN: the current language stands out; the other one switches to it. */

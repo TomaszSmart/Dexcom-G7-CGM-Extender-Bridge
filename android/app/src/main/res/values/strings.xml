@@ -136,6 +136,13 @@
     <string name="led_b5d">no pairing code or sensor set</string>
     <string name="led_r">red steady</string>
     <string name="led_rd">battery charging LED (not controlled by the bridge)</string>
+    <string name="no_sensor">no sensor set up</string>
+    <string name="rel_btn">Release sensor</string>
+    <string name="rel_title">Release the sensor?</string>
+    <string name="rel_text">The bridge disconnects from the sensor and stops connecting to it, also after a restart. About 15 minutes later the sensor can be paired in xDrip+ (G7) or in the Dexcom app. To go back to the bridge, enter the code under New sensor.</string>
+    <string name="rel_yes">Release</string>
+    <string name="rel_none">The bridge is not connecting to any sensor. To change that, enter the code under New sensor.</string>
+    <string name="msg_releasing">Releasing the sensor…</string>
     <string name="unp_title">Phone cannot connect</string>
     <string name="unp_text">Removes the phones’ pairing with the bridge (the sensor stays). Then forget “G7 Bridge” in the phone’s Bluetooth settings, unplug and replug the bridge’s power and pair the phone again within 10 minutes.</string>
     <string name="unp_btn">Remove phone pairing</string>

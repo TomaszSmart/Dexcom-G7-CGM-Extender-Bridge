@@ -117,6 +117,9 @@ ul.seen li:first-child { border-top: 0; }
 .msg { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
 .msg:empty { min-height: 0; margin-block: -7px !important; } /* no gap under the header without a message */
 .confirm { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.confirm[hidden] { display: none; }
+#relConfirm:not([hidden]) { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#relConfirm .sub { flex-basis: 100%; }
 details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 .nobt { border-color: var(--low); }
 #camVideo { width: 100%; max-height: 60vh; margin-top: 10px; border-radius: 9px; background: #000; object-fit: cover; }
@@ -180,6 +183,15 @@ details summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
       <dt data-i18n="sPhone"></dt><dd id="sPhone">—</dd>
     </dl>
     <div class="bar" aria-hidden="true"><span id="sBar"></span></div>
+    <p class="sub" id="relNone" hidden data-i18n="relNone"></p>
+    <div class="confirm" id="relBox" hidden>
+      <button type="button" class="quiet" id="relBtn" disabled data-i18n="relBtn"></button>
+      <span id="relConfirm" hidden>
+        <span class="sub" data-i18n="relText"></span>
+        <button type="button" class="danger" id="relYes" data-i18n="relYes"></button>
+        <button type="button" class="quiet" id="relNo" data-i18n="unpNo"></button>
+      </span>
+    </div>
   </section>
 
   <section class="panel" aria-labelledby="hPair">
@@ -357,6 +369,9 @@ const TEXT = {
     noReading: 'no reading since the bridge was switched on', waitSensor: 'waiting for the sensor',
     notSelected: 'not selected', sessUnknown: 'unknown (waiting for the sensor)', passed: ' (passed)',
     codeNotSet: 'not set', phoneOn: 'connected', phoneOff: 'not connected',
+    noSensor: 'no sensor set up', relBtn: 'Release sensor', relYes: 'Release', releasing: 'Releasing the sensor…',
+    relText: 'The bridge disconnects from the sensor and stops connecting to it, also after a restart. About 15 minutes later the sensor can be paired in xDrip+ (G7) or in the Dexcom app. To go back to the bridge, enter the code under New sensor.',
+    relNone: 'The bridge is not connecting to any sensor. To change that, enter the code under New sensor.',
     pillUsed: 'in use', pillNoFit: 'code does not fit', pillCheck: 'to check', pillOther: 'other',
     seenNone: 'The bridge has not seen any sensor yet. G7 transmits every 5 minutes.',
     rssiGood: 'good', rssiMid: 'fair', rssiBad: 'weak', signal: 'signal',
@@ -437,6 +452,9 @@ const TEXT = {
     noReading: 'brak odczytu od włączenia bridge’a', waitSensor: 'czekam na sensor',
     notSelected: 'nie wybrany', sessUnknown: 'nieznana (czekam na sensor)', passed: ' (minęło)',
     codeNotSet: 'nie ustawiony', phoneOn: 'połączony', phoneOff: 'nie połączony',
+    noSensor: 'brak sensora', relBtn: 'Zwolnij sensor', relYes: 'Zwolnij', releasing: 'Zwalniam sensor…',
+    relText: 'Bridge rozłączy się z sensorem i przestanie się z nim łączyć, także po restarcie. Po około 15 minutach sensor można sparować w xDrip+ (G7) albo w aplikacji Dexcom. Aby wrócić do bridge’a, wpisz kod w sekcji Nowy sensor.',
+    relNone: 'Bridge nie łączy się z żadnym sensorem. Aby to zmienić, wpisz kod w sekcji Nowy sensor.',
     pillUsed: 'używany', pillNoFit: 'kod nie pasuje', pillCheck: 'do sprawdzenia', pillOther: 'inny',
     seenNone: 'Bridge nie widział jeszcze żadnego sensora. G7 nadaje co 5 minut.',
     rssiGood: 'dobry', rssiMid: 'średni', rssiBad: 'słaby', signal: 'sygnał',
@@ -785,6 +803,7 @@ function bars(rssi) {
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
 function render(st) {
+  const noSensor = !st.code && !st.id;
   lastStatus = st;
   const g = st.g;
   const bg = $('bg');
@@ -800,11 +819,24 @@ function render(st) {
   } else {
     bg.className = 'bg none';
     bg.innerHTML = '—<small>mg/dL</small>';
-    $('trend').textContent = t('noReading');
     $('age').textContent = '';
-    $('state').textContent = t('waitSensor');
-    $('state').className = 'pill';
+    if (noSensor) {
+      $('trend').textContent = t('noSensor');
+      $('state').textContent = '';
+      $('state').className = '';
+    } else {
+      $('trend').textContent = t('noReading');
+      $('state').textContent = t('waitSensor');
+      $('state').className = 'pill';
+    }
   }
+
+  // No code and no sensor id: a new bridge, or the sensor was released
+  $('relNone').hidden = !noSensor;
+  // "release" came with firmware 0.3.3 ("0.3.3-dev" counts too)
+  const fwv = verNum(String(st.fw || '').replace(/-.*/, ''));
+  $('relBox').hidden = noSensor || !fwv || newer([0, 3, 3], fwv);
+  if (noSensor) $('relConfirm').hidden = true;
 
   const using = (st.seen || []).find((s) => s.use);
   $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : t('notSelected'));
@@ -926,6 +958,7 @@ function setConnected(on) {
   $('connText').textContent = t(on ? 'connYes' : 'connNo');
   $('connectBtn').textContent = t(on ? 'disconnectBtn' : 'connectBtn');
   $('unpairBtn').disabled = !on;
+  $('relBtn').disabled = !on;
   $('certsBtn').disabled = !(on && certsChr);
   validateCode();
   if (timer) clearInterval(timer);
@@ -1036,6 +1069,13 @@ $('pairForm').addEventListener('submit', (e) => {
   send('code ' + code);
 });
 $('connectBtn').addEventListener('click', connect);
+$('relBtn').addEventListener('click', () => { $('relConfirm').hidden = false; });
+$('relNo').addEventListener('click', () => { $('relConfirm').hidden = true; });
+$('relYes').addEventListener('click', () => {
+  $('relConfirm').hidden = true;
+  $('bridgeMsg').textContent = t('releasing');
+  send('release');
+});
 $('unpairBtn').addEventListener('click', () => { $('unpairConfirm').hidden = false; });
 $('unpairNo').addEventListener('click', () => { $('unpairConfirm').hidden = true; });
 $('unpairYes').addEventListener('click', () => {

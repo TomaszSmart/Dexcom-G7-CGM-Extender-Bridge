@@ -131,6 +131,13 @@
     <string name="led_b5d">nie ustawiono kodu ani sensora</string>
     <string name="led_r">czerwona świeci</string>
     <string name="led_rd">dioda ładowania baterii (nie zależy od bridge’a)</string>
+    <string name="no_sensor">brak sensora</string>
+    <string name="rel_btn">Zwolnij sensor</string>
+    <string name="rel_title">Zwolnić sensor?</string>
+    <string name="rel_text">Bridge rozłączy się z sensorem i przestanie się z nim łączyć, także po restarcie. Po około 15 minutach sensor można sparować w xDrip+ (G7) albo w aplikacji Dexcom. Aby wrócić do bridge’a, wpisz kod w sekcji Nowy sensor.</string>
+    <string name="rel_yes">Zwolnij</string>
+    <string name="rel_none">Bridge nie łączy się z żadnym sensorem. Aby to zmienić, wpisz kod w sekcji Nowy sensor.</string>
+    <string name="msg_releasing">Zwalniam sensor…</string>
     <string name="unp_title">Telefon nie może się połączyć</string>
     <string name="unp_text">Usuwa parowanie telefonów z bridge’em (sensor zostaje). Potem w ustawieniach Bluetooth telefonu zapomnij „G7 Bridge”, odłącz i podłącz zasilanie bridge’a i w ciągu 10 minut sparuj telefon ponownie.</string>
     <string name="unp_btn">Usuń parowanie telefonów</string>

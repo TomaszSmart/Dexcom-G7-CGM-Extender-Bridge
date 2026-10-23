@@ -47,4 +47,11 @@ void g7_bridge_start_search(void);
  */
 int g7_bridge_repair_sensor(void);
 
+/*
+ * Lets go of the sensor so xDrip+ or the Dexcom app can take it over: drops the link and
+ * forgets the sensor id and pairing code (kept in flash), so the bridge connects to no G7 until
+ * a code is set again. The bond and session key stay; the usual checks sort them out then.
+ */
+void g7_bridge_release_sensor(void);
+
 #endif /* G7_BRIDGE_H_ */
