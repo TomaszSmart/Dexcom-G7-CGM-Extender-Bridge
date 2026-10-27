@@ -24,7 +24,7 @@ back.
   <img src="docs/images/g7-bridge-back.jpg" width="32%" alt="G7 Bridge — back view">
 </p>
 
-The finished G7 Bridge: a RAK4631 on a RAK19003 base board with a battery, in a 3D-printed case.
+The finished G7 Bridge: a RAK4631 on a RAK19003 base board with a battery, in a 3D-printed case (https://www.printables.com/model/286664-rak19003-micro-case-for-meshtastic).
 On the front: the USB-C port for charging, the RESET button and the LEDs.
 Size: **47 × 50 × 24 mm** (width × length × thickness).
 
