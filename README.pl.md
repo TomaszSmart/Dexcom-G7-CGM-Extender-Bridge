@@ -24,7 +24,7 @@ na chwilę straci zasięg, bridge przechowa odczyty i wyśle je, gdy tylko poł�
   <img src="docs/images/g7-bridge-back.jpg" width="32%" alt="G7 Bridge — widok z tyłu">
 </p>
 
-Gotowy G7 Bridge: RAK4631 na płytce RAK19003 z akumulatorem, w obudowie wydrukowanej w 3D.
+Gotowy G7 Bridge: RAK4631 na płytce RAK19003 z akumulatorem, w obudowie wydrukowanej w 3D (https://www.printables.com/model/286664-rak19003-micro-case-for-meshtastic).
 Z przodu złącze USB-C do ładowania, przycisk RESET i diody.
 Wymiary: **47 × 50 × 24 mm** (szerokość × długość × grubość).
 
