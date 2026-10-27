@@ -163,6 +163,20 @@
     <string name="msg_send_fail">Nie udało się wysłać polecenia: %1$s</string>
     <string name="msg_sending_code">Wysyłam kod %1$s…</string>
     <string name="msg_unpairing">Usuwam parowanie telefonów…</string>
+    <string name="ans_code">Kod %1$s zapisany — bridge szuka sensora.</string>
+    <string name="ans_invalid_code">Nieprawidłowy kod: 4 cyfry (6 dla Dexcom ONE+).</string>
+    <string name="ans_set_code_first">Najpierw wpisz kod z aplikatora.</string>
+    <string name="ans_searching">Bridge szuka sensora.</string>
+    <string name="ans_id_set">Sensor wybrany.</string>
+    <string name="ans_invalid_id">Nieprawidłowa nazwa sensora.</string>
+    <string name="ans_released">Sensor zwolniony.</string>
+    <string name="ans_unpaired">Usunięto parowanie telefonów (%1$s). Parowanie otwarte na 10 minut.</string>
+    <string name="ans_cfg_saved">Konfiguracja G7 zapisana w bridge’u.</string>
+    <string name="ans_cfg_mismatch">Konfiguracja G7: dane z kodu QR do siebie nie pasują.</string>
+    <string name="ans_cfg_incomplete">Konfiguracja G7: wysyłanie niepełne, spróbuj ponownie.</string>
+    <string name="ans_cfg_failed">Konfiguracja G7: zapis się nie udał.</string>
+    <string name="ans_cfg_removed">Konfiguracja G7 usunięta.</string>
+    <string name="ans_unknown">Bridge nie zna tego polecenia — zaktualizuj firmware.</string>
     <string name="msg_bridge">Bridge: %1$s</string>
 
     <!-- powiadomienia -->

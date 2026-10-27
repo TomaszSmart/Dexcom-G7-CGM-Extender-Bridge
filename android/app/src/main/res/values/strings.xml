@@ -168,6 +168,20 @@
     <string name="msg_send_fail">Could not send the command: %1$s</string>
     <string name="msg_sending_code">Sending code %1$s…</string>
     <string name="msg_unpairing">Removing phone pairing…</string>
+    <string name="ans_code">Code %1$s saved — the bridge is looking for the sensor.</string>
+    <string name="ans_invalid_code">Invalid code: 4 digits (6 for Dexcom ONE+).</string>
+    <string name="ans_set_code_first">Enter the code from the applicator first.</string>
+    <string name="ans_searching">The bridge is looking for the sensor.</string>
+    <string name="ans_id_set">Sensor selected.</string>
+    <string name="ans_invalid_id">Invalid sensor name.</string>
+    <string name="ans_released">Sensor released.</string>
+    <string name="ans_unpaired">Phone pairing removed (%1$s). Pairing is open for 10 minutes.</string>
+    <string name="ans_cfg_saved">G7 configuration saved on the bridge.</string>
+    <string name="ans_cfg_mismatch">G7 configuration: the QR code data does not match.</string>
+    <string name="ans_cfg_incomplete">G7 configuration: sending was incomplete, try again.</string>
+    <string name="ans_cfg_failed">G7 configuration: saving failed.</string>
+    <string name="ans_cfg_removed">G7 configuration removed.</string>
+    <string name="ans_unknown">The bridge does not know this command — update its firmware.</string>
     <string name="msg_bridge">Bridge: %1$s</string>
 
     <!-- notifications -->

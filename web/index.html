@@ -382,6 +382,20 @@ const TEXT = {
     remembered: 'Connecting to the remembered bridge…',
     denied: 'The bridge refused access. A new phone can only be paired within 10 minutes of powering up the bridge or plugging a USB-C charger into it.',
     pairOpen: (m) => 'phone pairing open for ' + m + ' more min',
+    ans_code: 'Code {1} saved — the bridge is looking for the sensor.',
+    ans_invalid_code: 'Invalid code: 4 digits (6 for Dexcom ONE+).',
+    ans_set_code_first: 'Enter the code from the applicator first.',
+    ans_searching: 'The bridge is looking for the sensor.',
+    ans_id_set: 'Sensor selected.',
+    ans_invalid_id: 'Invalid sensor name.',
+    ans_released: 'Sensor released.',
+    ans_unpaired: 'Phone pairing removed ({1}). Pairing is open for 10 minutes.',
+    ans_cfg_saved: 'G7 configuration saved on the bridge.',
+    ans_cfg_mismatch: 'G7 configuration: the QR code data does not match.',
+    ans_cfg_incomplete: 'G7 configuration: sending was incomplete, try again.',
+    ans_cfg_failed: 'G7 configuration: saving failed.',
+    ans_cfg_removed: 'G7 configuration removed.',
+    ans_unknown: 'The bridge does not know this command — update its firmware.',
     unpairing: 'Removing phone pairing…',
     ago: (s) => s < 90 ? s + ' s ago' : s < 5400 ? Math.round(s / 60) + ' min ago'
       : s < 172800 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago',
@@ -466,6 +480,20 @@ const TEXT = {
     remembered: 'Łączę z zapamiętanym bridge’em…',
     denied: 'Bridge odmówił dostępu. Nowy telefon można sparować tylko przez 10 minut po włączeniu bridge’a albo podłączeniu do niego ładowarki USB-C.',
     pairOpen: (m) => 'parowanie telefonu otwarte jeszcze ' + m + ' min',
+    ans_code: 'Kod {1} zapisany — bridge szuka sensora.',
+    ans_invalid_code: 'Nieprawidłowy kod: 4 cyfry (6 dla Dexcom ONE+).',
+    ans_set_code_first: 'Najpierw wpisz kod z aplikatora.',
+    ans_searching: 'Bridge szuka sensora.',
+    ans_id_set: 'Sensor wybrany.',
+    ans_invalid_id: 'Nieprawidłowa nazwa sensora.',
+    ans_released: 'Sensor zwolniony.',
+    ans_unpaired: 'Usunięto parowanie telefonów ({1}). Parowanie otwarte na 10 minut.',
+    ans_cfg_saved: 'Konfiguracja G7 zapisana w bridge’u.',
+    ans_cfg_mismatch: 'Konfiguracja G7: dane z kodu QR do siebie nie pasują.',
+    ans_cfg_incomplete: 'Konfiguracja G7: wysyłanie niepełne, spróbuj ponownie.',
+    ans_cfg_failed: 'Konfiguracja G7: zapis się nie udał.',
+    ans_cfg_removed: 'Konfiguracja G7 usunięta.',
+    ans_unknown: 'Bridge nie zna tego polecenia — zaktualizuj firmware.',
     unpairing: 'Usuwam parowanie telefonów…',
     ago: (s) => s < 90 ? s + ' s temu' : s < 5400 ? Math.round(s / 60) + ' min temu'
       : s < 172800 ? Math.round(s / 3600) + ' h temu' : Math.round(s / 86400) + ' dni temu',
@@ -920,7 +948,15 @@ function render(st) {
   }
 
   // The bridge keeps its last answer across connections: show it only after our own command.
-  if (awaitingAnswer && st.msg && st.msg !== 'ready') $('bridgeMsg').textContent = 'Bridge: ' + st.msg;
+  // A repeated command gives the same answer as before: then take it after 2 s.
+  if (awaitingAnswer && st.msg && st.msg !== 'ready' &&
+      (st.msg !== msgBefore || Date.now() - sentAt > 2000)) {
+    awaitingAnswer = false;
+    const text = bridgeAnswer(st.msg);
+    $('bridgeMsg').textContent = text;
+    // Only a confirmation: the sections show the state itself
+    setTimeout(() => { if ($('bridgeMsg').textContent === text) $('bridgeMsg').textContent = ''; }, 20000);
+  }
 }
 
 const BOLT = '<svg viewBox="0 0 10 16" aria-hidden="true"><path d="M6.2 0 0.5 9.3h4L3.5 16l6-9.6h-4z"/></svg>';
@@ -946,11 +982,38 @@ async function readStatus() {
   }
 }
 
-let awaitingAnswer = false;
+let awaitingAnswer = false, sentAt = 0, msgBefore = null;
+
+// The bridge answers in English (firmware g7_ui.c); known answers get the page language.
+const ANSWERS = [
+  [/^code (\d+) set, searching$/, 'ans_code'],
+  [/^invalid code$/, 'ans_invalid_code'],
+  [/^set a code first$/, 'ans_set_code_first'],
+  [/^searching$/, 'ans_searching'],
+  [/^sensor id set$/, 'ans_id_set'],
+  [/^invalid id$/, 'ans_invalid_id'],
+  [/^sensor released$/, 'ans_released'],
+  [/^(\d+) phone bond\(s\) removed.*$/, 'ans_unpaired'],
+  [/^G7 configuration saved$/, 'ans_cfg_saved'],
+  [/^G7 configuration: QR code data does not match$/, 'ans_cfg_mismatch'],
+  [/^G7 configuration: upload incomplete$/, 'ans_cfg_incomplete'],
+  [/^G7 configuration: saving failed$/, 'ans_cfg_failed'],
+  [/^G7 configuration removed$/, 'ans_cfg_removed'],
+  [/^unknown command$/, 'ans_unknown'],
+];
+function bridgeAnswer(raw) {
+  for (const [re, key] of ANSWERS) {
+    const m = raw.match(re);
+    if (m) return t(key).replace('{1}', m[1] || '');
+  }
+  return 'Bridge: ' + raw;
+}
 
 async function send(cmd) {
   if (!cmdChr) return;
   awaitingAnswer = true;
+  sentAt = Date.now();
+  msgBefore = lastStatus ? lastStatus.msg : null;
   try {
     await cmdChr.writeValueWithResponse(new TextEncoder().encode(cmd));
     setTimeout(readStatus, 600);

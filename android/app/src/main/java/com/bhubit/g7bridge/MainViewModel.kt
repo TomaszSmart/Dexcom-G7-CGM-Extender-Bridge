@@ -55,6 +55,22 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     /** The bridge keeps its last message across connections: show it only as an answer to our command. */
     @Volatile private var awaitingAnswer = false
+    private var sentAt = 0L
+    private var msgBefore: String? = null
+
+    private fun expectAnswer() {
+        sentAt = System.currentTimeMillis()
+        msgBefore = client.status.value?.msg
+        awaitingAnswer = true
+    }
+
+    /** The bridge answers in English; known answers get the UI language. */
+    private fun answer(raw: String): Msg {
+        for ((re, id) in ANSWERS) {
+            re.matchEntire(raw)?.let { m -> return Msg(id, m.groupValues.drop(1)) }
+        }
+        return Msg(R.string.msg_bridge, listOf(raw))
+    }
 
 
     /**
@@ -114,7 +130,19 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     bondedHere = false
                     if (message.value == Msg(R.string.msg_add_xdrip)) message.value = null
                 }
-                if (awaitingAnswer && st.msg.isNotEmpty() && st.msg != "ready") message.value = Msg(R.string.msg_bridge, listOf(st.msg))
+                // A repeated command gives the same answer as before: then take it after 2 s
+                if (awaitingAnswer && st.msg.isNotEmpty() && st.msg != "ready" &&
+                    (st.msg != msgBefore || System.currentTimeMillis() - sentAt > 2_000)
+                ) {
+                    awaitingAnswer = false
+                    val m = answer(st.msg)
+                    message.value = m
+                    // Only a confirmation: the sections show the state itself
+                    viewModelScope.launch {
+                        delay(20_000)
+                        if (message.value == m) message.value = null
+                    }
+                }
             }
         }
     }
@@ -195,20 +223,20 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun sendCode(code: String) {
         message.value = Msg(R.string.msg_sending_code, listOf(code))
-        awaitingAnswer = true
+        expectAnswer()
         client.send("code $code")
     }
 
     /** The bridge lets go of the sensor (for xDrip+ or the Dexcom app) until a code is set again. */
     fun releaseSensor() {
         message.value = Msg(R.string.msg_releasing)
-        awaitingAnswer = true
+        expectAnswer()
         client.send("release")
     }
 
     fun unpairPhones() {
         message.value = Msg(R.string.msg_unpairing)
-        awaitingAnswer = true
+        expectAnswer()
         client.send("unpair_phone")
     }
 
@@ -248,7 +276,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun sendCerts() = viewModelScope.launch {
         val parts = _certs.value ?: return@launch
         certsBusy.value = true
-        awaitingAnswer = true
+        expectAnswer()
         try {
             client.sendCerts(parts) { pct -> certsMsg.value = Msg(R.string.certs_sending, listOf(pct)) }
             _certs.value = null
@@ -265,3 +293,21 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         client.disconnect()
     }
 }
+
+/** The bridge's answers (firmware g7_ui.c), most specific first. */
+private val ANSWERS = listOf(
+    Regex("""^code (\d+) set, searching$""") to R.string.ans_code,
+    Regex("""^invalid code$""") to R.string.ans_invalid_code,
+    Regex("""^set a code first$""") to R.string.ans_set_code_first,
+    Regex("""^searching$""") to R.string.ans_searching,
+    Regex("""^sensor id set$""") to R.string.ans_id_set,
+    Regex("""^invalid id$""") to R.string.ans_invalid_id,
+    Regex("""^sensor released$""") to R.string.ans_released,
+    Regex("""^(\d+) phone bond\(s\) removed.*$""") to R.string.ans_unpaired,
+    Regex("""^G7 configuration saved$""") to R.string.ans_cfg_saved,
+    Regex("""^G7 configuration: QR code data does not match$""") to R.string.ans_cfg_mismatch,
+    Regex("""^G7 configuration: upload incomplete$""") to R.string.ans_cfg_incomplete,
+    Regex("""^G7 configuration: saving failed$""") to R.string.ans_cfg_failed,
+    Regex("""^G7 configuration removed$""") to R.string.ans_cfg_removed,
+    Regex("""^unknown command$""") to R.string.ans_unknown,
+)
