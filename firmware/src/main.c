@@ -1,7 +1,7 @@
 /*
  * BLE central role for the Dexcom G7 bridge.
  *
- * Scans for a G7 transmitter (advertised service FEBC, GAP name "DXCM*"/"DX02*"),
+ * Scans for a G7 transmitter (advertised service FEBC, GAP name "DXCM*"/"DX01*"/"DX02*"/"DX04*"),
  * connects, discovers the CGM service, authenticates with the applicator pairing
  * code (app-layer EC-JPAKE over GATT, g7_auth.c -- see PROTOCOL_RESEARCH.md
  * section 2a), bonds when the sensor asks for it, and logs glucose readings from
@@ -62,7 +62,7 @@ static struct bt_gatt_subscribe_params auth_subscribe_params;
 static struct bt_gatt_subscribe_params control_subscribe_params;
 
 /*
- * --- scanning: look for GAP name "DXCM*"/"DX02*" alongside adv service FEBC ---
+ * --- scanning: look for GAP name "DXCM*"/"DX01*"/"DX02*"/"DX04*" alongside adv service FEBC ---
  *
  * That alone only tells us "this is *a* G7", not "this is *my* G7" -- more than
  * one sensor (yours, a household member's, a leftover old one) can be in range
@@ -101,9 +101,12 @@ static bool ad_parse_cb(struct bt_data *data, void *user_data)
 		memcpy(match->name, data->data, len);
 		match->name[len] = '\0';
 
+		/* The prefixes xDrip+ accepts (Ob1G5CollectionService.isScanMatch); DX04 came in
+		 * November 2026 with 15.5-day sensors.
+		 */
 		if (data->data_len >= 4 &&
-		    (memcmp(data->data, "DXCM", 4) == 0 ||
-		     memcmp(data->data, "DX02", 4) == 0)) {
+		    (memcmp(data->data, "DXCM", 4) == 0 || memcmp(data->data, "DX01", 4) == 0 ||
+		     memcmp(data->data, "DX02", 4) == 0 || memcmp(data->data, "DX04", 4) == 0)) {
 			match->has_matching_name = true;
 		}
 		break;
@@ -396,7 +399,7 @@ static void start_scan(void)
 		return;
 	}
 
-	LOG_INF("Scanning for a Dexcom G7 transmitter (service FEBC, name DXCM*/DX02*)...");
+	LOG_INF("Scanning for a Dexcom G7 transmitter (service FEBC, name DXCM*/DX01*/DX02*/DX04*)...");
 }
 
 /* --- GATT: discovery, subscriptions, authentication, data --- */
@@ -964,7 +967,7 @@ static void auth_finished(enum g7_auth_result result)
 
 		if (result == G7_AUTH_OK || result == G7_AUTH_BOND_NOW ||
 		    result == G7_AUTH_NEEDS_REPAIR) {
-			/* "DXCMab" -> id "ab" */
+			/* "DXCMab" / "DX04ab" -> id "ab" */
 			const char *suffix = strlen(connecting_name) > 4 ? connecting_name + 4
 									  : connecting_name;
 

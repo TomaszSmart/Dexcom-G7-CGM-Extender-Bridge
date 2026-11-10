@@ -870,7 +870,7 @@ function render(st) {
   if (noSensor) $('relConfirm').hidden = true;
 
   const using = (st.seen || []).find((s) => s.use);
-  $('sName').textContent = using ? using.n : (st.id ? 'DXCM' + st.id : t('notSelected'));
+  $('sName').textContent = using ? using.n : (st.id ? '…' + st.id : t('notSelected'));
   const sess = st.sess || {};
   if (sess.min !== undefined && sess.len) {
     $('sDay').textContent = t('dayOf', Math.floor(sess.min / 1440), Math.floor(sess.len / 1440));

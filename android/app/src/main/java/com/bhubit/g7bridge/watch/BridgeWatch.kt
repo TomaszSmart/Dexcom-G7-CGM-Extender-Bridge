@@ -129,7 +129,7 @@ class BridgeWatch(private val ctx: Context) {
 
     private fun diagnose(st: BridgeStatus) {
         val g = st.reading
-        val name = st.inUse?.name ?: st.id.takeIf { it.isNotEmpty() }?.let { "DXCM$it" } ?: "G7"
+        val name = st.inUse?.name ?: st.id.takeIf { it.isNotEmpty() }?.let { "…$it" } ?: "G7"
         when {
             st.searching -> clearDiagnosis() // a new sensor is being looked for: expected
             st.code.isEmpty() && st.id.isEmpty() -> clearDiagnosis() // no sensor set up, or released

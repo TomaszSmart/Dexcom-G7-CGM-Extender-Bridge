@@ -449,7 +449,7 @@ private fun SensorCard(vm: MainViewModel, st: BridgeStatus?, connected: Boolean)
         val using = st?.inUse
         Field(
             stringResource(R.string.s_name),
-            using?.name ?: st?.id?.takeIf { it.isNotEmpty() }?.let { "DXCM$it" }
+            using?.name ?: st?.id?.takeIf { it.isNotEmpty() }?.let { "…$it" }
                 ?: stringResource(R.string.not_selected),
         )
         val sess = st?.session

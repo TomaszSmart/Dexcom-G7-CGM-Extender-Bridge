@@ -12,7 +12,7 @@
 #define G7_BRIDGE_MAX_SEEN 6
 
 struct g7_seen_sensor {
-	char name[9];         /* e.g. "DXCMab" */
+	char name[9];         /* e.g. "DXCMab", "DX04ab" */
 	int8_t rssi;
 	uint16_t seen_s_ago;
 	bool tried;           /* the current pairing code did not fit it */
